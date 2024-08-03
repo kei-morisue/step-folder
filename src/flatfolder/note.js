@@ -4,12 +4,16 @@ export const NOTE = {  // ANNOTATION
     console: ((typeof document == "undefined")
         ? undefined : document.getElementById("console")),
     start: (label) => {
-        TIME.start_main()
+        TIME.start_main();
         if (label != undefined) {
             NOTE.time(label);
         }
     },
-    lap: () => NOTE.log(`   - Time elapsed: ${TIME.lap()}`),
+    lap: () => {
+        const time = TIME.lap();
+        NOTE.log(`   - Time elapsed: ${TIME.str(time)}`);
+        return time;
+    },
     start_check: (label, A, interval = 5000) => {
         const lim = (A == undefined) ? A : A.length;
         TIME.start_est(lim);
@@ -38,12 +42,15 @@ export const NOTE = {  // ANNOTATION
         NOTE.log(`${time} | ${label}`);
     },
     end: () => {
-        NOTE.log(`*** Total Time elapsed: ${TIME.read_time()} ***`);
+        const time = TIME.read_time();
+        NOTE.log(`*** Total Time elapsed: ${TIME.str(time)} ***`);
         NOTE.log("");
+        return time;
     },
     count: (A, label, div = 1) => {
         const n = Array.isArray(A) ? NOTE.count_subarrays(A)/div : A;
         NOTE.log(`   - Found ${n} ${label}`);
+        return n;
     },
     log: (str) => {
         if (NOTE.show) {
@@ -57,7 +64,13 @@ export const NOTE = {  // ANNOTATION
     },
     scroll: () => {
         if (NOTE.console) {
-            NOTE.console.scrollTop = NOTE.console.scrollHeight;
+            const c = NOTE.console;
+            // clientHeight is 8 rows, so this will auto scroll if
+            // console was scrolled within 3 rows of the bottom
+            // when the new line appeared.
+            if ((c.scrollHeight - c.scrollTop - c.clientHeight) < c.clientHeight/2) {
+                c.scrollTop = c.scrollHeight;
+            }
         }
     },
     clear_log: () => {
@@ -82,12 +95,12 @@ const TIME = {  // TIME
         TIME.main_start = Date.now();
         TIME.main_lap = TIME.main_start;
     },
-    read_time: () => TIME.str(Date.now() - TIME.main_start),
+    read_time: () => Date.now() - TIME.main_start,
     lap: () => {
         const stop = Date.now();
         const time = stop - TIME.main_lap;
         TIME.main_lap = stop;
-        return TIME.str(time);
+        return time;
     },
     read_est: () => Date.now() - TIME.est_lap,
     start_est: (lim) => {

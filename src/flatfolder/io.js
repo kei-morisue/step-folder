@@ -74,15 +74,12 @@ export const IO = {    // INPUT-OUTPUT
         return lines;
     },
     CP_2_L: (doc) => {
-        const map = ["", "B", "M", "V", "F"];
-        const L = doc.split("\n").map(line => {
+        const map = ["U", "B", "M", "V", "F"];
+        const L = doc.split("\n").filter(line => line.length > 0).map(line => {
             line = line.trim();
             const [a, x1, y1, x2, y2] = line.split(" ").map(t => t.trim());
-            return [[+x1, +y1], [+x2, +y2], map[+a]];
+            return [[+x1, +y1], [+x2, +y2], map[+a] ?? "U"];
         });
-        while (L[L.length - 1][2] == "") {
-            L.pop();
-        }
         return L;
     },
     SVGstyle_2_A: (sty) => {
@@ -210,8 +207,8 @@ export const IO = {    // INPUT-OUTPUT
         }
         return [V, EV, EA, VV, FV];
     },
-    doc_type_2_V_VV_EV_EA_EF_FV_FE: (doc, type) => {
-        let V, VV, EV, EA, FV, EF, FE;
+    doc_type_side_2_V_VV_EV_EA_EF_FV_FE: (doc, type, side) => {
+        let V, VV, EV, EA, FV, EF, FE, eps_i;
         if (type == "fold") {
             [V, EV, EA, VV, FV] = IO.FOLD_2_V_EV_EA_VV_FV(doc);
             if (V == undefined) { return []; }
@@ -227,10 +224,10 @@ export const IO = {    // INPUT-OUTPUT
             }
             NOTE.annotate(L, "lines");
             NOTE.lap();
-            const eps = M.min_line_length(L) / M.EPS;
-            NOTE.time(`Using eps ${eps} from min line length ${eps*M.EPS}`);
             NOTE.time("Constructing FOLD from lines");
-            [V, EV, EL] = X.L_2_V_EV_EL(L, eps);
+            [V, EV, EL, eps_i] = X.L_2_V_EV_EL(L);
+            const eps = M.min_line_length(L)/(2**eps_i);
+            NOTE.time(`Used eps: ${2**eps_i} | ${eps}`);
             EA = EL.map(l => L[l[0]][2]);
         }
         V = M.normalize_points(V);
@@ -244,7 +241,7 @@ export const IO = {    // INPUT-OUTPUT
             }
         };
         if (FV == undefined) {
-            if (document.getElementById("side").value == "+") {
+            if (side) {
                 EA = flip_EA(EA);
             } else {
                 V = flip_Y(V);
@@ -255,14 +252,16 @@ export const IO = {    // INPUT-OUTPUT
                 EA = flip_EA(EA);
                 reverse_FV(FV);
             }
-            if (document.getElementById("side").value == "-") {
+            if (!side) {
                 EA = flip_EA(EA);
                 reverse_FV(FV);
                 V = flip_Y(V);
             }
         }
         [EF, FE] = X.EV_FV_2_EF_FE(EV, FV);     // remove holes
-        FV = FV.filter((F, i) => !FE[i].every(e => (EA[e] == "B")));
+        if (FV.length > 1) {
+            FV = FV.filter((F, i) => !FE[i].every(e => (EA[e] == "B")));
+        }
         if (FV.length != FE.length) {           // recompute face maps
             [EF, FE] = X.EV_FV_2_EF_FE(EV, FV);
         }

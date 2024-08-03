@@ -115,15 +115,20 @@ const MAIN = {
         document.getElementById("state_config").style.display = "none";
         const flip_el = document.getElementById("flip");
         SVG.clear("output");
+        NOTE.time("Computing folded state");
         const STATE = MAIN.FOLD_CELL_2_STATE(FOLD, CELL);
+        NOTE.time("Drawing CP");
         MAIN.update_cp(FOLD, STATE);
+        NOTE.time("Writing output");
         MAIN.write(FS);
+        NOTE.time("Drawing State");
         MAIN.draw_state(SVG.clear("input"), FS, STATE);
         flip_el.onchange = () => {
             NOTE.start("Flipping model");
             MAIN.draw_state(SVG.clear("input"), FS, STATE);
             NOTE.end();
         };
+        NOTE.end();
     },
     update_cp: (FOLD, STATE, LINE) => {
         const {V, FV, EV, EF, Ff, FO, FOO, FM} = FOLD;
@@ -314,14 +319,13 @@ const MAIN = {
         const FG = MAIN.FV_VD_2_FG(FV, VD);
         const [FOLD, CELL] = MAIN.V_FV_2_FOLD_CELL(V, FV);
         FOLD.Vf = Vf;
-        const {BF, CF} = CELL;
-        const BF_set = new Set(X.CF_2_BF(CF));
+        const {BF, BI, CF} = CELL;
         const FO = [];
         for (const [f, g, o] of FO_) {
             for (const f_ of F_map[f]) {
                 for (const g_ of F_map[g]) {
                     const pair = M.encode_order_pair([f_, g_]);
-                    if (BF_set.has(pair)) {
+                    if (BI.has(pair)) {
                         FO.push([f_, g_, o]);
                     }
                 }
@@ -341,7 +345,7 @@ const MAIN = {
         MAIN.draw_state(svg, FS, STATE, LINE);
         const fold_button = document.getElementById("fold_button");
         fold_button.style.display = "inline";
-        fold_button.onclick = () => {
+        fold_button.onclick = async () => {
             if (clicked_groups.size == 0) {
                 FS.pop();
                 MAIN.update_fold(FS);
@@ -350,7 +354,7 @@ const MAIN = {
                 document.getElementById("slider").value = 0;
                 MAIN.draw_state(svg, FS, STATE);
                 svg.appendChild(line);
-                const new_FOLD = MAIN.make_fold(
+                const new_FOLD = await MAIN.make_fold(
                     V, FV_, FV, F_map, FG, FO_, clicked_groups, line_val, FS);
             }
         };
@@ -471,7 +475,7 @@ const MAIN = {
             }
         }
     },
-    make_fold: (V, FV_, FV, F_map_old, FG, FO_, clicked_groups, line, FS) => {
+    make_fold: async (V, FV_, FV, F_map_old, FG, FO_, clicked_groups, line, FS) => {
         const F_map = F_map_old.map(() => []);
         // map only clicked regions
         const FVx = [];
@@ -523,15 +527,14 @@ const MAIN = {
         }
         const [FOLD, CELL] = MAIN.V_FV_2_FOLD_CELL(Vy, FVy);
         const {Ff, EF} = FOLD;
-        const {P, PP, CP, FC, CF, SE, SC, SP, BF} = CELL;
-        const BF_set = new Set(BF);
+        const {P, PP, CP, FC, CF, SE, SC, SP, BF, BI} = CELL;
         const type = document.getElementById("type_select").value;
         const FO = [];
         for (const [f, g, o] of FO_) {
             for (const f_ of F_map[f]) {
                 for (const g_ of F_map[g]) {
                     const pair = M.encode_order_pair([f_, g_]);
-                    if (BF_set.has(pair)) {
+                    if (BI.has(pair)) {
                         if (type == "pure") {
                             if (FM[f_] == FM[g_]) {
                                 FO.push([f_, g_, o]);
@@ -550,7 +553,7 @@ const MAIN = {
             for (const f_ of F_map[f]) {
                 for (const g_ of F_map[g]) {
                     const pair = M.encode_order_pair([f_, g_]);
-                    if (BF_set.has(pair)) {
+                    if (BI.has(pair)) {
                         if (FM[f_] && FM[g_]) {
                             FOO.push([f_, g_, o]);
                         }
@@ -568,36 +571,29 @@ const MAIN = {
         const ExF = X.SE_CF_SC_2_ExF(SE, CF, SC);
         NOTE.count(ExF, "edge-face adjacencies");
         NOTE.lap();
-        NOTE.time("Computing variables");
-        NOTE.time("Computing transitivity constraints");
-        const BT3 = X.FC_CF_BF_2_BT3(FC, CF, BF);
-        NOTE.count(BT3, "initial transitivity", 3);
-        NOTE.lap();
         NOTE.time("Computing non-transitivity constraints");
-        const [BT0, BT1, BT2] = X.BF_EF_ExE_ExF_BT3_2_BT0_BT1_BT2(BF, EF, ExE, ExF, BT3);
+        const [BT0, BT1, BT2] = X.BF_BI_EF_ExE_ExF_2_BT0_BT1_BT2(
+            BF, BI, EF, ExE, ExF);
         NOTE.count(BT0, "taco-taco", 6);
         NOTE.count(BT1, "taco-tortilla", 3);
         NOTE.count(BT2, "tortilla-tortilla", 2);
-        NOTE.count(BT3, "independent transitivity", 3);
+        NOTE.lap();
+        NOTE.time("Computing excluded (possible) transitivity constraints");
+        const BT3x = X.FC_BF_BI_BT0_BT1_2_BT3x(FC, BF, BI, BT0, BT1);
+        NOTE.count(BT3x, "exluded (possible) transitivity", 3);
+        NOTE.lap();
+        NOTE.time("Computing transitivity constraints");
+        const [BT3, nx] = X.EF_SP_SE_CP_FC_CF_BF_BT3x_2_BT3(
+            EF, SP, SE, CP, FC, CF, BF, BT3x);
+        BT3x.length = 0;
+        const ni = NOTE.count(BT3, "independent transitivity", 3);
+        NOTE.log(`   - Found ${nx + ni} total transitivity`);
+        NOTE.lap();
         const BT = BF.map((F,i) => [BT0[i], BT1[i], BT2[i], BT3[i]]);
         NOTE.time("*** Computing states ***");
-        const BA0 = MAIN.FO_Ff_BF_2_BA0(FO, Ff, BF);
-        const sol = SOLVER.solve(BF, BT, BA0, Infinity);
-        if (sol.length == 3) { // solve found unsatisfiable constraint
-            const [type, F, E] = sol;
-            const str = `Unable to resolve ${CON.names[type]} on faces [${F}]`;
-            NOTE.log(`   - ${str}`);
-            NOTE.log(`   - Faces participating in conflict: [${E}]`);
-            NOTE.time("Solve completed");
-            NOTE.count(0, "folded states");
-            NOTE.lap();
-            stop = Date.now();
-            NOTE.end();
-            FS.pop();
-            MAIN.update_fold(FS);
-            return;
-        } // solve completed
-        const [GB, GA] = sol;
+        const BA = MAIN.FO_Ff_BF_2_BA0(FO, Ff, BF);
+        const GB = SOLVER.get_components(BI, BF, BT, BA);
+        const GA = SOLVER.solve(BI, BF, BT, BA, GB, Infinity);
         const n = (GA == undefined) ? 0 : GA.reduce((s, A) => {
             return s*BigInt(A.length);
         }, BigInt(1));
@@ -826,11 +822,9 @@ const MAIN = {
         const EV = Array.from(EV_set).sort().map(k => M.decode(k));
         const [EF, FE] = X.EV_FV_2_EF_FE(EV, FV);
         const L = EV.map(vs => vs.map(i => V[i]));
-        const eps = M.min_line_length(L) / M.EPS;
-        NOTE.time(`Using eps ${eps} from min line length ${
-            eps*M.EPS} (factor ${M.EPS})`);
         NOTE.time("Constructing points and segments from edges");
-        const [P, SP, SE] = X.L_2_V_EV_EL(L, eps);
+        const [P, SP, SE, eps_i] = X.L_2_V_EV_EL(L);
+        const eps = M.min_line_length(L)/(2**eps_i);
         NOTE.annotate(P, "points_coords");
         NOTE.annotate(SP, "segments_points");
         NOTE.annotate(SE, "segments_edges");
@@ -846,16 +840,18 @@ const MAIN = {
         NOTE.lap();
         NOTE.time("Making face-cell maps");
         const [CF, FC] = X.EF_FV_SP_SE_CP_SC_2_CF_FC(EF, FV, SP, SE, CP, SC);
-        const BF = X.CF_2_BF(CF);
+        const BF = X.EF_SP_SE_CP_CF_2_BF(EF, SP, SE, CP, CF);
+        const BI = new Map();
+        for (const [i, F] of BF.entries()) { BI.set(F, i); }
         NOTE.annotate(BF, "variables_faces");
         NOTE.lap();
         const FOLD = {V, FV, EV, EF, FE, Ff, eps};
-        const CELL = {P, SP, SE, PP, CP, CS, SC, CF, FC, BF};
+        const CELL = {P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI};
         return [FOLD, CELL];
     },
     FOLD_CELL_2_STATE: (FOLD, CELL) => {
         const {EF, Ff, FO} = FOLD;
-        const {P, SE, PP, CP, SC, CF, BF} = CELL;
+        const {P, SE, PP, CP, SC, CF} = CELL;
         const m = [0.5, 0.5];
         const flip = document.getElementById("flip").checked;
         const Q = P.map(p => (flip ? M.add(M.refX(M.sub(p, m)), m) : p));
