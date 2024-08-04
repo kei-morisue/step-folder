@@ -5,6 +5,7 @@ import { IO } from "./flatfolder/io.js";
 import { X } from "./flatfolder/conversion.js";
 import { SOLVER } from "./flatfolder/solver.js";
 import { CON } from "./flatfolder/constraints.js";
+import { GUI } from "./defox/gui.js";
 
 window.onload = () => { MAIN.startup(); };  // entry point
 
@@ -15,7 +16,7 @@ const MAIN = {
         active: "red",
         select: "blue",
         face: {
-            top: "#AAA",
+            top: "#555",
             bottom: "#FFF",
         },
         edge: {
@@ -43,22 +44,16 @@ const MAIN = {
         NOTE.time("Initializing interface");
         const [b, s] = [50, SVG.SCALE];
         const main = document.getElementById("main");
-        for (const [k, v] of Object.entries({
-            xmlns: SVG.NS,
-            style: `background: ${MAIN.color.background}`,
-            viewBox: [0, 0, 3*s, s].join(" "),
-        })) {
-            main.setAttribute(k, v);
-        }
-        for (const [i, id] of ["cp", "input", "output"].entries()) {
+
+        for (const [i, ch] of [].entries.call(main.children)) {
+            const id = ch.id
             const svg = document.getElementById(id);
             for (const [k, v] of Object.entries({
                 xmlns: SVG.NS,
                 height: s,
                 width: s,
-                x: i*s,
-                y: 0,
-                viewBox: [-b, -b, s + 2*b, s + 2*b].join(" "),
+
+                viewBox: [-b, -b, s + 2 * b, s + 2 * b].join(" "),
             })) {
                 svg.setAttribute(k, v);
             }
@@ -81,7 +76,7 @@ const MAIN = {
         const FV = [[0, 2, 3, 1]];
         const [FOLD, CELL] = MAIN.V_FV_2_FOLD_CELL(V, FV);
         FOLD.FO = [];
-        MAIN.update_fold([[FOLD, CELL]]);
+        MAIN.update_fold(FOLD, CELL, [[FOLD, CELL]]);
     },
     process_file: (e) => {
         NOTE.clear_log();
@@ -96,24 +91,15 @@ const MAIN = {
         }
         NOTE.time(`Importing from file ${file_name}`);
         const FS = MAIN.FOLD_2_FS(doc);
-        MAIN.update_fold(FS);
-    },
-    update_fold: (FS) => {
         const [FOLD, CELL] = FS[FS.length - 1];
+        MAIN.update_fold(FOLD, CELL, FS);
+    },
+    update_fold: (FOLD, CELL, FS) => {
+
         document.getElementById("back_button").onclick = () => {
-            if (FS.length == 1) { return; }
-            FS.pop();
-            MAIN.update_fold(FS);
+            GUI.back(FS);
         };
-        const slider = document.getElementById("slider");
-        slider.style.display = "none";
-        slider.value = 0;
-        document.getElementById("cycle").style.display = "none";
-        document.getElementById("replace").style.display = "none";
-        document.getElementById("fold_button").style.display = "none";
-        document.getElementById("state_controls").style.display = "none";
-        document.getElementById("state_config").style.display = "none";
-        const flip_el = document.getElementById("flip");
+        GUI.refresh();
         SVG.clear("output");
         NOTE.time("Computing folded state");
         const STATE = MAIN.FOLD_CELL_2_STATE(FOLD, CELL);
@@ -122,17 +108,37 @@ const MAIN = {
         NOTE.time("Writing output");
         MAIN.write(FS);
         NOTE.time("Drawing State");
-        MAIN.draw_state(SVG.clear("input"), FS, STATE);
+        MAIN.draw_state(SVG.clear("input"), FOLD, CELL, STATE, FS);
+
+        const flip_el = document.getElementById("flip");
         flip_el.onchange = () => {
-            NOTE.start("Flipping model");
-            MAIN.draw_state(SVG.clear("input"), FS, STATE);
-            NOTE.end();
+            GUI.flip(FS, STATE);
         };
         NOTE.end();
+
+
+        for (var i = 0; i < 6; i++) {
+            const j = FS.length - i - 1
+            const h = document.getElementById("h" + i)
+            const p = document.getElementById("ph" + i)
+            SVG.clear("h" + i)
+            h.setAttribute("xmlns", SVG.NS)
+            h.setAttribute("height", SVG.SCALE)
+            h.setAttribute("width", SVG.SCALE)
+            h.setAttribute("viewBox", [-50, -50, SVG.SCALE + 100, SVG.SCALE + 100].join(" "))
+            if (j >= 0) {
+                p.innerHTML = j + 1
+                const [F, C] = FS[j]
+                const S = MAIN.FOLD_CELL_2_STATE(F, C);
+                MAIN.draw_state(h, F, C, S, FS)
+            }
+        }
+
+
     },
     update_cp: (FOLD, STATE, LINE) => {
-        const {V, FV, EV, EF, Ff, FO, FOO, FM} = FOLD;
-        const {edges} = STATE;
+        const { V, FV, EV, EF, Ff, FO, FOO, FM } = FOLD;
+        const { edges } = STATE;
         const edge_map = new Set(edges);
         const EA = EF.map(F => {
             if (F.length != 2) { return "B"; }
@@ -161,10 +167,10 @@ const MAIN = {
             if (a == "V") { return "red"; }
             if (a == "F") { return "gray"; }
         });
-        const g1 = SVG.append("g", cp, {id: "flat_f"});
-        SVG.draw_polygons(g1, faces, {fill: "white", id: true});
-        const g2 = SVG.append("g", cp, {id: "flat_e"});
-        SVG.draw_segments(g2, lines, {stroke: colors, id: true});
+        const g1 = SVG.append("g", cp, { id: "flat_f" });
+        SVG.draw_polygons(g1, faces, { fill: "white", id: true });
+        const g2 = SVG.append("g", cp, { id: "flat_e" });
+        SVG.draw_segments(g2, lines, { stroke: colors, id: true });
         if (FM != undefined) {
             const H = new Map();
             for (const [i, j, o] of FO) {
@@ -242,9 +248,8 @@ const MAIN = {
             : MAIN.color.active
         );
     },
-    point_click: (i, el, clicked, Q, FS) => {
-        const [FOLD, CELL] = FS[FS.length - 1];
-        const {P} = CELL;
+    point_click: (i, el, clicked, Q, FOLD, CELL, FS) => {
+        const { P } = CELL;
         NOTE.time(`Clicked point ${i}`);
         if (clicked.has(i) || (clicked.size >= 4)) {
             SVG.clear("lines");
@@ -319,7 +324,7 @@ const MAIN = {
         const FG = MAIN.FV_VD_2_FG(FV, VD);
         const [FOLD, CELL] = MAIN.V_FV_2_FOLD_CELL(V, FV);
         FOLD.Vf = Vf;
-        const {BF, BI, CF} = CELL;
+        const { BF, BI, CF } = CELL;
         const FO = [];
         for (const [f, g, o] of FO_) {
             for (const f_ of F_map[f]) {
@@ -338,32 +343,31 @@ const MAIN = {
         slider.value = 0;
         slider.setAttribute("max", FV.length);
         const clicked_groups = new Set();
-        const LINE = {line, FG, clicked_groups};
+        const LINE = { line, FG, clicked_groups };
         FS.push([FOLD, CELL]);
         FOLD.line = line_val;
         FOLD.points = Array.from(clicked.keys());
-        MAIN.draw_state(svg, FS, STATE, LINE);
+        MAIN.draw_state(svg, FOLD, CELL, STATE, FS, LINE);
         const fold_button = document.getElementById("fold_button");
         fold_button.style.display = "inline";
         fold_button.onclick = async () => {
             if (clicked_groups.size == 0) {
                 FS.pop();
-                MAIN.update_fold(FS);
+                MAIN.update_fold(FOLD_, CELL_, FS);
             } else {
                 SVG.clear("input");
                 document.getElementById("slider").value = 0;
-                MAIN.draw_state(svg, FS, STATE);
+                MAIN.draw_state(svg, FOLD, CELL, STATE, FS);
                 svg.appendChild(line);
                 const new_FOLD = await MAIN.make_fold(
                     V, FV_, FV, F_map, FG, FO_, clicked_groups, line_val, FS);
             }
         };
     },
-    draw_state: (svg, FS, STATE, LINE) => {
-        const [FOLD, CELL] = FS[FS.length - 1];
-        const {Ff, EF} = FOLD;
-        const {P, PP, CP, CF, SP, SC, SE} = CELL;
-        const {Ctop, Ccolor, CD, L} = STATE;
+    draw_state: (svg, FOLD, CELL, STATE, FS, LINE) => {
+        const { Ff, EF } = FOLD;
+        const { P, PP, CP, CF, SP, SC, SE } = CELL;
+        const { Ctop, Ccolor, CD, L } = STATE;
         const flip = document.getElementById("flip").checked;
         const m = [0.5, 0.5];
         const Q = P.map(p => (flip ? M.add(M.refX(M.sub(p, m)), m) : p));
@@ -378,7 +382,7 @@ const MAIN = {
             slider.style.display = "inline";
             slider.oninput = () => {
                 SVG.clear(svg.id);
-                MAIN.draw_state(svg, FS, STATE, LINE);
+                MAIN.draw_state(svg, FOLD, CELL, STATE, FS, LINE);
             };
             const val = +slider.value;
             const n = FOLD.FV.length;
@@ -413,8 +417,8 @@ const MAIN = {
                 const d = Ctop[i];
                 let out = undefined;
                 if (d == undefined) { out = undefined; }
-                else if (Ff[d] != flip)  { out = MAIN.color.face.top; }
-                else                { out = MAIN.color.face.bottom; }
+                else if (Ff[d] != flip) { out = MAIN.color.face.top; }
+                else { out = MAIN.color.face.bottom; }
                 Ccolor[i] = out;
             }
         }
@@ -422,20 +426,23 @@ const MAIN = {
         const SD = X.Ctop_SC_SE_EF_Ff_2_SD(Ctop, SC, SE, EF, Ff);
         const Q_ = M.normalize_points(Q);
         const cells = CP.map(V => M.expand(V, Q_));
-        const fold_c = SVG.append("g", svg, {id: "fold_c"});
-        const fold_s_crease = SVG.append("g", svg, {id: "fold_s_crease"});
-        const fold_s_edge = SVG.append("g", svg, {id: "fold_s_edge"});
-        const Lsvg = SVG.append("g", svg, {id: "lines"});
-        const fold_p = SVG.append("g", svg, {id: "fold_p"});
+        const fold_c = SVG.append("g", svg, { id: "fold_c" });
+        const fold_s_crease = SVG.append("g", svg, { id: "fold_s_crease" });
+        const fold_s_edge = SVG.append("g", svg, { id: "fold_s_edge" });
+        const Lsvg = SVG.append("g", svg, { id: "lines" });
+        const fold_p = SVG.append("g", svg, { id: "fold_p" });
         SVG.draw_polygons(fold_c, cells, {
-            id: true, fill: Ccolor, stroke: Ccolor});
+            id: true, fill: Ccolor, stroke: Ccolor
+        });
         const lines = SP.map((ps) => M.expand(ps, Q_));
         SVG.draw_segments(fold_s_crease, lines, {
             id: true, stroke: MAIN.color.edge.F,
-            filter: (i) => SD[i][0] == "C"});
+            filter: (i) => SD[i][0] == "C"
+        });
         SVG.draw_segments(fold_s_edge, lines, {
             id: true, stroke: MAIN.color.edge.B,
-            filter: (i) => SD[i][0] == "B"});
+            filter: (i) => SD[i][0] == "B"
+        });
         if (svg.id == "input") {
             if (LINE == undefined) {
                 SVG.draw_points(fold_p, Q_, {
@@ -449,20 +456,20 @@ const MAIN = {
                     if (el != undefined) {
                         el.onmouseover = () => MAIN.point_over(el);
                         el.onmouseout = () => MAIN.point_out(i, el, clicked);
-                        el.onclick = () => MAIN.point_click(i, el, clicked, Q, FS);
+                        el.onclick = () => MAIN.point_click(i, el, clicked, Q, FOLD, CELL, FS);
                     }
                 }
             } else {
-                const {line, FG, clicked_groups} = LINE;
+                const { line, FG, clicked_groups } = LINE;
                 Lsvg.appendChild(line);
                 line.onmouseout = () => {
                     line.setAttribute("stroke", MAIN.color.active);
                     line.setAttribute("stroke-width", MAIN.radius.normal);
                 };
-                line.onclick = () => { MAIN.update_fold(FS); }
+                line.onclick = () => { MAIN.update_fold(FOLD, CELL, FS); }
                 line.setAttribute("stroke", MAIN.color.active);
                 line.setAttribute("stroke-width", MAIN.radius.normal);
-                const {Ctop, Ccolor} = STATE;
+                const { Ctop, Ccolor } = STATE;
                 for (let i = 0; i < CF.length; ++i) {
                     const el = document.getElementById(`fold_c${i}`);
                     if (el == undefined) { continue; }
@@ -517,7 +524,7 @@ const MAIN = {
                 if (Vy[vi] != undefined) { continue; }
                 const v = Vx[vi];
                 const d2 = M.dot(v, u) - d;
-                Vy[vi] = M.sub(v, M.mul(u, 2*d2));
+                Vy[vi] = M.sub(v, M.mul(u, 2 * d2));
             }
         }
         for (let vi = 0; vi < Vy.length; ++vi) {
@@ -526,8 +533,8 @@ const MAIN = {
             }
         }
         const [FOLD, CELL] = MAIN.V_FV_2_FOLD_CELL(Vy, FVy);
-        const {Ff, EF} = FOLD;
-        const {P, PP, CP, FC, CF, SE, SC, SP, BF, BI} = CELL;
+        const { Ff, EF } = FOLD;
+        const { P, PP, CP, FC, CF, SE, SC, SP, BF, BI } = CELL;
         const type = document.getElementById("type_select").value;
         const FO = [];
         for (const [f, g, o] of FO_) {
@@ -589,13 +596,13 @@ const MAIN = {
         const ni = NOTE.count(BT3, "independent transitivity", 3);
         NOTE.log(`   - Found ${nx + ni} total transitivity`);
         NOTE.lap();
-        const BT = BF.map((F,i) => [BT0[i], BT1[i], BT2[i], BT3[i]]);
+        const BT = BF.map((F, i) => [BT0[i], BT1[i], BT2[i], BT3[i]]);
         NOTE.time("*** Computing states ***");
         const BA = MAIN.FO_Ff_BF_2_BA0(FO, Ff, BF);
         const GB = SOLVER.get_components(BI, BF, BT, BA);
         const GA = SOLVER.solve(BI, BF, BT, BA, GB, Infinity);
         const n = (GA == undefined) ? 0 : GA.reduce((s, A) => {
-            return s*BigInt(A.length);
+            return s * BigInt(A.length);
         }, BigInt(1));
         NOTE.time("Solve completed");
         NOTE.count(n, "folded states");
@@ -603,7 +610,8 @@ const MAIN = {
         if (n == 0) {
             NOTE.end();
             FS.pop();
-            MAIN.update_fold(FS);
+            cnost[FOLD_, CELL_] = FS[FS.length - 1];
+            MAIN.update_fold(FOLD_, CELL_, FS);
             return;
         }
         const GI = GB.map(() => 0);
@@ -618,7 +626,7 @@ const MAIN = {
             }
             comp_select.appendChild(el);
         }
-        const SOLUTION = {GB, GA, GI};
+        const SOLUTION = { GB, GA, GI };
         FS.push([FOLD, CELL]);
         comp_select.onchange = () => {
             NOTE.start("Changing component");
@@ -631,7 +639,7 @@ const MAIN = {
         const STATE = MAIN.FOLD_CELL_2_STATE(FOLD, CELL);
         NOTE.time("Drawing fold");
         const svg = SVG.clear("output");
-        MAIN.draw_state(svg, FS, STATE);
+        MAIN.draw_state(svg, FOLD, CELL, STATE, FS);
         MAIN.update_component(FS, SOLUTION);
         NOTE.lap();
         stop = Date.now();
@@ -639,8 +647,8 @@ const MAIN = {
     },
     update_component: (FS, SOLUTION) => {
         const [FOLD, CELL] = FS[FS.length - 1];
-        const {BF} = CELL;
-        const {GB, GA, GI} = SOLUTION;
+        const { BF } = CELL;
+        const { GB, GA, GI } = SOLUTION;
         const comp_select = document.getElementById("component_select");
         const c = comp_select.value;
         document.getElementById("state_config").style.display = "none";
@@ -667,7 +675,7 @@ const MAIN = {
             const STATE = MAIN.FOLD_CELL_2_STATE(FOLD, CELL);
             NOTE.time("Drawing fold");
             const svg = SVG.clear("output");
-            MAIN.draw_state(svg, FS, STATE);
+            MAIN.draw_state(svg, FOLD, CELL, STATE, FS);
             const flip_el = document.getElementById("flip");
             flip_el.onchange = () => MAIN.flip_output(FS);
             const replace = document.getElementById("replace");
@@ -682,7 +690,8 @@ const MAIN = {
                 last[0].line = prev[0].line;
                 last[0].points = prev[0].points;
                 FS.push(last);
-                MAIN.update_fold(FS);
+                const [FOLD_, CELL_] = FS[FS.length - 1];
+                MAIN.update_fold(FOLD_, CELL_, FS);
             };
         };
         state_select.onchange();
@@ -692,7 +701,7 @@ const MAIN = {
         const svg = SVG.clear("output");
         const [FOLD, CELL] = FS[FS.length - 1];
         const STATE = MAIN.FOLD_CELL_2_STATE(FOLD, CELL);
-        MAIN.draw_state(svg, FS, STATE);
+        MAIN.draw_state(svg, FOLD, CELL, STATE, FS);
         NOTE.end();
     },
     FO_Ff_BF_2_BA0: (FO, Ff, BF) => {
@@ -824,13 +833,13 @@ const MAIN = {
         const L = EV.map(vs => vs.map(i => V[i]));
         NOTE.time("Constructing points and segments from edges");
         const [P, SP, SE, eps_i] = X.L_2_V_EV_EL(L);
-        const eps = M.min_line_length(L)/(2**eps_i);
+        const eps = M.min_line_length(L) / (2 ** eps_i);
         NOTE.annotate(P, "points_coords");
         NOTE.annotate(SP, "segments_points");
         NOTE.annotate(SE, "segments_edges");
         NOTE.lap();
         NOTE.time("Constructing cells from segments");
-        const [PP,CP] = X.V_EV_2_VV_FV(P, SP);
+        const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
         NOTE.annotate(CP, "cells_points");
         NOTE.lap();
         NOTE.time("Computing segments_cells");
@@ -845,18 +854,18 @@ const MAIN = {
         for (const [i, F] of BF.entries()) { BI.set(F, i); }
         NOTE.annotate(BF, "variables_faces");
         NOTE.lap();
-        const FOLD = {V, FV, EV, EF, FE, Ff, eps};
-        const CELL = {P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI};
+        const FOLD = { V, FV, EV, EF, FE, Ff, eps };
+        const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI };
         return [FOLD, CELL];
     },
     FOLD_CELL_2_STATE: (FOLD, CELL) => {
-        const {EF, Ff, FO} = FOLD;
-        const {P, SE, PP, CP, SC, CF} = CELL;
+        const { EF, Ff, FO } = FOLD;
+        const { P, SE, PP, CP, SC, CF } = CELL;
         const m = [0.5, 0.5];
         const flip = document.getElementById("flip").checked;
         const Q = P.map(p => (flip ? M.add(M.refX(M.sub(p, m)), m) : p));
         const edges = FO.map(([f1, f2, o]) => {
-            return M.encode(((Ff[f2] ? 1 : -1)*o >= 0) ? [f1, f2] : [f2, f1]);
+            return M.encode(((Ff[f2] ? 1 : -1) * o >= 0) ? [f1, f2] : [f2, f1]);
         });
         const L = MAIN.linearize(edges, Ff.length);
         const slider = document.getElementById("slider");
@@ -867,10 +876,10 @@ const MAIN = {
         const Ctop = CD.map(S => flip ? S[0] : S[S.length - 1]);
         const Ccolor = Ctop.map(d => {
             if (d == undefined) { return undefined; }
-            if (Ff[d] != flip)  { return MAIN.color.face.top; }
-            else                { return MAIN.color.face.bottom; }
+            if (Ff[d] != flip) { return MAIN.color.face.top; }
+            else { return MAIN.color.face.bottom; }
         });
-        return {Q, CD, Ctop, Ccolor, L, edges};
+        return { Q, CD, Ctop, Ccolor, L, edges };
     },
     linearize: (edges, n) => {
         const Adj = Array(n).fill(0).map(() => []);
@@ -1015,7 +1024,7 @@ const MAIN = {
                 const pc = M.dot(c, v);
                 const pa = M.dot(a, v);
                 const pb = M.dot(b, v);
-                const bb = M.add(a, M.mul(M.sub(b, a), (pc - pa)/(pb - pa)));
+                const bb = M.add(a, M.mul(M.sub(b, a), (pc - pa) / (pb - pa)));
                 const x = M.div(M.add(bb, c), 2);
                 const pv = M.perp(v);
                 const [aL, bL, cL, dL] = [a, b, c, d].map(p => {
@@ -1091,7 +1100,7 @@ const MAIN = {
                         const xf = M.add(Vf[v1],
                             M.mul(
                                 M.sub(Vf[v2], Vf[v1]),
-                                M.dist(x, V[v1])/M.dist(V[v1], V[v2])
+                                M.dist(x, V[v1]) / M.dist(V[v1], V[v2])
                             )
                         );
                         xi = V2.length;
@@ -1141,11 +1150,11 @@ const MAIN = {
     write: (FS) => {
         const frames = [];
         for (const [FOLD, _] of FS) {
-            const {V, Vf, FV, FO, FL} = FOLD;
+            const { V, Vf, FV, FO, FL } = FOLD;
             const frame_FOLD = {
-                vertices_coords:  V,
-                faces_vertices:   FV,
-                faceOrders:       FO,
+                vertices_coords: V,
+                faces_vertices: FV,
+                faceOrders: FO,
                 "faces_lf:group": FL,
                 "lf:line": FOLD.line,
                 "lf:points": FOLD.points,
@@ -1153,7 +1162,7 @@ const MAIN = {
             frames.push(frame_FOLD);
         }
         const [FOLD, CELL] = FS[FS.length - 1];
-        const {V, Vf, FV, FO, FL} = FOLD;
+        const { V, Vf, FV, FO, FL } = FOLD;
         const path = document.getElementById("import").value.split("\\");
         const name = path[path.length - 1].split(".")[0];
         const export_FOLD = {
@@ -1161,13 +1170,14 @@ const MAIN = {
             file_creator: "flat-folder",
             file_title: `${name}_state`,
             file_classes: ["singleModel"],
-            vertices_coords:  V,
-            faces_vertices:   FV,
-            faceOrders:       FO,
-            file_frames:  frames,
+            vertices_coords: V,
+            faces_vertices: FV,
+            faceOrders: FO,
+            file_frames: frames,
         };
         const data = new Blob([JSON.stringify(export_FOLD, undefined, 2)], {
-            type: "application/json"});
+            type: "application/json"
+        });
         const link = document.getElementById("export_anchor");
         link.setAttribute("download", `state.fold`);
         link.setAttribute("href", window.URL.createObjectURL(data));
