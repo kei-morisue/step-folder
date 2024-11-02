@@ -31,10 +31,10 @@ const MAIN = {
         document.getElementById("import0").onchange = (e) => {
             if (e.target.files.length > 0) {
                 const file_reader = new FileReader();
-                file_reader.onload = (e) => {
-                    const doc = e.target.result;
+                file_reader.onload = (e1) => {
+                    const doc = e1.target.result;
                     const path = e.target.value;
-                    MAIN.import(path, doc);
+                    MAIN.import(path, doc)
                 };
                 file_reader.readAsText(e.target.files[0]);
             }
@@ -81,18 +81,22 @@ const MAIN = {
 
     import: (path, doc) => {
         if (!doc) {
-            return
+            return false;
         }
+        const [FOLD, CELL] = Y.CP_2_FOLD_CELL(doc, true);
+        if (FOLD == undefined) {
+            alert("unfoldable Crease Pattern: " + path)
+            return false;
+        }
+
         MAIN.Gs.push([STEP.FOLD1, STEP.CELL1]);
         MAIN.Ss.push([STEP.FOLD, STEP.CELL]);
         MAIN.Fs.push(true);
         MAIN.Ps.push([DIST.scale, DIST.rotation, DIST.strength]);
-
-
         const i = MAIN.Gs.length - 1;
         MAIN.current_idx = i;
+        [STEP.FOLD1, STEP.CELL1] = [FOLD, CELL];
         [STEP.FOLD0, STEP.CELL0] = MAIN.Gs[i];
-        [STEP.FOLD1, STEP.CELL1] = Y.CP_2_FOLD_CELL(doc, true);
         STEP.update_states();
         const select = document.getElementById("selectG");
         const assign = document.getElementById("assign");
@@ -100,6 +104,7 @@ const MAIN = {
         STEP.update_dist()
         document.getElementById("steps").innerHTML = MAIN.Gs.length;
         document.getElementById("step").innerHTML = MAIN.current_idx + 1;
+        return true
     },
 
     record: (i, is_flip0) => {

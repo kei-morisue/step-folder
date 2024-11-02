@@ -71,7 +71,7 @@ export const Y = {     // CONVERSION
         const BT = BF.map((F, i) => [BT0[i], BT1[i], BT2[i], BT3[i]]);
 
         const BA = SOLVER.initial_assignment(BA0, BF, BT, BI)
-
+        if (BA.length == 3 && !isNaN(BA[0])) { return [undefined, undefined] }
         const GB = SOLVER.get_components(BI, BF, BT, BA);
         const GA = SOLVER.solve(BI, BF, BT, BA, GB, Infinity);
         const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {
@@ -82,6 +82,7 @@ export const Y = {     // CONVERSION
         if (n > 0) {
             FOLD.FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff);
         }
+        else { return [undefined, undefined]; }
 
         const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI, GB, GA, GI };
         return [FOLD, CELL];
