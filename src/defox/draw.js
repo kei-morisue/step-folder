@@ -11,12 +11,9 @@ import { LIN } from "../linefolder/linear.js";
 
 export const DRAW = {
     color: {
-        background: "lightgray",
-        normal: "black",
-        active: "red",
-        select: "blue",
+        background: "#0F0",
         face: {
-            top: "#555",
+            top: "#888",
             bottom: "#FFF",
         },
         edge: {
@@ -36,8 +33,8 @@ export const DRAW = {
             B: "black",
             V: "red",
             M: "blue",
-            VV: "red",
-            MM: "blue",
+            VV: "magenta",
+            MM: "cyan",
             RV: "red",
             RM: "blue",
             UF: "green",
@@ -70,10 +67,27 @@ export const DRAW = {
             UF: 3,
         }
     },
+    pair: (d) => {
+        switch (d) {
+            case "V":
+                return "M";
+            case "M":
+                return "V";
+            case "VV":
+                return "MM";
+            case "MM":
+                return "VV";
+            case "RV":
+                return "RM";
+            case "RM":
+                return "RV";
+            default:
+                return d;
+        }
+    },
+    draw_cp: (FOLD, svg_cp, text = false) => {
 
-    draw_cp: (FOLD, svg_cp) => {
-
-        const { V, FV, EV, EF, Ff, FO, FOO, FM, EA, Vf } = FOLD;
+        const { V, FV, EV, EA, Vf } = FOLD;
 
         const faces = FV.map(F => M.expand(F, Vf));
         const lines = EV.map(E => M.expand(E, Vf));
@@ -84,23 +98,22 @@ export const DRAW = {
         const g2 = SVG.append("g", svg_cp, { id: "flat_e" });
         SVG.draw_segments(g2, lines, { stroke_width: widths, stroke: colors, id: true });
 
-        const cp_text = SVG.append("g", svg_cp, { id: "cp_text" });
 
-        DRAW.draw_text(FOLD, cp_text)
+        if (text) {
+            const cp_text = SVG.append("g", svg_cp, { id: "cp_text" });
+            DRAW.draw_text(FOLD, cp_text)
+        }
 
     },
 
-    draw_state: (svg, FOLD, CELL, STATE, flip) => {
+    draw_state: (svg, FOLD, CELL, STATE) => {
         if (STATE == undefined) {
             DRAW.draw_xray(FOLD, flip, svg)
             return
         }
         const { Ff, EF, EA } = FOLD;
         const { P, PP, CP, CF, SP, SC, SE } = CELL;
-        const { Ctop, L } = STATE;
-        const m = [0.5, 0.5];
-        const Q = P.map(p => (flip ? M.add(M.refX(M.sub(p, m)), m) : p));
-
+        const { Q, Ctop, L, Ccolor } = STATE;
         const SD = Y.Ctop_SC_SE_EF_Ff_EA_2_SD(Ctop, SC, SE, EF, Ff, EA);
         const Q_ = M.normalize_points(Q);
         const cells = CP.map(V => M.expand(V, Q_));
@@ -110,13 +123,18 @@ export const DRAW = {
 
         SVG.draw_polygons(fold_c, cells, {
             id: true,
-            fill: STATE.Ccolor.map(b => b ? DRAW.color.face.top : DRAW.color.face.bottom),
-            stroke: STATE.Ccolor.map(b => b ? DRAW.color.face.top : DRAW.color.face.bottom),
+            fill: Ccolor.map(b => b ? DRAW.color.face.top : DRAW.color.face.bottom),
+            stroke: Ccolor.map(b => b ? DRAW.color.face.top : DRAW.color.face.bottom),
             stroke_width: 3
         });
         const lines = SP.map((ps) => M.expand(ps, Q_));
         SVG.draw_segments(fold_s_crease, lines, {
             id: true, stroke: SD.map((d, i) => {
+                const [c0, c1] = SC[i];
+
+                if (Ccolor[c0] && Ccolor[c1]) {
+                    return DRAW.color.edge[DRAW.pair(d)];
+                }
                 return DRAW.color.edge[d];
             }),
             filter: (i) => SD[i] == "MM" || SD[i] == "VV" || SD[i] == "F" || SD[i] == "U",
@@ -148,9 +166,11 @@ export const DRAW = {
         SVG.draw_points(G.e, line_centers, { text: true, fill: colors });
     },
 
-    draw_group_text: (FOLD, CELL, svg) => {
+    draw_group_text: (FOLD, CELL, svg, is_flip) => {
         const { V, FV } = FOLD;
         const { GB, BF, BI } = CELL
+        const m = [0.5, 0.5];
+        const Q = V.map(p => (is_flip ? M.add(M.refX(M.sub(p, m)), m) : p));
 
         const P = GB.map((bs, Gi) => {
             if (Gi == 0) {
@@ -161,7 +181,7 @@ export const DRAW = {
             })
             const centroids = Fs.map(Fi => {
 
-                return M.centroid(M.expand(FV[Fi[0]].concat(FV[Fi[1]]), V));
+                return M.centroid(M.expand(FV[Fi[0]].concat(FV[Fi[1]]), Q));
             });
             return M.centroid(centroids);
         })

@@ -5,8 +5,12 @@ import { IO } from "../flatfolder/io.js";
 import { X } from "../flatfolder/conversion.js";
 import { SOLVER } from "../flatfolder/solver.js";
 import { CON } from "../flatfolder/constraints.js";
-import { MAIN } from "../main.js";
 
+import { DIST } from "../distortionfolder/distortion.js";
+
+import { STEP } from "./step.js";
+import { DRAW } from "./draw.js";
+import { Y } from "./y.js";
 export const GUI = {
 
     opacity: {
@@ -17,10 +21,96 @@ export const GUI = {
         normal: 10,
         hover: 20,
     },
-    startup: (FOLD0, CELL0, FOLD1, CELL1) => {
+    startup: () => {
+        CON.build();
+        NOTE.clear_log();
+        NOTE.start("*** Starting Flat-Folder ***");
+        NOTE.time("Initializing interface");
+
+        GUI.set_svg("states")
+        GUI.set_svg("cps")
+
+        document.getElementById("flip").onclick = (e) => {
+            STEP.flip0 = !STEP.flip0;
+            STEP.update_states();
+            STEP.update_dist();
+        }
+        GUI.setup_number_options(
+            ["width_crease", "width_boundary", "width_MMVV"],
+            ["F", "B", ["MM", "VV"]],
+            [1, 3, 3],
+            DRAW.width.edge
+        )
+
+
+        for (const [i, id] of ["T0", "T1", "T2", "T3"].entries()) {
+            document.getElementById("cb_" + id).onchange = (e) => {
+                DIST[id] = e.target.checked
+                STEP.update_states()
+                STEP.update_dist()
+            }
+        }
+        document.getElementById("topcolor").onchange = (e) => {
+            DRAW.color.face.top = e.target.value
+            STEP.update_states()
+        }
+
+        document.getElementById("bottomcolor").onchange = (e) => {
+            DRAW.color.face.bottom = e.target.value
+            STEP.update_states()
+        }
+
+        document.getElementById("bgcolor").onchange = (e) => {
+            DRAW.color.background = e.target.value
+            STEP.update_dist()
+        }
+        GUI.open_close("cps", "flex");
+        GUI.open_close("option_color", "inline");
+        GUI.open_close("option_width", "inline")
+
+
+        document.getElementById("assign").onchange = (e) => {
+            const { GB, BF, GA, GI } = STEP.CELL0
+            const { Ff } = STEP.FOLD0
+
+            const a = e.target.value - 1;
+            const g = document.getElementById("selectG").value
+
+            STEP.CELL0.GI[g] = a
+            STEP.FOLD0.FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff)
+            STEP.update_states()
+            STEP.update_dist();
+        }
+
+        document.getElementById("selectG").onchange = (e) => {
+            const { GA, GI } = STEP.CELL0
+            const g = e.target.value
+            document.getElementById("assign").max = GA[g].length
+            document.getElementById("assign").value = GI[g] + 1
+            document.getElementById("assigns").innerHTML = "/" + GA[g].length
+        }
+
+
+        GUI.setup_range_options(
+            ["k0", "t0", "s0"],
+            ["scale", "rotation", "strength"],
+            [(v) => { return 1 + (v - 0.5) }, (v) => { return (v - 0.5) * Math.PI }, (v) => { return 1.01 ** (2 - 1 / v) }],
+            [0.5, 0.5, 0.5],
+            DIST
+        );
 
     },
-
+    open_close: (id, display_style) => {
+        var el = document.getElementById(id);
+        document.getElementById(id + "_b").onclick = () => {
+            if (el.style.display == display_style) {
+                el.style.display = "none";
+            }
+            else {
+                el.style.display = display_style;
+            }
+        }
+    },
     setup_number_options: (ids, edge_props, init, module) => {
         for (const [i, id] of ids.entries()) {
             const props = edge_props[i]
@@ -30,7 +120,7 @@ export const GUI = {
                 } else {
                     module[props] = e.target.value
                 }
-                MAIN.update_states()
+                STEP.update_states()
             }
             document.getElementById(id + "_reset").onclick = (e) => {
                 if (Array.isArray(props)) {
@@ -39,7 +129,7 @@ export const GUI = {
                     module[props] = init[i]
                 }
                 document.getElementById(id).value = init[i]
-                MAIN.update_states()
+                STEP.update_states()
             }
         }
     },
@@ -50,12 +140,12 @@ export const GUI = {
                 const val = e.target.value
                 module[props[i]] = affines[i](val)
 
-                MAIN.update_dist();
+                STEP.update_dist();
             }
             document.getElementById(id + "_reset").onclick = (e) => {
                 document.getElementById(id).value = init[i]
                 module[props[i]] = affines[i](init[i])
-                MAIN.update_dist();
+                STEP.update_dist();
             }
         }
 
@@ -72,7 +162,6 @@ export const GUI = {
                 xmlns: SVG.NS,
                 height: s,
                 width: s,
-
                 viewBox: [-b, -b, s + 2 * b, s + 2 * b].join(" "),
             })) {
                 svg.setAttribute(k, v);
@@ -101,7 +190,7 @@ export const GUI = {
             slider.style.display = "inline";
             slider.oninput = () => {
                 SVG.clear(svg.id);
-                MAIN.draw_state(svg, FOLD, CELL, STATE, FS, LINE);
+                STEP.draw_state(svg, FOLD, CELL, STATE, FS, LINE);
             };
             const val = +slider.value;
             const n = FOLD.FV.length;

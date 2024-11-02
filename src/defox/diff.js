@@ -43,7 +43,7 @@ export const DIFF = {
             const [a0, a1] = [F0.EA[i0], F1.EA[i1]]
             switch (a0) {
                 case "F":
-                    return a1;
+                    return a1 == "F" ? "F" : a1 == "M" ? "MM" : "VV";
                 case "B":
                     return "B"
                 case "M":
@@ -81,7 +81,7 @@ export const DIFF = {
         for (const [i, Fs] of FF_map.entries()) {
             if (Fs.length == 1) {
                 if (F0.Ff[i] != Ff[Fs[0]]) {
-                    Ff = Ff.map(f => !f)
+                    FOLD.Ff = Ff.map(f => !f);
                     continue
                 }
                 continue

@@ -12,16 +12,25 @@
     <div>
         <span style="font-family:sans-serif">
             <b>DEFOX&nbsp;&nbsp;</b>
+            <button id="init_sq">new Square</button>
+            <button id="init_hq">new Hexagon</button>
         </span>
 
     </div>
-    <div>
-        <label for="import0">Import FOLD/CP</label>
-        <input type="file" id="import0" />
-        <label for="import1">disabled</label>
-        <input type="file" id="import1" />
-    </div>
-
+    <span class="openclose" id="imports_b"><b>CP Import</b>
+        <p id="imports">
+            <label for="import0">Insert CP</label>
+            <input type="file" id="import0" />
+        </p>
+    </span>
+    <span><b>Steps</b></span>
+    <span>
+        <button id="prev">Prev</button>
+        <b id="step">1</b>
+        <b>/ </b>
+        <b id="steps">1</b>
+        <button id="next">Next</button>
+    </span>
 
     <div>
         <div id="states" class="mainpanel">
@@ -32,11 +41,16 @@
         </div>
         <div>
             <p>
-                <b>Layers</b>
+                <b>Global Operations</b>
+                <button id="flip">Flip</button>
+            </p>
+            <p>
+                <b>Control Layers</b>
                 <label for="selectG">Group</label>
                 <select id="selectG"></select>
                 <label for="assign0">state</label>
                 <input type="number" id="assign" min="1" max="1" value="1">
+                <a id="assigns">/ 1</a>
             </p>
             <p>
                 <b>Distortion</b>
@@ -63,23 +77,26 @@
                 <input type="checkbox" id="cb_T3" checked="true">
             </p>
         </div>
-        <div id="cps" class="mainpanel">
+        <span id="cps_b" class="openclose"><b>Crease Patterns</b></span>
+        <span id="cps" class="mainpanel" style="display: none;">
             <svg id="cp0" class="paint"></svg>
             <!-- <svg id="cp2" class="paint"></svg> -->
             <svg id="cp3" class="paint"></svg>
             <svg id="cp1" class="paint"></svg>
-        </div>
+        </span>
     </div>
     <div id="option">
-        <div>
-            <b>Color Options</b>
+        <span id="option_color_b" class="openclose"><b>Color Options</b></span>
+        <span id="option_color" style="display: none;">
             <label for="topcolor">Top Color</label>
-            <input type="color" id="topcolor" value="#5F5F5F">
+            <input type="color" id="topcolor" value="#8F8F8F">
             <label for="bottomcolor">Bottom Color</label>
             <input type="color" id="bottomcolor" value="#FFFFFF">
-        </div>
-        <div>
-            <b>Segment Options</b>
+            <label for="bottomcolor">BG Color</label>
+            <input type="color" id="bgcolor" value="#00FF00">
+        </span>
+        <span id="option_width_b" class="openclose"><b>Segment Options</b></span>
+        <span id="option_width" style="display: none;">
             <label for="width_crease">Crease Width</label>
             <input id="width_crease" type="number" max="10" min="1" value="1">
             <button id="width_crease_reset">Reset</button>
@@ -90,11 +107,11 @@
             <input id="width_MMVV" type="number" max="10" min="1" value="3">
             <button id="width_MMVV_reset">Reset</button>
 
-        </div>
+        </span>
 
     </div>
 
-    <div>© Kei Morisue 2024</div>
+    <b>© Kei Morisue 2024</b>
     <script type="module" src="./src/main.js"></script>
 </body>
 

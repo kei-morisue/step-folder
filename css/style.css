@@ -1,3 +1,7 @@
+input[type="range"] {
+    width: 400px;
+}
+
 .mainpanel {
     width: 100%;
 
@@ -25,4 +29,10 @@
     border: 1px solid #000;
     overflow-y: scroll;
     overflow-x: scroll;
+}
+
+.openclose {
+    display: block;
+    background-color: gray;
+    border: 1px solid #000;
 }
