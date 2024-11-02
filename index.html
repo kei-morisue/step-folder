@@ -13,54 +13,87 @@
         <span style="font-family:sans-serif">
             <b>DEFOX&nbsp;&nbsp;</b>
         </span>
-        <input type="file" id="import" />
-        <a id="export_anchor">
-            <input type="button" id="export" value="Export" style="display:inline">
-        </a>
-    </div>
-    <div style="display:flex;gap:5px;margin:5px">
-        <input type="button" id="back_button" value="<">
-        <label for="flip">Flip</label>
-        <input type="checkbox" id="flip">
-        <select id="type_select"></select>
-        <input type="button" id="fold_button" value="Fold" style="display:none">
-        <div id="state_controls" style="display:none">
-            <label for="component_select">Component</label>
-            <select id="component_select"></select>
-        </div>
-        <div id="state_config" style="display:none">
-            <label for="state_select" id="state_label"></label>
-            <input id="state_select" type="number"></input>
-        </div>
-        <input type="button" id="replace" value="Replace" style="display:none">
-        <label for="slider" style="display:inline">Layers</label>
-        <input type="range" id="slider" style="display:none;flex-grow:1;" min=0 value=0 max=1 step=1>
-        <div id="cycle" style="display:none">(Cycle found)</div>
+
     </div>
     <div>
-        <div id="main" class="mainpanel">
-            <svg id="cp" class="paint"></svg>
-            <svg id="input" class="paint"></svg>
-            <svg id="output" class="paint"></svg>
-        </div>
+        <label for="import0">Import FOLD/CP</label>
+        <input type="file" id="import0" />
+        <label for="import1">disabled</label>
+        <input type="file" id="import1" />
     </div>
+
+
     <div>
-        <p>History</p>
-        <div id="history" class="historypanel">
-            <p id="ph0"></p>
-            <svg id="h0" class="history"></svg>
-            <p id="ph1"></p>
-            <svg id="h1" class="history"></svg>
-            <p id="ph2"></p>
-            <svg id="h2" class="history"></svg>
-            <p id="ph3"></p>
-            <svg id="h3" class="history"></svg>
-            <p id="ph4"></p>
-            <svg id="h4" class="history"></svg>
-            <p id="ph5"></p>
-            <svg id="h5" class="history"></svg>
+        <div id="states" class="mainpanel">
+            <svg id="state0" class="paint"></svg>
+            <!-- <svg id="state2" class="paint"></svg> -->
+            <svg id="state3" class="paint"></svg>
+            <svg id="state1" class="paint"></svg>
+        </div>
+        <div>
+            <p>
+                <b>Layers</b>
+                <label for="selectG">Group</label>
+                <select id="selectG"></select>
+                <label for="assign0">state</label>
+                <input type="number" id="assign" min="1" max="1" value="1">
+            </p>
+            <p>
+                <b>Distortion</b>
+                <label for="k0">k</label>
+                <input type="range" id="k0" min="0" , max="1" , value="0.5" , step="0.0001">
+                <button id="k0_reset">Reset</button>
+                <label for="t0">theta</label>
+                <input type="range" id="t0" min="0" , max="1" , value="0.5" , step="0.0001">
+                <button id="t0_reset">Reset</button>
+                <label for="s0">strength</label>
+                <input type="range" id="s0" min="0" , max="1" , value="0.5" , step="0.0001">
+                <button id="s0_reset">Reset</button>
+
+            </p>
+            <p>
+                <b>Distortion Constraints</b>
+                <label for="cb_T0">taco-taco</label>
+                <input type="checkbox" id="cb_T0" checked="true">
+                <label for="cb_T1">taco-tortilla</label>
+                <input type="checkbox" id="cb_T1" checked="true">
+                <label for="cb_T2">tortilla-tortilla</label>
+                <input type="checkbox" id="cb_T2" checked="true">
+                <label for="cb_T3">transitivity</label>
+                <input type="checkbox" id="cb_T3" checked="true">
+            </p>
+        </div>
+        <div id="cps" class="mainpanel">
+            <svg id="cp0" class="paint"></svg>
+            <!-- <svg id="cp2" class="paint"></svg> -->
+            <svg id="cp3" class="paint"></svg>
+            <svg id="cp1" class="paint"></svg>
         </div>
     </div>
+    <div id="option">
+        <div>
+            <b>Color Options</b>
+            <label for="topcolor">Top Color</label>
+            <input type="color" id="topcolor" value="#5F5F5F">
+            <label for="bottomcolor">Bottom Color</label>
+            <input type="color" id="bottomcolor" value="#FFFFFF">
+        </div>
+        <div>
+            <b>Segment Options</b>
+            <label for="width_crease">Crease Width</label>
+            <input id="width_crease" type="number" max="10" min="1" value="1">
+            <button id="width_crease_reset">Reset</button>
+            <label for="width_boundary">Boundary Width</label>
+            <input id="width_boundary" type="number" max="10" min="1" value="3">
+            <button id="width_boundary_reset">Reset</button>
+            <label for="width_MMVV">MV Crease Width</label>
+            <input id="width_MMVV" type="number" max="10" min="1" value="3">
+            <button id="width_MMVV_reset">Reset</button>
+
+        </div>
+
+    </div>
+
     <div>© Kei Morisue 2024</div>
     <script type="module" src="./src/main.js"></script>
 </body>

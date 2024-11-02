@@ -12,8 +12,8 @@ export const X = {     // CONVERSION
         let V_ = [], EV_ = [], EL_ = [], k_ = 1, i_ = 1;
         NOTE.start_check("epsilon");
         for (const i of Array(50).fill().map((_, j) => j + 3)) {
-            const eps = d/(2**i);
-            NOTE.check(2**i);
+            const eps = d / (2 ** i);
+            NOTE.check(2 ** i);
             if (eps < M.FLOAT_EPS) { break; }
             try {
                 const [V, EV, EL] = X.L_eps_2_V_EV_EL(L, eps);
@@ -40,10 +40,10 @@ export const X = {     // CONVERSION
         const line_intersect = ([x1, y1], [x2, y2], [x3, y3], [x4, y4]) => {
             const dx12 = x1 - x2, dx34 = x3 - x4;
             const dy12 = y1 - y2, dy34 = y3 - y4;
-            const denom = dx12*dy34 - dx34*dy12;
-            if (denom < eps*eps) { return undefined; }
-            const x = ((x1*y2 - y1*x2)*dx34 - (x3*y4 - y3*x4)*dx12)/denom;
-            const y = ((x1*y2 - y1*x2)*dy34 - (x3*y4 - y3*x4)*dy12)/denom;
+            const denom = dx12 * dy34 - dx34 * dy12;
+            if (denom < eps * eps) { return undefined; }
+            const x = ((x1 * y2 - y1 * x2) * dx34 - (x3 * y4 - y3 * x4) * dx12) / denom;
+            const y = ((x1 * y2 - y1 * x2) * dy34 - (x3 * y4 - y3 * x4) * dy12) / denom;
             return [x, y];
         };
         const V = [[-Infinity, -Infinity]];     // sentinal first point
@@ -82,7 +82,7 @@ export const X = {     // CONVERSION
         const on_line = (vi, si) => (Math.abs(point_seg_dist(vi, si)) < eps);
         let curr;
         const seg_comp = (si, sj) => {
-            if(!on_line(curr, si)) {                // assumes si on curr
+            if (!on_line(curr, si)) {                // assumes si on curr
                 throw new Error();
             }
             const dj = point_seg_dist(curr, sj);    // only search near curr,
@@ -159,7 +159,7 @@ export const X = {     // CONVERSION
             }
             const pairs = [];
             pairs.push([T.prev(0), T.next(0)]); SA[0] = -Infinity
-            pairs.push([T.prev(0), T.next(0)]); SA[0] =  Infinity
+            pairs.push([T.prev(0), T.next(0)]); SA[0] = Infinity
             for (const [l, r] of pairs) {   // check adjacent pairs
                 if ((l == undefined) || (r == undefined)) {
                     continue;               // incomplete pair
@@ -167,7 +167,7 @@ export const X = {     // CONVERSION
                 const vl = SV[l][0], al = SA[l];
                 const vr = SV[r][0], ar = SA[r];
                 const x = line_intersect(V[vl], M.add(V[vl], SU[l]),
-                                         V[vr], M.add(V[vr], SU[r]));
+                    V[vr], M.add(V[vr], SU[r]));
                 if ((x == undefined) ||                         // none
                     (point_comp(x, v) == 0) ||                  // near curr
                     ((point_comp(x, v) < 0) && (x[1] <= v[1]))  // behind sweep
@@ -364,7 +364,7 @@ export const X = {     // CONVERSION
                 const len = M.distsq(V[vi], V[vj]);
                 const f = EF_map.get(M.encode([vi, vj]));
                 const a = EA_map.get(M.encode_order_pair([vi, vj]));
-                const new_s = (a == "M" || a == "V" || a == "U") ? !s : s;
+                const new_s = (a == "M" || a == "V" || a == "U" || a == "RV" || a == "RM" || a == "UF") ? !s : s;
                 if ((f != undefined) && !seen.has(f)) {
                     queue.push([f, vj, vi, len, new_s]);
                     seen.add(f);
@@ -401,7 +401,7 @@ export const X = {     // CONVERSION
         }
         for (const [i, F] of EF.entries()) {
             const c = (F[0] == undefined) ? 1 :
-                     ((F[1] == undefined) ? 0 : undefined);
+                ((F[1] == undefined) ? 0 : undefined);
             if (c != undefined) {
                 EF[i] = [F[c]];
             }
@@ -826,7 +826,7 @@ export const X = {     // CONVERSION
                 const [c, C] = CC[i];
                 J.push([i, c, C]);
             }
-            P[wi] = ((J.length == 0) ? (new Promise(res => {}))
+            P[wi] = ((J.length == 0) ? (new Promise(res => { }))
                 : PAR.send_message(W[wi], "BT3x", [J]));
             J.length = 0;
         }
@@ -855,14 +855,14 @@ export const X = {     // CONVERSION
                     for (const f3 of CF[c]) {
                         if ((f3 == f1) || (f3 == f2)) { continue; }
                         if (S.has(f3)) { X.add(f3); }
-                        else           { T.add(f3); }
+                        else { T.add(f3); }
                     }
                 }
             }
             nx += X.size;
             BT3.push(M.encode(T));
         }
-        return [BT3, nx/3];     // |BT3| = O(|B||F|) <= O(|F|^3)
+        return [BT3, nx / 3];     // |BT3| = O(|B||F|) <= O(|F|^3)
     },
     FC_CF_BF_BT3x_W_2_BT3: async (FC, CF, BF, BT3x, W) => {
         const P = W.map((_, wi) => new Promise(res => res([wi, undefined])));
@@ -886,12 +886,12 @@ export const X = {     // CONVERSION
                 J.push([i, BF[i], BT3x[i]]);
                 delete BT3x[i];
             }
-            P[wi] = ((J.length == 0) ? (new Promise(res => {}))
+            P[wi] = ((J.length == 0) ? (new Promise(res => { }))
                 : PAR.send_message(W[wi], "BT3", [J]));
             J.length = 0;
         }
         await Promise.all(W.map(w => PAR.send_message(w, "BT3_stop", [])));
-        return [BT3, nx/3];
+        return [BT3, nx / 3];
     },
     EF_SP_SE_CP_FC_CF_BF_BT3x_2_BT3: (EF, SP, SE, CP, FC, CF, BF, BT3x) => {
         const FC_set = FC.map(C => new Set(C));
@@ -945,7 +945,7 @@ export const X = {     // CONVERSION
                 for (const f3 of CF[ci]) {
                     if ((f3 == f1) || (f3 == f2)) { continue; }
                     if (S.has(f3)) { X.add(f3); }
-                    else           { T.add(f3); }
+                    else { T.add(f3); }
                 }
                 const Q = [ci];
                 seen.add(ci);
@@ -963,7 +963,7 @@ export const X = {     // CONVERSION
                             for (const f3 of SF_map.get(k)) {
                                 if ((f3 == f1) || (f3 == f2)) { continue; }
                                 if (S.has(f3)) { X.add(f3); }
-                                else           { T.add(f3); }
+                                else { T.add(f3); }
                             }
                         }
                         v1 = v2;
@@ -973,7 +973,7 @@ export const X = {     // CONVERSION
             nx += X.size;
             BT3.push(M.encode(T));
         }
-        return [BT3, nx/3];
+        return [BT3, nx / 3];
     },
     BF_GB_GA_GI_2_edges: (BF, GB, GA, GI) => {
         const edges = [];
