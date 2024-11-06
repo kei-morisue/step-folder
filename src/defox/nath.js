@@ -1,5 +1,7 @@
 import { M } from "../flatfolder/math.js"
 export const N = {
+    FLOAT_EPS: 10 ** (-10),
+    near_zero: (a) => Math.abs(a) < N.FLOAT_EPS,
     is_inside: (c, vs) => {
         let wind = 0
         let d0 = M.sub(vs[vs.length - 1], c)
@@ -12,6 +14,6 @@ export const N = {
             wind = wind + theta
             d0 = d1
         }
-        return M.near_zero((wind + 2 * Math.PI) % (2 * Math.PI))
+        return N.near_zero((wind + 2 * Math.PI) % (2 * Math.PI))
     },
 }

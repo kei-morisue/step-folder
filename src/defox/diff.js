@@ -28,7 +28,7 @@ export const DIFF = {
                 const a1 = F1.EA[i - L0.length]
                 switch (a1) {
                     case "F":
-                        return "UF";
+                        return "F";
                     case "B":
                         return "B"
                     case "M":

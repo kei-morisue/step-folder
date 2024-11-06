@@ -20,12 +20,12 @@ export const DRAW = {
             U: "black",
             F: "black",
             B: "black",
-            M: "blue",
             V: "red",
-            MM: "blue",
+            M: "blue",
             VV: "red",
-            RV: "blue",
-            RM: "red",
+            MM: "blue",
+            RV: "red",
+            RM: "blue",
             UF: "magenta",
         },
         segment: {
@@ -111,10 +111,10 @@ export const DRAW = {
             DRAW.draw_xray(FOLD, flip, svg)
             return
         }
-        const { Ff, EF, EA } = FOLD;
+        const { Ff, EF, FE, EA } = FOLD;
         const { P, PP, CP, CF, SP, SC, SE } = CELL;
         const { Q, Ctop, L, Ccolor } = STATE;
-        const SD = Y.Ctop_SC_SE_EF_Ff_EA_2_SD(Ctop, SC, SE, EF, Ff, EA);
+        const SD = Y.Ctop_SC_SE_EF_Ff_EA_FE_2_SD(Ctop, SC, SE, EF, Ff, EA, FE);
         const Q_ = M.normalize_points(Q);
         const cells = CP.map(V => M.expand(V, Q_));
         const fold_c = SVG.append("g", svg, { id: "fold_c" });
@@ -137,7 +137,7 @@ export const DRAW = {
                 }
                 return DRAW.color.edge[d];
             }),
-            filter: (i) => SD[i] == "MM" || SD[i] == "VV" || SD[i] == "F" || SD[i] == "U",
+            filter: (i) => SD[i] == "MM" || SD[i] == "VV" || SD[i] == "F" || SD[i] == "U" || SD[i] == "RM" || SD[i] == "RV",
             stroke_width: SD.map((d, i) => {
                 return DRAW.width.edge[d];
             }),

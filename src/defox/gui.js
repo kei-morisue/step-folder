@@ -30,6 +30,9 @@ export const GUI = {
         GUI.set_svg("states")
         GUI.set_svg("cps")
 
+
+
+
         document.getElementById("flip").onclick = (e) => {
             STEP.flip0 = !STEP.flip0;
             STEP.update_states();
@@ -170,13 +173,6 @@ export const GUI = {
     },
     refresh: () => {
     },
-
-    flip: (FS, STATE) => {
-        NOTE.start("Flipping model");
-        MAIN.draw_state(SVG.clear("input"), FS, STATE);
-        NOTE.end();
-    },
-
 
 
     show_linear_slider: (L, svg, FOLD, CELL, STATE, FS, LINE) => {

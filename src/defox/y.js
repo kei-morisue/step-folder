@@ -88,6 +88,54 @@ export const Y = {     // CONVERSION
         return [FOLD, CELL];
     },
 
+    FOLD_2_PAPER: (FOLD) => {
+        //TODO stub
+        const a = 0.5;
+        const VV = [[-a, -a], [-a, a], [a, a], [a, -a]];
+        const V = M.normalize_points(VV)
+        const Vf = V;
+        const FV = [[0, 1, 2, 3]]
+        const EV = [[0, 1], [1, 2], [2, 3], [3, 0]]
+        const EF = [[0,], [0,], [0,], [0,]]
+        const FE = [[0, 1, 2, 3]]
+        const Ff = [false]
+        const eps = 1e-3
+        const EA = ["B", "B", "B", "B"]
+        const F = { V, Vf, FV, EV, EF, FE, Ff, eps, EA }
+        const L = EV.map((P) => M.expand(P, V));
+        const [P, SP, SE, eps_i] = X.L_2_V_EV_EL(L);
+        const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
+        const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
+        const [CF, FC] = X.EF_FV_SP_SE_CP_SC_2_CF_FC(EF, FV, SP, SE, CP, SC);
+        const ExE = X.SE_2_ExE(SE);
+        const ExF = X.SE_CF_SC_2_ExF(SE, CF, SC);
+        const BF = X.CF_2_BF(CF);
+
+        const BI = new Map();
+        for (const [i, F] of BF.entries()) { BI.set(F, i); }
+        NOTE.annotate(BF, "variables_faces");
+        const BA0 = SOLVER.EF_EA_Ff_BF_BI_2_BA0(EF, EA, Ff, BF, BI);
+        const [BT0, BT1, BT2] = X.BF_BI_EF_ExE_ExF_2_BT0_BT1_BT2(BF, BI, EF, ExE, ExF);
+        const BT3x = X.FC_BF_BI_BT0_BT1_2_BT3x(FC, BF, BI, BT0, BT1);
+        const [BT3,] = X.EF_SP_SE_CP_FC_CF_BF_BT3x_2_BT3(EF, SP, SE, CP, FC, CF, BF, BT3x);
+        const BT = BF.map((F, i) => [BT0[i], BT1[i], BT2[i], BT3[i]]);
+
+        const BA = SOLVER.initial_assignment(BA0, BF, BT, BI)
+        if (BA.length == 3 && !isNaN(BA[0])) { return [undefined, undefined] }
+        const GB = SOLVER.get_components(BI, BF, BT, BA);
+        const GA = SOLVER.solve(BI, BF, BT, BA, GB, Infinity);
+        const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {
+            return s * BigInt(A.length);
+        }, BigInt(1));
+        NOTE.count(n, "folded states");
+        const GI = GB.map(() => 0);
+        if (n > 0) {
+            F.FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff);
+        }
+        const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI, GB, GA, GI };
+        return [F, CELL];
+    },
+
     BF_GB_GA_GI_Ff_2_FO: (BF, GB, GA, GI, Ff) => {
         NOTE.time("Computing state");
         const edges = X.BF_GB_GA_GI_2_edges(BF, GB, GA, GI);
@@ -200,43 +248,7 @@ export const Y = {     // CONVERSION
         return { Q, CD, Ctop, Ccolor, L, edges };
     },
 
-    PP_Ctop_CP_SC_2_Pvisible: (P, PP, Ctop, CP, SC) => {
-        // computes boolean whether each vertex isvisible from top
-        const SC_map = new Map();
-        for (const [i, C] of CP.entries()) {
-            for (const [j, p1] of C.entries()) {
-                const p2 = C[(j + 1) % C.length];
-                SC_map.set(M.encode([p2, p1]), i);
-            }
-        }
-        return PP.map((V, i) => {
-            const F = [];
-            const A = V.map(j => M.angle(M.sub(P[j], P[i])));
-            for (const j of V) {
-                const c = SC_map.get(M.encode([i, j]));
-                F.push((c == undefined) ? -1 : Ctop[c]);
-            }
-            const F_set = new Map();
-            for (let i = 0; i < F.length; ++i) {
-                const f = F[i];
-                let ang = F_set.get(f);
-                if (ang == undefined) { ang = 0; }
-                ang += A[i] - A[(i - 1) % A.length];
-                F_set.set(f, ang);
-            }
-            if (F_set.size > 2) {
-                return true;
-            }
-            for (const [f, ang] of F_set.entries()) {
-                if (Math.abs(Math.abs(ang) - Math.PI) > 0.001) {
-                    return true;
-                }
-            }
-            return false;
-        });
-    },
-
-    Ctop_SC_SE_EF_Ff_EA_2_SD: (Ctop, SC, SE, EF, Ff, EA) => {
+    Ctop_SC_SE_EF_Ff_EA_FE_2_SD: (Ctop, SC, SE, EF, Ff, EA, FE) => {
         const EF_set = new Set(
             EF.filter(F => F.length == 2).map(F => M.encode_order_pair(F)));
         const FE_map = new Map()
@@ -248,7 +260,18 @@ export const Y = {     // CONVERSION
             const F = C.map(ci => Ctop[ci]);
             if (F[0] == F[1]) { return "N"; }
             // borders of a state
-            if ((F[0] == undefined) || (F[1] == undefined)) { return "B"; }
+            if ((F[0] == undefined) || (F[1] == undefined)) {
+                // const face = F[0] ?? F[1];
+                // for (const ei of SE[si]) {
+                //     const [fi, fj] = EF[ei];
+
+                //     if ((fi == face) || (fj == face)) {
+                //         const a = EA[ei]
+                //         return (a == "M" || a == "V" || a == "B") ? "B" : a;
+                //     }
+                // }
+                return "B";
+            }
             const flips = F.map(fi => Ff[fi]);
             const pair = M.encode_order_pair(F);
             //creases inside the state
@@ -261,15 +284,15 @@ export const Y = {     // CONVERSION
                     return a;
                 }
             }
-            let left = false, right = false;
+            let left = undefined, right = undefined;
             // edges in the state
             for (const ei of SE[si]) {
                 const [fi, fj] = EF[ei];
                 if (Ff[fi] == Ff[fj]) { continue; }
-                if ((fi == F[0]) || (fj == F[0])) { left = true; }
-                if ((fi == F[1]) || (fj == F[1])) { right = true; }
+                if ((fi == F[0]) || (fj == F[0])) { left = ei; }
+                if ((fi == F[1]) || (fj == F[1])) { right = ei; }
             }
-            if (left == right) { return "B"; }
+            if (left && right) { return "B"; }
             return left ? "BL" : "BR";
         });
         return SD;

@@ -20,26 +20,27 @@ window.onload = () => { MAIN.startup(); };  // entry point
 
 const MAIN = {
     current_idx: 0,
-    Gs: [],
-    Ss: [],
-    Ps: [],
-    Fs: [],
+    lastcp: undefined,
+    Cps: [],
+    States: [],
+    Params: [],
 
     startup: () => {
         GUI.startup();
-        document.getElementById("next").onclick = MAIN.next;
-        document.getElementById("import0").onchange = (e) => {
-            if (e.target.files.length > 0) {
-                const file_reader = new FileReader();
-                file_reader.onload = (e1) => {
-                    const doc = e1.target.result;
-                    const path = e.target.value;
-                    MAIN.import(path, doc)
-                };
-                file_reader.readAsText(e.target.files[0]);
+
+        document.getElementById("new").onclick = (e) => {
+            if (confirm("Are you sure to discard current sequence?")) {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'cp/plain';
+                input.onchange = MAIN.new;
+                input.click();
             }
         };
 
+        document.getElementById("next").onclick = MAIN.next;
+        document.getElementById("prev").onclick = MAIN.prev;
+        document.getElementById("import0").onclick = MAIN.read;
         [STEP.FOLD0, STEP.CELL0] = Y.CP_2_FOLD_CELL(SMPL.cp1, true);
         [STEP.FOLD1, STEP.CELL1] = Y.CP_2_FOLD_CELL(SMPL.cp0, true);
 
@@ -54,64 +55,127 @@ const MAIN = {
         STEP.update_component(STEP.FOLD0, STEP.CELL0, select, assign);
         STEP.update_dist()
 
-        const is_flip = STEP.flip0;
-        MAIN.record(0, is_flip)
+        MAIN.record(0)
     },
 
+    prev: () => {
+        if (MAIN.current_idx == 0) {
+            return;
+        }
+        const i = MAIN.current_idx;
+        MAIN.record(i);
+        MAIN.restore(i - 1);
+        MAIN.current_idx--;
+    },
     next: () => {
-        const is_flip0 = STEP.flip0
 
-        if (MAIN.Gs.length < MAIN.current_idx + 2) {
+        if (MAIN.States.length <= MAIN.current_idx + 1) {
             document.getElementById("import0").click();
         }
         else {
             const i = MAIN.current_idx;
-            MAIN.record(i, is_flip0);
-
-            [STEP.FOLD0, STEP.CELL0] = MAIN.Gs[i];
-            [STEP.FOLD1, STEP.CELL1] = MAIN.Gs[i + 1];
-            [STEP.FOLD, STEP.CELL] = MAIN.Ss[i + 1];
-            [DIST.scale, DIST.rotation, DIST.strength] = MAIN.Ps[i + 1];
-            current_idx++;
-            document.getElementById("steps").innerHTML = MAIN.Gs.length;
-            document.getElementById("step").innerHTML = MAIN.current_idx + 1;
+            MAIN.record(i);
+            MAIN.restore(i + 1);
+            MAIN.current_idx++;
         }
 
     },
 
+    read: (e) => {
+        if (e.target.files.length > 0) {
+            const el = e.target;
+            const file_reader = new FileReader();
+            file_reader.onload = (e1) => {
+                const doc = e1.target.result;
+                const path = el.value;
+                MAIN.import(path, doc);
+            };
+            file_reader.readAsText(e.target.files[0]);
+        }
+    },
     import: (path, doc) => {
         if (!doc) {
             return false;
         }
-        const [FOLD, CELL] = Y.CP_2_FOLD_CELL(doc, true);
-        if (FOLD == undefined) {
+        const [FOLD1, CELL1] = Y.CP_2_FOLD_CELL(doc, true);
+        if (FOLD1 == undefined) {
             alert("unfoldable Crease Pattern: " + path)
             return false;
         }
 
-        MAIN.Gs.push([STEP.FOLD1, STEP.CELL1]);
-        MAIN.Ss.push([STEP.FOLD, STEP.CELL]);
-        MAIN.Fs.push(true);
-        MAIN.Ps.push([DIST.scale, DIST.rotation, DIST.strength]);
-        const i = MAIN.Gs.length - 1;
+        MAIN.Cps.push(MAIN.lastcp);
+        MAIN.lastcp = [FOLD1, CELL1]
+        MAIN.States.push([STEP.FOLD, STEP.CELL]);
+        MAIN.Params.push([STEP.flip0, DIST.scale, DIST.rotation, DIST.strength]);
+
+        const i = MAIN.Cps.length - 1;
         MAIN.current_idx = i;
-        [STEP.FOLD1, STEP.CELL1] = [FOLD, CELL];
-        [STEP.FOLD0, STEP.CELL0] = MAIN.Gs[i];
+
+        MAIN.restore(i)
+        return true
+    },
+
+
+    new: (e) => {
+        if (e.target.files.length > 0) {
+            const el = e.target
+            const file_reader = new FileReader();
+            file_reader.onload = (e1) => {
+                const doc = e1.target.result;
+                const path = el.value;
+                MAIN.import_new(path, doc);
+            };
+            file_reader.readAsText(e.target.files[0]);
+        }
+    },
+    import_new: (path, doc) => {
+        if (!doc) {
+            return false;
+        }
+
+        const [FOLD1, CELL1] = Y.CP_2_FOLD_CELL(doc, true);
+        if (FOLD1 == undefined) {
+            alert("unfoldable Crease Pattern: " + path)
+            return false;
+        }
+        const [FOLD0, CELL0] = Y.FOLD_2_PAPER(FOLD1);
+
+        MAIN.Cps = [[FOLD0, CELL0]];
+        MAIN.States = [DIFF.diff(FOLD0, CELL0, FOLD1, CELL1)];
+        MAIN.Flips = [false];
+        MAIN.Params = [[1, 0, 1]];
+        MAIN.record(1)
+        MAIN.restore(0)
+        return true
+    },
+    restore: (i) => {
+        if (i > MAIN.Cps.length - 1) {
+            return;
+        }
+        [STEP.FOLD0, STEP.CELL0] = MAIN.Cps[i];
+        [STEP.FOLD1, STEP.CELL1] = (MAIN.Cps.length - 1 > i) ? MAIN.Cps[i + 1] : MAIN.lastcp;
+
+        [STEP.FOLD, STEP.CELL] = MAIN.States[i];
+        [STEP.flip0, DIST.scale, DIST.rotation, DIST.strength] = MAIN.Params[i]
+
         STEP.update_states();
         const select = document.getElementById("selectG");
         const assign = document.getElementById("assign");
         STEP.update_component(STEP.FOLD0, STEP.CELL0, select, assign);
         STEP.update_dist()
-        document.getElementById("steps").innerHTML = MAIN.Gs.length;
-        document.getElementById("step").innerHTML = MAIN.current_idx + 1;
-        return true
+        document.getElementById("steps").innerHTML = MAIN.States.length;
+        document.getElementById("step").innerHTML = i + 1;
     },
-
-    record: (i, is_flip0) => {
-        MAIN.Gs[i] = [STEP.FOLD0, STEP.CELL0];
-        MAIN.Ss[i] = [STEP.FOLD, STEP.CELL];
-        MAIN.Fs[i] = is_flip0;
-        MAIN.Ps[i] = [DIST.scale, DIST.rotation, DIST.strength];
+    record: (i) => {
+        if (MAIN.Cps.length - 1 < i) {
+            MAIN.Cps.push(undefined)
+            MAIN.States.push(undefined)
+            MAIN.Params.push(undefined)
+            MAIN.lastcp = [STEP.FOLD1, STEP.CELL1]
+        }
+        MAIN.Cps[i] = [STEP.FOLD0, STEP.CELL0];
+        MAIN.States[i] = [STEP.FOLD, STEP.CELL];
+        MAIN.Params[i] = [STEP.flip0, DIST.scale, DIST.rotation, DIST.strength];
     },
 };
 
