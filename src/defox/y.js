@@ -31,18 +31,6 @@ export const Y = {     // CONVERSION
     },
 
 
-    FOLD_2_CELL: (FOLD) => {
-        const { V, EV, EF, FV } = FOLD
-        const L = EV.map((P) => M.expand(P, V));
-        const [P, SP, SE, eps_i] = X.L_2_V_EV_EL(L);
-        const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
-        const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
-        const [CF, FC] = X.EF_FV_SP_SE_CP_SC_2_CF_FC(EF, FV, SP, SE, CP, SC);
-        const BF = X.CF_2_BF(CF);
-
-        return { P, CP, SP, SC, SE, BF, FC, CF }
-    },
-
     CP_2_FOLD_CELL: (doc, is_flip) => {
         const [Vf, VV, EV, EA, EF, FV, FE] =
             IO.doc_type_side_2_V_VV_EV_EA_EF_FV_FE(doc, "cp", is_flip);
@@ -53,7 +41,7 @@ export const Y = {     // CONVERSION
         const L = EV.map((P) => M.expand(P, V));
         const [P, SP, SE, eps_i] = X.L_2_V_EV_EL(L);
         const eps = M.min_line_length(L) / (2 ** eps_i);
-        const FOLD = { V, Vf, FV, EV, EF, FE, Ff, eps, EA };
+        const FOLD = { V, Vf, FV, EV, EF, FE, Ff, eps, EA, VV };
         const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
         const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
         const [CF, FC] = X.EF_FV_SP_SE_CP_SC_2_CF_FC(EF, FV, SP, SE, CP, SC);
@@ -87,53 +75,33 @@ export const Y = {     // CONVERSION
         const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI, GB, GA, GI };
         return [FOLD, CELL];
     },
-
-    FOLD_2_PAPER: (FOLD) => {
-        //TODO stub
-        const a = 0.5;
-        const VV = [[-a, -a], [-a, a], [a, a], [a, -a]];
-        const V = M.normalize_points(VV)
-        const Vf = V;
-        const FV = [[0, 1, 2, 3]]
-        const EV = [[0, 1], [1, 2], [2, 3], [3, 0]]
-        const EF = [[0,], [0,], [0,], [0,]]
-        const FE = [[0, 1, 2, 3]]
-        const Ff = [false]
-        const eps = 1e-3
-        const EA = ["B", "B", "B", "B"]
-        const F = { V, Vf, FV, EV, EF, FE, Ff, eps, EA }
+    FOLD_2_CELL: (FOLD) => {
+        const { V, EV, EF, FV } = FOLD
         const L = EV.map((P) => M.expand(P, V));
         const [P, SP, SE, eps_i] = X.L_2_V_EV_EL(L);
         const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
         const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
         const [CF, FC] = X.EF_FV_SP_SE_CP_SC_2_CF_FC(EF, FV, SP, SE, CP, SC);
-        const ExE = X.SE_2_ExE(SE);
-        const ExF = X.SE_CF_SC_2_ExF(SE, CF, SC);
         const BF = X.CF_2_BF(CF);
 
-        const BI = new Map();
-        for (const [i, F] of BF.entries()) { BI.set(F, i); }
-        NOTE.annotate(BF, "variables_faces");
-        const BA0 = SOLVER.EF_EA_Ff_BF_BI_2_BA0(EF, EA, Ff, BF, BI);
-        const [BT0, BT1, BT2] = X.BF_BI_EF_ExE_ExF_2_BT0_BT1_BT2(BF, BI, EF, ExE, ExF);
-        const BT3x = X.FC_BF_BI_BT0_BT1_2_BT3x(FC, BF, BI, BT0, BT1);
-        const [BT3,] = X.EF_SP_SE_CP_FC_CF_BF_BT3x_2_BT3(EF, SP, SE, CP, FC, CF, BF, BT3x);
-        const BT = BF.map((F, i) => [BT0[i], BT1[i], BT2[i], BT3[i]]);
+        return { P, CP, SP, SC, SE, BF, FC, CF }
+    },
 
-        const BA = SOLVER.initial_assignment(BA0, BF, BT, BI)
-        if (BA.length == 3 && !isNaN(BA[0])) { return [undefined, undefined] }
-        const GB = SOLVER.get_components(BI, BF, BT, BA);
-        const GA = SOLVER.solve(BI, BF, BT, BA, GB, Infinity);
-        const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {
-            return s * BigInt(A.length);
-        }, BigInt(1));
-        NOTE.count(n, "folded states");
-        const GI = GB.map(() => 0);
-        if (n > 0) {
-            F.FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff);
+    FOLD_2_PAPER: (FOLD) => {
+        //TODO stub
+        const EV = []
+        for (const [i, a] of FOLD.EA.entries()) {
+            if (a == "B") {
+                const [v0, v1] = FOLD.EV[i];
+                EV.push([v0, v1]);
+            }
         }
-        const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI, GB, GA, GI };
-        return [F, CELL];
+        const L = EV.map((P) => M.expand(P, FOLD.Vf));
+        let doc = ""
+        for (const [_, [p, q]] of L.entries()) {
+            doc = doc + "1 " + p[0] + " " + p[1] + " " + q[0] + " " + q[1] + "\r\n"
+        }
+        return Y.CP_2_FOLD_CELL(doc, true)
     },
 
     BF_GB_GA_GI_Ff_2_FO: (BF, GB, GA, GI, Ff) => {

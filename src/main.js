@@ -24,7 +24,13 @@ const MAIN = {
     Cps: [],
     States: [],
     Params: [],
-
+    refresh: () => {
+        MAIN.current_idx = 0;
+        MAIN.lastcp = undefined;
+        MAIN.Cps = [];
+        MAIN.States = [];
+        MAIN.Params = [];
+    },
     startup: () => {
         GUI.startup();
 
@@ -33,14 +39,16 @@ const MAIN = {
                 const input = document.createElement('input');
                 input.type = 'file';
                 input.accept = 'cp/plain';
-                input.onchange = MAIN.new;
+                input.multiple = true;
+                input.onchange = MAIN.read;
+                MAIN.refresh();
                 input.click();
             }
         };
 
         document.getElementById("next").onclick = MAIN.next;
         document.getElementById("prev").onclick = MAIN.prev;
-        document.getElementById("import0").onclick = MAIN.read;
+        document.getElementById("import0").onchange = MAIN.read;
         [STEP.FOLD0, STEP.CELL0] = Y.CP_2_FOLD_CELL(SMPL.cp1, true);
         [STEP.FOLD1, STEP.CELL1] = Y.CP_2_FOLD_CELL(SMPL.cp0, true);
 
@@ -49,11 +57,7 @@ const MAIN = {
         STEP.FOLD_D = STEP.FOLD0;
         STEP.CELL_D = STEP.CELL0;
 
-        STEP.update_states();
-        const select = document.getElementById("selectG");
-        const assign = document.getElementById("assign");
-        STEP.update_component(STEP.FOLD0, STEP.CELL0, select, assign);
-        STEP.update_dist()
+        STEP.update()
 
         MAIN.record(0)
     },
@@ -81,16 +85,34 @@ const MAIN = {
 
     },
 
+
     read: (e) => {
-        if (e.target.files.length > 0) {
-            const el = e.target;
+        const l = e.target.files.length;
+        const el = e.target;
+        if (l > 0) {
             const file_reader = new FileReader();
-            file_reader.onload = (e1) => {
-                const doc = e1.target.result;
-                const path = el.value;
-                MAIN.import(path, doc);
-            };
-            file_reader.readAsText(e.target.files[0]);
+            let i = 0;
+            const fn = () => {
+                file_reader.readAsText(el.files[i]);
+                file_reader.onload = (e) => {
+                    let res = undefined;
+                    if (MAIN.Cps.length == 0) {
+                        res = MAIN.import_new(el.files[i].name, e.target.result);
+                    }
+                    else {
+                        res = MAIN.import(el.files[i].name, e.target.result);
+                    }
+                    if (res && i < l - 1) {
+                        i++;
+                        fn();
+                    }
+                    else {
+                        return true;
+                    }
+                }
+            }
+            fn();
+
         }
     },
     import: (path, doc) => {
@@ -111,23 +133,11 @@ const MAIN = {
         const i = MAIN.Cps.length - 1;
         MAIN.current_idx = i;
 
-        MAIN.restore(i)
+        MAIN.restore(i);
         return true
     },
 
 
-    new: (e) => {
-        if (e.target.files.length > 0) {
-            const el = e.target
-            const file_reader = new FileReader();
-            file_reader.onload = (e1) => {
-                const doc = e1.target.result;
-                const path = el.value;
-                MAIN.import_new(path, doc);
-            };
-            file_reader.readAsText(e.target.files[0]);
-        }
-    },
     import_new: (path, doc) => {
         if (!doc) {
             return false;
@@ -142,10 +152,10 @@ const MAIN = {
 
         MAIN.Cps = [[FOLD0, CELL0]];
         MAIN.States = [DIFF.diff(FOLD0, CELL0, FOLD1, CELL1)];
-        MAIN.Flips = [false];
-        MAIN.Params = [[1, 0, 1]];
-        MAIN.record(1)
+        MAIN.Params = [[false, 1, 0, 1]];
+        MAIN.lastcp = [FOLD1, CELL1]
         MAIN.restore(0)
+
         return true
     },
     restore: (i) => {
@@ -158,11 +168,7 @@ const MAIN = {
         [STEP.FOLD, STEP.CELL] = MAIN.States[i];
         [STEP.flip0, DIST.scale, DIST.rotation, DIST.strength] = MAIN.Params[i]
 
-        STEP.update_states();
-        const select = document.getElementById("selectG");
-        const assign = document.getElementById("assign");
-        STEP.update_component(STEP.FOLD0, STEP.CELL0, select, assign);
-        STEP.update_dist()
+        STEP.update();
         document.getElementById("steps").innerHTML = MAIN.States.length;
         document.getElementById("step").innerHTML = i + 1;
     },

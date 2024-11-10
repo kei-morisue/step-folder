@@ -97,7 +97,7 @@ export const GUI = {
         GUI.setup_range_options(
             ["k0", "t0", "s0"],
             ["scale", "rotation", "strength"],
-            [(v) => { return 1 + (v - 0.5) }, (v) => { return (v - 0.5) * Math.PI }, (v) => { return 1.01 ** (2 - 1 / v) }],
+            [(v) => { return 1 + (v - 0.5) }, (v) => { return (v - 0.5) * Math.PI * 0.1 }, (v) => { return 1.01 ** (2 - 1 / v) }],
             [0.5, 0.5, 0.5],
             DIST
         );

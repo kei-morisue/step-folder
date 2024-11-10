@@ -17,6 +17,13 @@ import { SMPL } from "./sample.js"
 
 export const STEP = {
     flip0: false,
+    update: () => {
+        STEP.update_states()
+        const select = document.getElementById("selectG");
+        const assign = document.getElementById("assign");
+        STEP.update_component(STEP.FOLD0, STEP.CELL0, select, assign);
+        STEP.update_dist()
+    },
     update_dist: () => {
         const { Vf, FV, EV, EF, FE, Ff, EA, V } = STEP.FOLD
         const VD = DIST.FOLD_2_VD(V, Vf)
@@ -26,6 +33,7 @@ export const STEP = {
         STEP.FOLD_D.FO = FO_D
         STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", "cp3", STEP.flip0);
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
+
     },
     update_component: (FOLD, CELL, el_select, el_assign) => {
         const { GB, GA } = CELL

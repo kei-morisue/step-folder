@@ -56,7 +56,7 @@ export const DIFF = {
         const [VV, FV] = X.V_EV_2_VV_FV(Vf, EV)
         const [EF, FE] = X.EV_FV_2_EF_FE(EV, FV);
         const [V, Ff] = X.V_FV_EV_EA_2_Vf_Ff(Vf, FV, EV, EA)
-        const FOLD = { V, Vf, EV, EA, EF, FV, FE, eps, Ff }
+        const FOLD = { V, Vf, EV, EA, EF, FV, FE, eps, Ff, VV }
 
         const CL = EV.map((P) => M.expand(P, V));
         const [P, SP, SE,] = X.L_2_V_EV_EL(CL);
