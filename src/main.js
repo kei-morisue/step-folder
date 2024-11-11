@@ -20,13 +20,13 @@ window.onload = () => { MAIN.startup(); };  // entry point
 
 const MAIN = {
     current_idx: 0,
-    lastcp: undefined,
+    blank_cp: undefined,
     Cps: [],
     States: [],
     Params: [],
     refresh: () => {
         MAIN.current_idx = 0;
-        MAIN.lastcp = undefined;
+        MAIN.blank_cp = undefined;
         MAIN.Cps = [];
         MAIN.States = [];
         MAIN.Params = [];
@@ -125,8 +125,7 @@ const MAIN = {
             return false;
         }
 
-        MAIN.Cps.push(MAIN.lastcp);
-        MAIN.lastcp = [FOLD1, CELL1]
+        MAIN.Cps.push([FOLD1, CELL1]);
         MAIN.States.push([STEP.FOLD, STEP.CELL]);
         MAIN.Params.push([STEP.flip0, DIST.scale, DIST.rotation, DIST.strength]);
 
@@ -150,10 +149,10 @@ const MAIN = {
         }
         const [FOLD0, CELL0] = Y.FOLD_2_PAPER(FOLD1);
 
-        MAIN.Cps = [[FOLD0, CELL0]];
+        MAIN.Cps = [[FOLD1, CELL1]];
         MAIN.States = [DIFF.diff(FOLD0, CELL0, FOLD1, CELL1)];
         MAIN.Params = [[false, 1, 0, 1]];
-        MAIN.lastcp = [FOLD1, CELL1]
+        MAIN.blank_cp = [FOLD0, CELL0]
         MAIN.restore(0)
 
         return true
@@ -162,8 +161,8 @@ const MAIN = {
         if (i > MAIN.Cps.length - 1) {
             return;
         }
-        [STEP.FOLD0, STEP.CELL0] = MAIN.Cps[i];
-        [STEP.FOLD1, STEP.CELL1] = (MAIN.Cps.length - 1 > i) ? MAIN.Cps[i + 1] : MAIN.lastcp;
+        [STEP.FOLD0, STEP.CELL0] = (0 < i) ? MAIN.Cps[i - 1] : MAIN.blank_cp;
+        [STEP.FOLD1, STEP.CELL1] = MAIN.Cps[i];
 
         [STEP.FOLD, STEP.CELL] = MAIN.States[i];
         [STEP.flip0, DIST.scale, DIST.rotation, DIST.strength] = MAIN.Params[i]
@@ -174,12 +173,15 @@ const MAIN = {
     },
     record: (i) => {
         if (MAIN.Cps.length - 1 < i) {
-            MAIN.Cps.push(undefined)
-            MAIN.States.push(undefined)
-            MAIN.Params.push(undefined)
-            MAIN.lastcp = [STEP.FOLD1, STEP.CELL1]
+            MAIN.Cps.push([STEP.FOLD1, STEP.CELL1])
+            MAIN.States.push([STEP.FOLD, STEP.CELL])
+            MAIN.Params.push([STEP.flip0, DIST.scale, DIST.rotation, DIST.strength])
+            MAIN.blank_cp = [STEP.FOLD1, STEP.CELL1]
         }
-        MAIN.Cps[i] = [STEP.FOLD0, STEP.CELL0];
+        if (i == 0) {
+            MAIN.blank_cp = [STEP.FOLD0, STEP.CELL0]
+        }
+        MAIN.Cps[i] = [STEP.FOLD1, STEP.CELL1];
         MAIN.States[i] = [STEP.FOLD, STEP.CELL];
         MAIN.Params[i] = [STEP.flip0, DIST.scale, DIST.rotation, DIST.strength];
     },
