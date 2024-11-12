@@ -42,6 +42,9 @@
             <p>
                 <b>Global Operations</b>
                 <button id="flip">Flip</button>
+                <label for="clip">Crease Clip</label>
+                <input id="clip" type="range" max="1" min="0" value="0.0" step="0.001">
+                <button id="clip_reset">Reset</button>
             </p>
             <p>
                 <b>Control Layers</b>
@@ -54,13 +57,13 @@
             <p>
                 <b>Distortion</b>
                 <label for="k0">k</label>
-                <input type="range" id="k0" min="0" , max="1" , value="0.5" , step="0.0001">
+                <input type="range" id="k0" min="0" max="1" value="0.5" step="0.0001">
                 <button id="k0_reset">Reset</button>
                 <label for="t0">theta</label>
-                <input type="range" id="t0" min="0" , max="1" , value="0.5" , step="0.0001">
+                <input type="range" id="t0" min="0" max="1" value="0.5" step="0.0001">
                 <button id="t0_reset">Reset</button>
                 <label for="s0">strength</label>
-                <input type="range" id="s0" min="0" , max="1" , value="0.5" , step="0.0001">
+                <input type="range" id="s0" min="0" max="1" value="0.5" step="0.0001">
                 <button id="s0_reset">Reset</button>
 
             </p>
@@ -105,7 +108,6 @@
             <label for="width_MMVV">MV Crease Width</label>
             <input id="width_MMVV" type="number" max="10" min="1" value="3">
             <button id="width_MMVV_reset">Reset</button>
-
         </span>
 
     </div>

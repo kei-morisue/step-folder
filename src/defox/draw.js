@@ -1,4 +1,6 @@
 import { Y } from "./y.js"
+import { SEG } from "./segment.js";
+
 import { M } from "../flatfolder/math.js";
 import { X } from "../flatfolder/conversion.js";
 import { IO } from "../flatfolder/io.js";
@@ -137,15 +139,38 @@ export const DRAW = {
                 }
                 return DRAW.color.edge[d];
             }),
-            filter: (i) => SD[i] == "MM" || SD[i] == "VV" || SD[i] == "F" || SD[i] == "U" || SD[i] == "RM" || SD[i] == "RV",
+            filter: (i) => SD[i] == "MM" || SD[i] == "VV" || SD[i] == "U" || SD[i] == "RM" || SD[i] == "RV",
             stroke_width: SD.map((d, i) => {
                 return DRAW.width.edge[d];
             }),
         });
+        if (DRAW.width.edge.clip == 0) {
+            DRAW.draw_creases(fold_s_crease, lines, SC, SD, Ccolor);
+        } else {
+            const lines_clipped = SEG.clip_lines(lines, CELL, SD, Q_);
+            DRAW.draw_creases(fold_s_crease, lines_clipped, SC, SD, Ccolor);
+        }
+
         SVG.draw_segments(fold_s_edge, lines, {
             id: true, stroke: DRAW.color.edge.B,
             filter: (i) => SD[i][0] == "B",
             stroke_width: DRAW.width.edge.B,
+        });
+
+    },
+
+    draw_creases: (svg, lines, SC, SD, Ccolor) => {
+        SVG.draw_segments(svg, lines, {
+            id: true, stroke: SD.map((d, i) => {
+                const [c0, c1] = SC[i];
+
+                if (Ccolor[c0] && Ccolor[c1]) {
+                    return DRAW.color.edge[DRAW.pair(d)];
+                }
+                return DRAW.color.edge[d];
+            }),
+            filter: (i) => SD[i] == "F",
+            stroke_width: DRAW.width.edge.F,
         });
     },
 

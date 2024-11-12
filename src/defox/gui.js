@@ -11,6 +11,7 @@ import { DIST } from "../distortionfolder/distortion.js";
 import { STEP } from "./step.js";
 import { DRAW } from "./draw.js";
 import { Y } from "./y.js";
+import { SEG } from "./segment.js";
 export const GUI = {
 
     opacity: {
@@ -55,12 +56,12 @@ export const GUI = {
         }
         document.getElementById("topcolor").onchange = (e) => {
             DRAW.color.face.top = e.target.value
-            STEP.update_states()
+            STEP.redraw()
         }
 
         document.getElementById("bottomcolor").onchange = (e) => {
             DRAW.color.face.bottom = e.target.value
-            STEP.update_states()
+            STEP.redraw()
         }
 
         document.getElementById("bgcolor").onchange = (e) => {
@@ -102,6 +103,14 @@ export const GUI = {
             DIST
         );
 
+        GUI.setup_range_options(
+            ["clip"],
+            ["clip"],
+            [(v) => { return v }],
+            [0.0],
+            SEG
+        );
+
     },
     open_close: (id, display_style) => {
         var el = document.getElementById(id);
@@ -123,7 +132,7 @@ export const GUI = {
                 } else {
                     module[props] = e.target.value
                 }
-                STEP.update_states()
+                STEP.redraw()
             }
             document.getElementById(id + "_reset").onclick = (e) => {
                 if (Array.isArray(props)) {
@@ -132,7 +141,7 @@ export const GUI = {
                     module[props] = init[i]
                 }
                 document.getElementById(id).value = init[i]
-                STEP.update_states()
+                STEP.redraw()
             }
         }
     },

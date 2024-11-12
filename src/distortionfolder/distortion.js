@@ -12,7 +12,11 @@ export const DIST = {    // STATE DISTORTER
     T1: true,
     T2: true,
     T3: true,
-
+    refresh: () => {
+        DIST.scale = 1;
+        DIST.rotation = 0;
+        DIST.strength = 1;
+    },
     affine: (x, T) => {
         const { A, b } = T
         const Ax = DIST.matprod(A, x)

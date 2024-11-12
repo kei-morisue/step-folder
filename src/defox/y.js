@@ -84,7 +84,7 @@ export const Y = {     // CONVERSION
         const [CF, FC] = X.EF_FV_SP_SE_CP_SC_2_CF_FC(EF, FV, SP, SE, CP, SC);
         const BF = X.CF_2_BF(CF);
 
-        return { P, CP, SP, SC, SE, BF, FC, CF }
+        return { P, CP, SP, PP, SC, SE, BF, FC, CF }
     },
 
     FOLD_2_PAPER: (FOLD) => {
