@@ -5,17 +5,21 @@ import { NOTE } from "../flatfolder/note.js";
 import { SVG } from "../flatfolder/svg.js";
 
 export const DIST = {    // STATE DISTORTER
-    scale: 1,
-    rotation: 0,
-    strength: 1,
+    scale: .5,
+    rotation: .5,
+    strength: .5,
     T0: true,
     T1: true,
     T2: true,
     T3: true,
     refresh: () => {
-        DIST.scale = 1;
-        DIST.rotation = 0;
-        DIST.strength = 1;
+        DIST.scale = .5;
+        DIST.rotation = .5;
+        DIST.strength = .5;
+        DIST.T0 = true;
+        DIST.T1 = true;
+        DIST.T2 = true;
+        DIST.T3 = true;
     },
     affine: (x, T) => {
         const { A, b } = T
@@ -26,10 +30,14 @@ export const DIST = {    // STATE DISTORTER
     matprod: (A, x) => {
         return [M.dot(A[0], x), M.dot(A[1], x)]
     },
-
+    tilt: () => {
+        return 1 + (DIST.scale - 0.5) * DIST.mul()
+    },
+    twist: () => { return (DIST.rotation - 0.5) * Math.PI * 0.1 * DIST.mul() },
+    mul: () => { return 1.01 ** (2 - 1 / DIST.strength) },
     FOLD_2_VD: (V, Vf) => {
-        const s = DIST.scale * DIST.strength
-        const t = DIST.rotation * DIST.strength
+        const s = DIST.tilt();
+        const t = DIST.twist();
         const co = Math.cos(t)
         const si = Math.sin(t)
         const T = { A: [[s * co, -si * s], [s * si, s * co]], b: [0, 0] }

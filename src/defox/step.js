@@ -14,6 +14,7 @@ import { GUI } from "./gui.js";
 import { DRAW } from "./draw.js";
 import { DIFF } from "./diff.js";
 import { SMPL } from "./sample.js"
+import { SEG } from "./segment.js";
 
 export const STEP = {
     flip0: false,
@@ -35,6 +36,7 @@ export const STEP = {
         const assign = document.getElementById("assign");
         STEP.update_component(STEP.FOLD0, STEP.CELL0, select, assign);
         DIST.refresh();
+        SEG.refresh();
         STEP.update_dist();
     },
     update_dist: () => {

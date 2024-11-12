@@ -96,20 +96,12 @@ export const GUI = {
 
 
         GUI.setup_range_options(
-            ["k0", "t0", "s0"],
-            ["scale", "rotation", "strength"],
-            [(v) => { return 1 + (v - 0.5) }, (v) => { return (v - 0.5) * Math.PI * 0.1 }, (v) => { return 1.01 ** (2 - 1 / v) }],
-            [0.5, 0.5, 0.5],
-            DIST
+            ["k0", "t0", "s0", "clip"],
+            ["scale", "rotation", "strength", "clip"],
+            [0.5, 0.5, 0.5, 0],
+            [DIST, DIST, DIST, SEG]
         );
 
-        GUI.setup_range_options(
-            ["clip"],
-            ["clip"],
-            [(v) => { return v }],
-            [0.0],
-            SEG
-        );
 
     },
     open_close: (id, display_style) => {
@@ -146,17 +138,17 @@ export const GUI = {
         }
     },
 
-    setup_range_options: (ids, props, affines, init, module) => {
+    setup_range_options: (ids, props, init, modules) => {
         for (const [i, id] of ids.entries()) {
             document.getElementById(id).onchange = (e) => {
                 const val = e.target.value
-                module[props[i]] = affines[i](val)
+                modules[i][props[i]] = val
 
                 STEP.update_dist();
             }
             document.getElementById(id + "_reset").onclick = (e) => {
                 document.getElementById(id).value = init[i]
-                module[props[i]] = affines[i](init[i])
+                modules[i][props[i]] = init[i]
                 STEP.update_dist();
             }
         }

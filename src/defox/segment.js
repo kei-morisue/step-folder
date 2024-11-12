@@ -9,6 +9,8 @@ import { LIN } from "../linefolder/linear.js";
 
 export const SEG = {
     clip: .0,
+
+    refresh: () => { SEG.clip = .0 },
     clip_lines: (lines, CELL, SD, Q_) => {
         const { P, PP, CP, CF, SP, SC, SE } = CELL;
         const PPA_map = new Map();

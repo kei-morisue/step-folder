@@ -163,6 +163,10 @@ const MAIN = {
         [STEP.FOLD, STEP.CELL] = MAIN.States[i];
         [STEP.FOLD_D, STEP.CELL_D] = MAIN.States_D[i];
         [STEP.flip0, SEG.clip, DIST.scale, DIST.rotation, DIST.strength] = MAIN.Params[i]
+        document.getElementById("clip").value = SEG.clip;
+        document.getElementById("k0").value = DIST.scale;
+        document.getElementById("t0").value = DIST.rotation;
+        document.getElementById("s0").value = DIST.strength;
 
 
         MAIN.current_idx = i
