@@ -162,12 +162,13 @@ const MAIN = {
 
         [STEP.FOLD, STEP.CELL] = MAIN.States[i];
         [STEP.FOLD_D, STEP.CELL_D] = MAIN.States_D[i];
-        [STEP.flip0, SEG.clip, DIST.scale, DIST.rotation, DIST.strength] = MAIN.Params[i]
+        [STEP.flip0, SEG.clip, DIST.scale, DIST.direction, DIST.scale_skew, DIST.direction_skew, DIST.strength] = MAIN.Params[i]
         document.getElementById("clip").value = SEG.clip;
         document.getElementById("k0").value = DIST.scale;
-        document.getElementById("t0").value = DIST.rotation;
+        document.getElementById("t0").value = DIST.direction;
         document.getElementById("s0").value = DIST.strength;
-
+        document.getElementById("k1").value = DIST.scale_skew;
+        document.getElementById("t1").value = DIST.direction_skew;
 
         MAIN.current_idx = i
         document.getElementById("steps").innerHTML = MAIN.States.length;
@@ -196,7 +197,9 @@ const MAIN = {
             STEP.flip0,
             SEG.clip,
             DIST.scale,
-            DIST.rotation,
+            DIST.direction,
+            DIST.scale_skew,
+            DIST.direction_skew,
             DIST.strength]
     },
 };

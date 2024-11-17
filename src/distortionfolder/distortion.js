@@ -5,17 +5,21 @@ import { NOTE } from "../flatfolder/note.js";
 import { SVG } from "../flatfolder/svg.js";
 
 export const DIST = {    // STATE DISTORTER
-    scale: .5,
-    rotation: .5,
+    scale: .0,
+    direction: .5,
+    scale_skew: .5,
+    direction_skew: .5,
     strength: .5,
     T0: true,
     T1: true,
     T2: true,
     T3: true,
     refresh: () => {
-        DIST.scale = .5;
-        DIST.rotation = .5;
+        DIST.scale = .0;
+        DIST.direction = .5;
         DIST.strength = .5;
+        DIST.direction_skew = .5;
+        DIST.scale_skew = .5;
         DIST.T0 = true;
         DIST.T1 = true;
         DIST.T2 = true;
@@ -31,17 +35,26 @@ export const DIST = {    // STATE DISTORTER
         return [M.dot(A[0], x), M.dot(A[1], x)]
     },
     tilt: () => {
-        return 1 + (DIST.scale - 0.5) * DIST.mul()
+        return (DIST.scale) * DIST.mul()
     },
-    twist: () => { return (DIST.rotation - 0.5) * Math.PI * 0.1 * DIST.mul() },
-    mul: () => { return 1.01 ** (2 - 1 / DIST.strength) },
+    twist: () => { return (2 * DIST.direction - 1) * Math.PI },
+    mul: () => { return 1.1 ** (2 - 1 / DIST.strength) },
+    tilt_d: () => {
+        return (DIST.scale_skew - .5) * DIST.mul()
+    },
+    twist_d: () => { return (2 * DIST.direction_skew - 1) * Math.PI },
+
     FOLD_2_VD: (V, Vf) => {
-        const s = DIST.tilt();
-        const t = DIST.twist();
-        const co = Math.cos(t)
-        const si = Math.sin(t)
-        const T = { A: [[s * co, -si * s], [s * si, s * co]], b: [0, 0] }
-        return Vf.map((vf, i) => { return M.add(V[i], M.sub(DIST.affine(vf, T), vf)) });
+        const ex = DIST.tilt();
+        const tx = DIST.twist();
+        const ey = ex + DIST.tilt_d();
+        const ty = tx + DIST.twist_d();
+        const cx = Math.cos(tx)
+        const sx = Math.sin(tx)
+        const cy = Math.cos(ty)
+        const sy = Math.sin(ty)
+        const A = [[ex * cx, -sy * ey], [ex * sx, ey * cy]];
+        return Vf.map((vf, i) => { return M.add(V[i], DIST.matprod(A, vf)) });
     },
     infer_FO: (FOLD, CELL_D) => {
         //Solving only with FULL Constraints

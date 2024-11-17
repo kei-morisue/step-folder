@@ -40,7 +40,7 @@
         </div>
         <div>
             <p>
-                <b>Global Operations</b>
+                <b>Local Operations</b>
                 <button id="flip">Flip</button>
                 <label for="clip">Crease Clip</label>
                 <input id="clip" type="range" max="1" min="0" value="0.0" step="0.001">
@@ -57,18 +57,25 @@
             <p>
                 <b>Distortion</b>
                 <label for="k0">Tilt</label>
-                <input type="range" id="k0" min="0" max="1" value="0.5" step="0.0001">
+                <input type="range" id="k0" min="0" max="1" value="0.0" step="0.0001">
                 <button id="k0_reset">Reset</button>
                 <label for="t0">Twist</label>
                 <input type="range" id="t0" min="0" max="1" value="0.5" step="0.0001">
                 <button id="t0_reset">Reset</button>
-                <label for="s0">strength</label>
-                <input type="range" id="s0" min="0" max="1" value="0.5" step="0.0001">
-                <button id="s0_reset">Reset</button>
-
             </p>
             <p>
-                <b>Distortion Constraints</b>
+                <label for="k1">Tilt Skew</label>
+                <input type="range" id="k1" min="0" max="1" value="0.5" step="0.0001">
+                <button id="k1_reset">Reset</button>
+                <label for="t1">Twist Skew</label>
+                <input type="range" id="t1" min="0" max="1" value="0.5" step="0.0001">
+                <button id="t1_reset">Reset</button>
+            </p>
+            <label for="s0">strength</label>
+            <input type="range" id="s0" min="0" max="1" value="0.5" step="0.0001">
+            <button id="s0_reset">Reset</button>
+            <p>
+                <b>Collision Constraints</b>
                 <label for="cb_T0">taco-taco</label>
                 <input type="checkbox" id="cb_T0" checked="true">
                 <label for="cb_T1">taco-tortilla</label>

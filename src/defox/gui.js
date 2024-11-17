@@ -96,10 +96,10 @@ export const GUI = {
 
 
         GUI.setup_range_options(
-            ["k0", "t0", "s0", "clip"],
-            ["scale", "rotation", "strength", "clip"],
-            [0.5, 0.5, 0.5, 0],
-            [DIST, DIST, DIST, SEG]
+            ["k0", "t0", "s0", "clip", "k1", "t1"],
+            ["scale", "direction", "strength", "clip", "scale_skew", "direction_skew"],
+            [0.0, 0.5, 0.5, 0, 0.5, 0.5],
+            [DIST, DIST, DIST, SEG, DIST, DIST]
         );
 
 
