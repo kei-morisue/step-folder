@@ -52,8 +52,8 @@ const MAIN = {
         document.getElementById("next").onclick = MAIN.next;
         document.getElementById("prev").onclick = MAIN.prev;
         document.getElementById("import0").onchange = MAIN.read;
-        [STEP.FOLD0, STEP.CELL0] = Y.CP_2_FOLD_CELL(SMPL.cp1, true);
-        [STEP.FOLD1, STEP.CELL1] = Y.CP_2_FOLD_CELL(SMPL.cp0, true);
+        [STEP.FOLD0, STEP.CELL0] = Y.CP_2_FOLD_CELL(SMPL.owo, true);
+        [STEP.FOLD1, STEP.CELL1] = Y.CP_2_FOLD_CELL(SMPL.owo, true);
         STEP.new();
         MAIN.record(0)
 
@@ -162,13 +162,11 @@ const MAIN = {
 
         [STEP.FOLD, STEP.CELL] = MAIN.States[i];
         [STEP.FOLD_D, STEP.CELL_D] = MAIN.States_D[i];
-        [STEP.flip0, SEG.clip, DIST.scale, DIST.direction, DIST.scale_skew, DIST.direction_skew, DIST.strength] = MAIN.Params[i]
+        [STEP.flip0, SEG.clip, DIST.p0, DIST.p1, DIST.p2, DIST.direction_skew, DIST.strength] = MAIN.Params[i]
         document.getElementById("clip").value = SEG.clip;
-        document.getElementById("k0").value = DIST.scale;
-        document.getElementById("t0").value = DIST.direction;
-        document.getElementById("s0").value = DIST.strength;
-        document.getElementById("k1").value = DIST.scale_skew;
-        document.getElementById("t1").value = DIST.direction_skew;
+        document.getElementById("p0").value = DIST.p0;
+        document.getElementById("p1").value = DIST.p1;
+        document.getElementById("p2").value = DIST.p2;
 
         MAIN.current_idx = i
         document.getElementById("steps").innerHTML = MAIN.States.length;
@@ -196,11 +194,9 @@ const MAIN = {
         return [
             STEP.flip0,
             SEG.clip,
-            DIST.scale,
-            DIST.direction,
-            DIST.scale_skew,
-            DIST.direction_skew,
-            DIST.strength]
+            DIST.p0,
+            DIST.p1,
+            DIST.p2]
     },
 };
 

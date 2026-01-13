@@ -96,10 +96,10 @@ export const GUI = {
 
 
         GUI.setup_range_options(
-            ["k0", "t0", "s0", "clip", "k1", "t1"],
-            ["scale", "direction", "strength", "clip", "scale_skew", "direction_skew"],
-            [0.0, 0.5, 0.5, 0, 0.5, 0.5],
-            [DIST, DIST, DIST, SEG, DIST, DIST]
+            ["p0", "p1", "clip", "p2"],
+            ["p0", "p1", "clip", "p2"],
+            [0.5, 0.5, 0, 0.5],
+            [DIST, DIST, SEG, DIST]
         );
 
 
@@ -140,7 +140,7 @@ export const GUI = {
 
     setup_range_options: (ids, props, init, modules) => {
         for (const [i, id] of ids.entries()) {
-            document.getElementById(id).onchange = (e) => {
+            document.getElementById(id).oninput = (e) => {
                 const val = e.target.value
                 modules[i][props[i]] = val
 

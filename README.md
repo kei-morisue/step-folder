@@ -1,6 +1,6 @@
 # Step-Folder: A Squencial Crease Patterns Renderer
 
-Step-Folder is software written by [Kei Morisue](https://x.com/keimorisue) to
+DEFOX is software written by [Kei Morisue](https://x.com/keimorisue) to
 distort/add tutorial symbols on valid flat-foldable states of flat-foldable crease patterns exported as .cp files. 
 This software is a branch of [Line-Folder](https://origamimagiro.github.io/line-folder/) written by [Jason S. Ku](http://jasonku.mit.edu/).
 

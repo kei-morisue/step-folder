@@ -5,55 +5,47 @@ import { NOTE } from "../flatfolder/note.js";
 import { SVG } from "../flatfolder/svg.js";
 
 export const DIST = {    // STATE DISTORTER
-    scale: .0,
-    direction: .5,
-    scale_skew: .5,
-    direction_skew: .5,
-    strength: .5,
+    p0: .5,
+    p1: .5,
+    p2: .5,
+
     T0: true,
     T1: true,
     T2: true,
     T3: true,
     refresh: () => {
-        DIST.scale = .0;
-        DIST.direction = .5;
-        DIST.strength = .5;
-        DIST.direction_skew = .5;
-        DIST.scale_skew = .5;
+        DIST.p0 = 0.5;
+        DIST.p1 = 0.5;
+        DIST.p2 = 0.5;
         DIST.T0 = true;
         DIST.T1 = true;
         DIST.T2 = true;
         DIST.T3 = true;
     },
-    affine: (x, T) => {
-        const { A, b } = T
-        const Ax = DIST.matprod(A, x)
-        return M.add(Ax, b);
-    },
 
     matprod: (A, x) => {
-        return [M.dot(A[0], x), M.dot(A[1], x)]
+        return [M.dot(A[0], x), M.dot(A[1], x)];
     },
     tilt: () => {
-        return (DIST.scale) * DIST.mul()
+        return DIST.p0
     },
-    twist: () => { return (2 * DIST.direction - 1) * Math.PI },
-    mul: () => { return 1.1 ** (2 - 1 / DIST.strength) },
+    twist: () => { return (2 * DIST.p1 - 1) * Math.PI },
     tilt_d: () => {
-        return (DIST.scale_skew - .5) * DIST.mul()
+        return DIST.p2
     },
-    twist_d: () => { return (2 * DIST.direction_skew - 1) * Math.PI },
-
     FOLD_2_VD: (V, Vf) => {
-        const ex = DIST.tilt();
-        const tx = DIST.twist();
-        const ey = ex + DIST.tilt_d();
-        const ty = tx + DIST.twist_d();
-        const cx = Math.cos(tx)
-        const sx = Math.sin(tx)
-        const cy = Math.cos(ty)
-        const sy = Math.sin(ty)
-        const A = [[ex * cx, -sy * ey], [ex * sx, ey * cy]];
+        const p = Math.exp(- 1 / (DIST.tilt()));
+        const q = DIST.tilt_d();
+
+        const r1 = p * (1 - q);
+        const r2 = p * q;
+
+        const t2 = DIST.twist();
+
+        const cy = Math.cos(t2)
+        const sy = Math.sin(t2)
+
+        const A = [[r1 + r2 * cy, r2 * sy], [r2 * sy, r1 - r2 * cy]];
         return Vf.map((vf, i) => { return M.add(V[i], DIST.matprod(A, vf)) });
     },
     infer_FO: (FOLD, CELL_D) => {
