@@ -2,6 +2,8 @@ import { M } from "./flatfolder/math.js";
 import { NOTE } from "./flatfolder/note.js";
 import { SVG } from "./flatfolder/svg.js";
 import { IO } from "./flatfolder/io.js";
+import { IO3 } from "./defox/io.js";
+
 import { X } from "./flatfolder/conversion.js";
 import { SOLVER } from "./flatfolder/solver.js";
 import { CON } from "./flatfolder/constraints.js";
@@ -49,11 +51,15 @@ const MAIN = {
             }
         };
 
+        document.getElementById("export").onclick = (e) => {
+            IO3.write(MAIN.States_D[MAIN.current_idx], "state3", "hoge")
+        };
+
         document.getElementById("next").onclick = MAIN.next;
         document.getElementById("prev").onclick = MAIN.prev;
         document.getElementById("import0").onchange = MAIN.read;
         [STEP.FOLD0, STEP.CELL0] = Y.CP_2_FOLD_CELL(SMPL.owo, true);
-        [STEP.FOLD1, STEP.CELL1] = Y.CP_2_FOLD_CELL(SMPL.owo, true);
+        [STEP.FOLD1, STEP.CELL1] = Y.CP_2_FOLD_CELL(SMPL.owo2, true);
         STEP.new();
         MAIN.record(0)
 
