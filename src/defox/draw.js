@@ -30,6 +30,7 @@ export const DRAW = {
             RM: "blue",
             UF: "magenta",
         },
+
         segment: {
             F: "gray",
             B: "black",
@@ -107,7 +108,6 @@ export const DRAW = {
         }
 
     },
-
     draw_state: (svg, FOLD, CELL, STATE) => {
         if (STATE == undefined) {
             DRAW.draw_xray(FOLD, flip, svg)
@@ -144,7 +144,7 @@ export const DRAW = {
                 return DRAW.width.edge[d];
             }),
         });
-        if (DRAW.width.edge.clip == 0) {
+        if (SEG.clip == 0) {
             DRAW.draw_creases(fold_s_crease, lines, SC, SD, Ccolor);
         } else {
             const lines_clipped = SEG.clip_lines(lines, CELL, SD, Q_);

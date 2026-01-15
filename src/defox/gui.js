@@ -29,7 +29,7 @@ export const GUI = {
         NOTE.time("Initializing interface");
 
         GUI.set_svg("states")
-        GUI.set_svg("cps")
+        // GUI.set_svg("cps")
 
 
 
@@ -68,7 +68,7 @@ export const GUI = {
             DRAW.color.background = e.target.value
             STEP.update_dist()
         }
-        GUI.open_close("cps", "flex");
+        // GUI.open_close("cps", "flex");
         GUI.open_close("option_color", "inline");
         GUI.open_close("option_width", "inline")
 

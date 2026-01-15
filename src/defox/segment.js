@@ -50,5 +50,36 @@ export const SEG = {
 
         });
     },
+    clip_edges: (Es, VV, EA, EV, V_) => {
+        const VVA_map = new Map();
+        for (const [i, [v1, v2]] of EV.entries()) {
+            const a = EA[i];
+            VVA_map.set(M.encode([v1, v2]), a);
+            VVA_map.set(M.encode([v2, v1]), a);
+        }
+        return Es.map((E) => {
+            let c1 = false;
+            let c2 = false;
+            const [v1, v2] = EV[E];
+
+            for (const [, w1] of VV[v1].entries()) {
+                if (VVA_map.get(M.encode([v1, w1])) == "F") { continue; }
+                c1 = true;
+            };
+
+            for (const [, w2] of VV[v2].entries()) {
+                if (VVA_map.get(M.encode([v2, w2])) == "F") { continue; }
+                c2 = true;
+            };
+            const [q1, q2] = M.expand(EV[E], V_);
+            const c = M.centroid([q1, q2]);
+            const s1 = c1 ? 1.0 - SEG.clip : 1;
+            const s2 = c2 ? 1.0 - SEG.clip : 1;
+
+            const r1 = M.add(c, M.mul(M.sub(q1, c), s1));
+            const r2 = M.add(c, M.mul(M.sub(q2, c), s2));
+            return [r1, r2];
+        });
+    },
 
 }
