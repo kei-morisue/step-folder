@@ -167,7 +167,7 @@ const MAIN = {
         [STEP.FOLD1, STEP.CELL1] = MAIN.Cps[i];
 
         [STEP.FOLD, STEP.CELL] = MAIN.States[i];
-        [STEP.FOLD_D, STEP.CELL_D] = MAIN.States_D[i];
+        [STEP.FOLD_D, STEP.CELL_D, STEP.LIN] = MAIN.States_D[i];
         [STEP.flip0, SEG.clip, DIST.p0, DIST.p1, DIST.p2, DIST.direction_skew, DIST.strength] = MAIN.Params[i]
         document.getElementById("clip").value = SEG.clip;
         document.getElementById("p0").value = DIST.p0;
@@ -185,13 +185,13 @@ const MAIN = {
         if (MAIN.Cps.length - 1 < i) {
             MAIN.Cps.push([STEP.FOLD1, STEP.CELL1])
             MAIN.States.push([STEP.FOLD, STEP.CELL])
-            MAIN.States_D.push([STEP.FOLD_D, STEP.CELL_D])
+            MAIN.States_D.push([STEP.FOLD_D, STEP.CELL_D, STEP.LIN])
             MAIN.Params.push(MAIN.parameters());
         }
         else {
             MAIN.Cps[i] = [STEP.FOLD1, STEP.CELL1];
             MAIN.States[i] = [STEP.FOLD, STEP.CELL];
-            MAIN.States_D[i] = [STEP.FOLD_D, STEP.CELL_D];
+            MAIN.States_D[i] = [STEP.FOLD_D, STEP.CELL_D, STEP.LIN];
             MAIN.Params[i] = MAIN.parameters();
         }
     },
