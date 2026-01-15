@@ -54,14 +54,14 @@ export const DIFF = {
         const [EF, FE] = X.EV_FV_2_EF_FE(EV, FV);
         const [V, Ff] = X.V_FV_EV_EA_2_Vf_Ff(Vf, FV, EV, EA)
         const FOLD = { V, Vf, EV, EA, EF, FV, FE, eps, Ff, VV }
-        const FF_map = F0.FV.map(vs => [])
+        const FF_map = F0.FV.map((vs) => [])
         for (const [i, vs] of FV.entries()) {
             const c = M.interior_point(M.expand(vs, Vf))
             for (const [j, ws] of F0.FV.entries()) {
                 if (N.is_inside(c, M.expand(ws, F0.Vf))
                 ) {
-                    FF_map[j].push(i)
-                    continue
+                    FF_map[j].push(i);
+                    break;
                 }
             }
         }
@@ -69,9 +69,8 @@ export const DIFF = {
             if (Fs.length == 1) {
                 if (F0.Ff[i] != Ff[Fs[0]]) {
                     FOLD.Ff = Ff.map(f => !f);
-                    continue
+                    break;
                 }
-                continue
             }
         }
         if (!LIN0) {

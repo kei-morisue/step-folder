@@ -63,13 +63,17 @@ export const SEG = {
             const [v1, v2] = EV[E];
 
             for (const [, w1] of VV[v1].entries()) {
-                if (VVA_map.get(M.encode([v1, w1])) == "F") { continue; }
-                c1 = true;
+                if (VVA_map.get(M.encode([v1, w1])) != "F") {
+                    c1 = true;
+                    break;
+                }
             };
 
             for (const [, w2] of VV[v2].entries()) {
-                if (VVA_map.get(M.encode([v2, w2])) == "F") { continue; }
-                c2 = true;
+                if (VVA_map.get(M.encode([v2, w2])) != "F") {
+                    c2 = true;
+                    break;
+                }
             };
             const [q1, q2] = M.expand(EV[E], V_);
             const c = M.centroid([q1, q2]);
