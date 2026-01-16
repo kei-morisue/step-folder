@@ -5,7 +5,7 @@ import { NOTE } from "../flatfolder/note.js";
 import { SVG } from "../flatfolder/svg.js";
 
 export const DIST = {    // STATE DISTORTER
-    p0: .5,
+    p0: .0,
     p1: .5,
     p2: .5,
 
@@ -14,7 +14,7 @@ export const DIST = {    // STATE DISTORTER
     T2: true,
     T3: true,
     refresh: () => {
-        DIST.p0 = 0.5;
+        DIST.p0 = 0.0;
         DIST.p1 = 0.5;
         DIST.p2 = 0.5;
         DIST.T0 = true;

@@ -203,7 +203,8 @@ export const Y = {     // CONVERSION
         const edges = FO.map(([f1, f2, o]) => {
             return M.encode(((Ff[f2] ? 1 : -1) * o >= 0) ? [f1, f2] : [f2, f1]);
         });
-        const L = LIN.linearize(edges, Ff.length).reverse();
+        const L_ = LIN.linearize(edges, Ff.length)
+        const L = L_ ? L_.reverse() : undefined;
 
         const CD = X.CF_edges_2_CD(CF, edges);
         const Ctop = CD.map(S => flip ? S[0] : S[S.length - 1]);

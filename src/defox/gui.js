@@ -105,7 +105,7 @@ export const GUI = {
         GUI.setup_range_options(
             ["p0", "p1", "clip", "p2"],
             ["p0", "p1", "clip", "p2"],
-            [0.5, 0.5, 0, 0.5],
+            [0, 0.5, 0, 0.5],
             [DIST, DIST, SEG, DIST]
         );
 
@@ -183,57 +183,5 @@ export const GUI = {
     },
 
 
-    show_linear_slider: (L, svg, FOLD, CELL, STATE, FS, LINE) => {
-        const slider = document.getElementById("slider");
-        const cycle = document.getElementById("cycle");
-        if (L == undefined) {
-            slider.style.display = "none";
-            cycle.style.display = "inline";
-        } else {
-            cycle.style.display = "none";
-            slider.style.display = "inline";
-            slider.oninput = () => {
-                SVG.clear(svg.id);
-                STEP.draw_state(svg, FOLD, CELL, STATE, FS, LINE);
-            };
-            const val = +slider.value;
-            const n = FOLD.FV.length;
-            const F_set = new Set();
-            for (let i = 0; i < n; ++i) {
-                F_set.add(i);
-            }
-            if (flip) { L.reverse(); }
-            for (let i = L.length - 1; i >= val; --i) {
-                const layer = L[i];
-                for (const fi of layer) {
-                    F_set.delete(fi);
-                }
-            }
-            if (flip) { L.reverse(); }
-            for (let i = 0; i < STATE.CD.length; ++i) {
-                const S = STATE.CD[i];
-                const D = S.map(a => a);
-                if (flip) {
-                    D.reverse();
-                }
-                STATE.Ctop[i] = undefined;
-                while (D.length > 0) {
-                    const fi = D.pop();
-                    if (!F_set.has(fi)) {
-                        STATE.Ctop[i] = fi;
-                        break;
-                    }
-                }
-            }
-            for (let i = 0; i < STATE.Ccolor.length; ++i) {
-                const d = STATE.Ctop[i];
-                let out = undefined;
-                if (d == undefined) { out = undefined; }
-                else if (FOLD.Ff[d] != flip) { out = GUI.color.face.top; }
-                else { out = GUI.color.face.bottom; }
-                STATE.Ccolor[i] = out;
-            }
-        }
 
-    },
 }

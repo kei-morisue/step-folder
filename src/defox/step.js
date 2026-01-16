@@ -45,6 +45,7 @@ export const STEP = {
         if (state.L) {
             STEP.LIN = state.L
             STEP.CELL_D = undefined;
+            STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", "cp3", STEP.flip0);
         }
     },
 

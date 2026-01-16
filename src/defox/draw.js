@@ -1,5 +1,6 @@
 import { Y } from "./y.js"
 import { SEG } from "./segment.js";
+import { STEP } from "./step.js";
 
 import { M } from "../flatfolder/math.js";
 import { X } from "../flatfolder/conversion.js";
@@ -212,8 +213,27 @@ export const DRAW = {
         })
         const g = SVG.append("g", svg, { id: `group_text_` });
         const colors = "green";
-        SVG.draw_points(g, P, { text: true, fill: colors, text_size: 20 });
 
+        SVG.draw_points(g, P, {
+            id: true,
+            text: true,
+            fill: colors,
+            r: 60,
+            opacity: 0.5,
+            text_size: 40,
+        });
+        P.map((p, g) => {
+            const el = document.getElementById("group_text_" + g);
+            el.onclick = (e) => {
+                const { GB, BF, GA, GI } = STEP.CELL0
+                const { Ff } = STEP.FOLD0
+                const a = (GI[g] + 1) % GA[g].length;
+                STEP.CELL0.GI[g] = a
+                STEP.FOLD0.FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff)
+                STEP.update_states()
+                STEP.update_dist();
+            };
+        });
     },
 
     draw_xray: (FOLD, is_flip, svg) => {
