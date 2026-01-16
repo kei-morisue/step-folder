@@ -41,21 +41,6 @@
         </div>
         <div>
             <p>
-                <b>Local Operations</b>
-                <button id="flip">Flip</button>
-                <label for="clip">Crease Clip</label>
-                <input id="clip" type="range" max="1" min="0" value="0.0" step="0.001">
-                <button id="clip_reset">Reset</button>
-            </p>
-            <p>
-                <b>Control Layers</b>
-                <label for="selectG">Group</label>
-                <select id="selectG"></select>
-                <label for="assign0">state</label>
-                <input type="number" id="assign" min="1" max="1" value="1">
-                <a id="assigns">/ 1</a>
-            </p>
-            <p>
                 <b>Distortion</b>
                 <label for="p0">Level</label>
                 <input type="range" id="p0" min="0" max="1" value="0.5" step="0.0001">
@@ -77,9 +62,27 @@
             <input type="checkbox" id="cb_T2" checked="true">
             <label for="cb_T3">transitivity</label>
             <input type="checkbox" id="cb_T3" checked="true">
-            </p>
+            <button id="apply_tt">Apply</button>
+            <button id="reset_tt">Reset</button>
         </div>
+        <div>
+            <p>
+                <b>Local Operations</b>
+                <button id="flip">Flip</button>
+                <label for="clip">Crease Clip</label>
+                <input id="clip" type="range" max="1" min="0" value="0.0" step="0.001">
+                <button id="clip_reset">Reset</button>
+            </p>
+            <p>
+                <b>Control Layers</b>
+                <label for="selectG">Group</label>
+                <select id="selectG"></select>
+                <label for="assign0">state</label>
+                <input type="number" id="assign" min="1" max="1" value="1">
+                <a id="assigns">/ 1</a>
+            </p>
 
+        </div>
     </div>
     <div id="option">
         <span id="option_color_b" class="openclose"><b>Color Options</b></span>

@@ -109,9 +109,6 @@ export const DIFF = {
             return f1;
         }
         );
-        if (FOLD.Ff[0] == Ff[FF_map[0][0]]) {
-            LIN.reverse();
-        }
         return [FOLD, undefined, LIN];
     },
 }

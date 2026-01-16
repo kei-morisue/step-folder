@@ -1,20 +1,7 @@
-import { M } from "./flatfolder/math.js";
-import { NOTE } from "./flatfolder/note.js";
-import { SVG } from "./flatfolder/svg.js";
-import { IO } from "./flatfolder/io.js";
 import { IO3 } from "./defox/io.js";
-
-import { X } from "./flatfolder/conversion.js";
-import { SOLVER } from "./flatfolder/solver.js";
-import { CON } from "./flatfolder/constraints.js";
-
 import { DIST } from "./distortionfolder/distortion.js";
-
-
 import { Y } from "./defox/y.js";
 import { GUI } from "./defox/gui.js";
-import { DRAW } from "./defox/draw.js";
-import { DIFF } from "./defox/diff.js";
 import { SMPL } from "./defox/sample.js"
 import { STEP } from "./defox/step.js"
 import { SEG } from "./defox/segment.js";

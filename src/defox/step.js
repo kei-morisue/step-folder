@@ -36,6 +36,18 @@ export const STEP = {
         SEG.refresh();
         STEP.update_dist();
     },
+
+    update_lin: () => {
+        STEP.LIN = undefined;
+
+        [STEP.FOLD, STEP.CELL,] = DIFF.diff(STEP.FOLD0, STEP.FOLD1,);
+        const state = STEP.update_dist();
+        if (state.L) {
+            STEP.LIN = state.L
+            STEP.CELL_D = undefined;
+        }
+    },
+
     update_dist: () => {
         const { Vf, FV, EV, EF, FE, Ff, EA, V, VV } = STEP.FOLD
         const VD = DIST.FOLD_2_VD(V, Vf)
@@ -52,8 +64,8 @@ export const STEP = {
         }
 
 
-        STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", "cp3", STEP.flip0);
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
+        return STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", "cp3", STEP.flip0);
     },
     update_component: (FOLD, CELL, el_select, el_assign) => {
         const { GB, GA } = CELL

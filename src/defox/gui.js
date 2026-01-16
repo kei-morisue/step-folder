@@ -86,6 +86,13 @@ export const GUI = {
             STEP.update_dist();
         }
 
+        document.getElementById("apply_tt").onclick = (e) => {
+            STEP.update_lin()
+        }
+        document.getElementById("reset_tt").onclick = (e) => {
+            STEP.update_states()
+        }
+
         document.getElementById("selectG").onchange = (e) => {
             const { GA, GI } = STEP.CELL0
             const g = e.target.value
