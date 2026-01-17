@@ -40,13 +40,30 @@ export const GUI = {
 
         document.getElementById("state3").onwheel = (e) => {
             e.preventDefault();
-            STEP.scale = Math.max(1, STEP.scale - Math.sign(e.deltaY));
+            const lvl = STEP.scale - Math.sign(e.deltaY);
+            STEP.scale = Math.max(1, lvl);
             STEP.redraw();
-        };
+        }
+        document.getElementById("state3").onclick = (e) => {
+            e.preventDefault();
+            const svg = document.getElementById("state3")
+            var pt = svg.createSVGPoint();  // Created once for document
+            pt.x = e.clientX;
+            pt.y = e.clientY;
+            // The cursor point, translated into svg coordinates
+            var cursorpt = pt.matrixTransform(svg.getScreenCTM().inverse());
+            const w = SVG.SCALE + 2 * SVG.MARGIN;
+            const b = SVG.MARGIN / SVG.SCALE;
+            const z = STEP.get_zoom();
+            [STEP.cx, STEP.cy] = [
+                STEP.cx + (cursorpt.x / w - .5 + b) / z,
+                STEP.cy + (cursorpt.y / w - .5 + b) / z];
+            STEP.redraw();
+        }
         GUI.setup_number_options(
             ["width_crease", "width_boundary", "width_MMVV"],
             ["F", "B", ["MM", "VV"]],
-            [1, 3, 3],
+            [1, 3, 6],
             DRAW.width.edge
         )
 
@@ -168,7 +185,7 @@ export const GUI = {
     },
 
     set_svg: (id) => {
-        const [b, s] = [50, SVG.SCALE];
+        const [b, s] = [SVG.MARGIN, SVG.SCALE];
         const main = document.getElementById(id);
 
         for (const [i, ch] of [].entries.call(main.children)) {

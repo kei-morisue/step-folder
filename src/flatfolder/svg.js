@@ -2,6 +2,7 @@ import { M } from "./math.js";
 
 export const SVG = {   // DRAWING
     SCALE: 1000,
+    MARGIN: 50,
     NS: "http://www.w3.org/2000/svg",
     append: (type, par, attrs = {}) => {
         const el = document.createElementNS(SVG.NS, type);

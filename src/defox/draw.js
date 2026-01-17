@@ -8,10 +8,6 @@ import { X } from "../flatfolder/conversion.js";
 import { IO } from "../flatfolder/io.js";
 import { SVG } from "../flatfolder/svg.js";
 
-import { NOTE } from "../flatfolder/note.js";
-import { LIN } from "../linefolder/linear.js";
-
-// import { PAR } from "./parallel.js";
 
 export const DRAW = {
     color: {
@@ -54,8 +50,8 @@ export const DRAW = {
         edge: {
             F: 1,
             B: 3,
-            VV: 3,
-            MM: 3,
+            VV: 6,
+            MM: 6,
             RV: 3,
             RM: 3,
             UF: 3,

@@ -14,20 +14,26 @@ import { SEG } from "./segment.js";
 export const STEP = {
     flip0: false,
     rotate: 0.5,
-    center: [.5, .5],
+    cx: .5,
+    cy: .5,
     scale: 1,
 
     get_transform: () => {
-        const scale = Math.pow(2, (STEP.scale - 1) / 2);
+        const scale = STEP.get_zoom();
         const theta = (2 * STEP.rotate - 1) * Math.PI;
         const A = N.mat(STEP.flip0, scale, theta);
-        const b = M.sub([.5, .5], N.apply(A, STEP.center));
+        const b = M.sub([.5, .5], N.apply(A, [STEP.cx, STEP.cy]));
         return [A, b];
+    },
+
+    get_zoom: () => {
+        return Math.pow(2, (STEP.scale - 1) / 2);
     },
     refresh: () => {
         STEP.flip0 = false;
         STEP.rotate = 0.5;
-        STEP.center = [.5, .5];
+        STEP.cx = .5;
+        STEP.cy = .5;
         STEP.scale = 1;
     },
     redraw: () => {
