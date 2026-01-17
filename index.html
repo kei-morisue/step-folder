@@ -11,6 +11,7 @@
 <body style="background:darkgray">
     <div>
         <span style="font-family:sans-serif">
+            <img src="./icon-512x512.png" alt="DEFOX_icon" style="width: 15px;">
             <b>DEFOX&nbsp;&nbsp;</b>
             <button id="new">New</button>
             <button id="export">Export</button>
@@ -18,9 +19,9 @@
         </span>
 
     </div>
-    <span class="openclose" id="imports_b"><b>CP Import</b>
+    <span class="openclose" id="imports_b">
         <p id="imports">
-            <label for="import0">Insert CP</label>
+            <label for="import0"><b>Insert CP</b></label>
             <input type="file" multiple id="import0" accept="cp/plain" />
         </p>
     </span>
@@ -31,6 +32,17 @@
         <b>/ </b>
         <b id="steps">1</b>
         <button id="next">Next</button>
+        <p>
+            <b>View Options</b>
+            <button id="flip">Flip</button>
+            <label for="rotate">rotate</label>
+            <input id="rotate" type="range" max="1" min="0" value="0.5" step="0.001">
+            <button id="rotate_reset">Reset</button>
+            <label for="clip">Crease Clip</label>
+            <input id="clip" type="range" max="1" min="0" value="0.0" step="0.001">
+            <button id="clip_reset">Reset</button>
+        </p>
+
     </span>
 
     <div>
@@ -38,6 +50,7 @@
             <svg id="state0" class="paint"></svg>
             <svg id="state3" class="paint"></svg>
             <svg id="state1" class="paint"></svg>
+            <!-- <svg id="cp3" class="paint"></svg> -->
         </div>
         <div>
             <p>
@@ -65,26 +78,17 @@
             <button id="apply_tt">Apply</button>
             <button id="reset_tt">Reset</button>
         </div>
-        <div>
-            <p>
-                <b>Local Operations</b>
-                <button id="flip">Flip</button>
-                <label for="clip">Crease Clip</label>
-                <input id="clip" type="range" max="1" min="0" value="0.0" step="0.001">
-                <button id="clip_reset">Reset</button>
-            </p>
-            <p>
-                <b>Control Layers</b>
-                <label for="selectG">Group</label>
-                <select id="selectG"></select>
-                <label for="assign0">state</label>
-                <input type="number" id="assign" min="1" max="1" value="1">
-                <a id="assigns">/ 1</a>
-            </p>
-
-        </div>
     </div>
     <div id="option">
+        <span id="option_layers_b" class="openclose"><b>Manual Layer Control</b></span>
+        <span id="option_layers" style="display: none;">
+            <label for="selectG">Group</label>
+            <select id="selectG"></select>
+            <label for="assign0">state</label>
+            <input type="number" id="assign" min="1" max="1" value="1">
+            <a id="assigns">/ 1</a>
+
+        </span>
         <span id="option_color_b" class="openclose"><b>Color Options</b></span>
         <span id="option_color" style="display: none;">
             <label for="topcolor">Top Color</label>
@@ -106,12 +110,6 @@
             <input id="width_MMVV" type="number" max="10" min="1" value="3">
             <button id="width_MMVV_reset">Reset</button>
         </span>
-        <!-- <span id="cps_b" class="openclose"><b>Crease Patterns</b></span> -->
-        <!-- <span id="cps" class="mainpanel" style="display: none;">
-            <svg id="cp0" class="paint"></svg>
-            <svg id="cp3" class="paint"></svg>
-            <svg id="cp1" class="paint"></svg>
-        </span> -->
     </div>
 
     <b>© Kei Morisue 2024, 2026</b>

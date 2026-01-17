@@ -1,6 +1,6 @@
 import { M } from "../flatfolder/math.js"
 export const N = {
-    FLOAT_EPS: 10 ** (-6),
+    FLOAT_EPS: 10 ** (-8),
     near_zero: (a) => Math.abs(a) < N.FLOAT_EPS,
     cross: ([x1, y1], [x2, y2]) => x1 * y2 - x2 * y1,
     is_inside: (c, vs) => {
@@ -25,5 +25,24 @@ export const N = {
             d0 = d1
         }
         return N.near_zero(wind + 2 * Math.PI)
+    },
+
+    mat: (flip, scale, rotate) => {
+        const s = scale * Math.sin(rotate);
+        const c = scale * Math.cos(rotate);
+        return [flip ? [-c, s] : [c, -s], [s, c]];
+    },
+    det: (A) => {
+        const [a, b] = A[0];
+        const [c, d] = A[1];
+        return a * d - b * c;
+    },
+    apply: (A, v) => {
+        return [M.dot(A[0], v), M.dot(A[1], v)];
+    },
+    transform: (T, v) => {
+        const A = T[0];
+        const b = T[1];
+        return M.add(N.apply(A, v), b);
     },
 }

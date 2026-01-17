@@ -1,4 +1,5 @@
-import { Y } from "./y.js"
+import { Y } from "./y.js";
+import { N } from "./nath.js";
 import { SEG } from "./segment.js";
 import { STEP } from "./step.js";
 
@@ -109,16 +110,18 @@ export const DRAW = {
         }
 
     },
-    draw_state: (svg, FOLD, CELL, STATE) => {
+    draw_state: (svg, FOLD, CELL, STATE, T) => {
+        const is_flip = N.det(T[0]) < 0
         if (STATE == undefined) {
-            DRAW.draw_xray(FOLD, flip, svg)
+            DRAW.draw_xray(FOLD, is_flip, svg)
             return
         }
         const { Ff, EF, FE, EA } = FOLD;
         const { P, PP, CP, CF, SP, SC, SE } = CELL;
-        const { Q, Ctop, L, Ccolor } = STATE;
-        const SD = Y.Ctop_SC_SE_EF_Ff_EA_FE_2_SD(Ctop, SC, SE, EF, Ff, EA, FE);
-        const Q_ = M.normalize_points(Q);
+        const { Q, Ctop, Cbottom, L, Ccolor, Ccolor_bottom } = STATE;
+        const color = is_flip ? Ccolor_bottom : Ccolor;
+        const SD = Y.Ctop_SC_SE_EF_Ff_EA_FE_2_SD(is_flip ? Cbottom : Ctop, SC, SE, EF, Ff, EA, FE);
+        const Q_ = M.normalize_points(Q).map((v) => N.transform(T, v));
         const cells = CP.map(V => M.expand(V, Q_));
         const fold_c = SVG.append("g", svg, { id: "fold_c" });
         const fold_s_crease = SVG.append("g", svg, { id: "fold_s_crease" });
@@ -126,8 +129,8 @@ export const DRAW = {
 
         SVG.draw_polygons(fold_c, cells, {
             id: true,
-            fill: Ccolor.map(b => b ? DRAW.color.face.top : DRAW.color.face.bottom),
-            stroke: Ccolor.map(b => b ? DRAW.color.face.top : DRAW.color.face.bottom),
+            fill: color.map(b => b ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom),
+            stroke: color.map(b => b ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom),
             stroke_width: 3
         });
         const lines = SP.map((ps) => M.expand(ps, Q_));
@@ -135,7 +138,7 @@ export const DRAW = {
             id: true, stroke: SD.map((d, i) => {
                 const [c0, c1] = SC[i];
 
-                if (Ccolor[c0] && Ccolor[c1]) {
+                if (color[c0] && color[c1]) {
                     return DRAW.color.edge[DRAW.pair(d)];
                 }
                 return DRAW.color.edge[d];
@@ -192,11 +195,11 @@ export const DRAW = {
         SVG.draw_points(G.e, line_centers, { text: true, fill: colors });
     },
 
-    draw_group_text: (FOLD, CELL, svg, is_flip) => {
+    draw_group_text: (FOLD, CELL, svg, T) => {
         const { V, FV } = FOLD;
         const { GB, BF, BI } = CELL
         const m = [0.5, 0.5];
-        const Q = V.map(p => (is_flip ? M.add(M.refX(M.sub(p, m)), m) : p));
+        const Q = V.map((v) => N.transform(T, v));
 
         const P = GB.map((bs, Gi) => {
             if (Gi == 0) {

@@ -1,25 +1,36 @@
-
 import { SVG } from "../flatfolder/svg.js";
-
-
 import { DIST } from "../distortionfolder/distortion.js";
-
-
 import { Y } from "./y.js";
-import { DRAW_LIN } from "./draw_lin.js";
+import { N } from "./nath.js";
 
+
+import { M } from "../flatfolder/math.js";
+
+import { DRAW_LIN } from "./draw_lin.js";
 import { DRAW } from "./draw.js";
 import { DIFF } from "./diff.js";
-
 import { SEG } from "./segment.js";
 
 export const STEP = {
     flip0: false,
+    rotate: 0.5,
+    center: [.5, .5],
+    scale: 1,
+
+    get_transform: () => {
+        const scale = Math.pow(2, (STEP.scale - 1) / 2);
+        const theta = (2 * STEP.rotate - 1) * Math.PI;
+        const A = N.mat(STEP.flip0, scale, theta);
+        const b = M.sub([.5, .5], N.apply(A, STEP.center));
+        return [A, b];
+    },
+
     redraw: () => {
-        STEP.update_state(STEP.FOLD0, STEP.CELL0, "state0", "cp0", STEP.flip0);
-        DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), STEP.flip0);
-        STEP.update_state(STEP.FOLD1, STEP.CELL1, "state1", "cp1", false);
-        STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", "cp3", STEP.flip0);
+        const T = STEP.get_transform();
+        STEP.update_state(STEP.FOLD0, STEP.CELL0, "state0", T);
+        DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
+        STEP.update_state(STEP.FOLD1, STEP.CELL1, "state1", T);
+        STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", T);
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
 
         const select = document.getElementById("selectG");
@@ -40,12 +51,12 @@ export const STEP = {
     update_lin: () => {
         STEP.LIN = undefined;
 
-        [STEP.FOLD, STEP.CELL,] = DIFF.diff(STEP.FOLD0, STEP.FOLD1,);
+        [STEP.FOLD, STEP.CELL,] = DIFF.diff(STEP.FOLD0, STEP.FOLD1, undefined);
         const state = STEP.update_dist();
         if (state.L) {
             STEP.LIN = state.L
             STEP.CELL_D = undefined;
-            STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", "cp3", STEP.flip0);
+            STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", STEP.get_transform());
         }
     },
 
@@ -66,7 +77,9 @@ export const STEP = {
 
 
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
-        return STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", "cp3", STEP.flip0);
+        // DRAW.draw_cp(STEP.FOLD, document.getElementById("cp3"), false);
+        return STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", STEP.get_transform());
+
     },
     update_component: (FOLD, CELL, el_select, el_assign) => {
         const { GB, GA } = CELL
@@ -83,23 +96,22 @@ export const STEP = {
 
 
     update_states: () => {
-        STEP.STATE0 = STEP.update_state(STEP.FOLD0, STEP.CELL0, "state0", "cp0", STEP.flip0);
-        DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), STEP.flip0);
+        const T = STEP.get_transform();
+        STEP.STATE0 = STEP.update_state(STEP.FOLD0, STEP.CELL0, "state0", T);
+        DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
 
-        STEP.STATE1 = STEP.update_state(STEP.FOLD1, STEP.CELL1, "state1", "cp1", false);
+        STEP.STATE1 = STEP.update_state(STEP.FOLD1, STEP.CELL1, "state1", T);
         [STEP.FOLD, STEP.CELL, STEP.LIN] = DIFF.diff(STEP.FOLD0, STEP.FOLD1, STEP.STATE0.L);
 
     },
 
-    update_state: (FOLD, CELL, svg_state, svg_cp, is_flip) => {
+    update_state: (FOLD, CELL, svg_state, T) => {
         if (!CELL) {
-            DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, STEP.LIN);
-            // DRAW.draw_cp(FOLD, SVG.clear(svg_cp));
+            DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, STEP.LIN, T);
             return undefined;
         } else {
-            const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL, is_flip);
-            DRAW.draw_state(SVG.clear(svg_state), FOLD, CELL, STATE);
-            // DRAW.draw_cp(FOLD, SVG.clear(svg_cp));
+            const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
+            DRAW.draw_state(SVG.clear(svg_state), FOLD, CELL, STATE, T);
             return STATE
         }
     },

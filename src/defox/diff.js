@@ -27,11 +27,11 @@ export const DIFF = {
                     case "F":
                         return "F";
                     case "B":
-                        return "B"
+                        return "B";
                     case "M":
-                        return "MM"
+                        return "MM";
                     case "V":
-                        return "VV"
+                        return "VV";
                 }
             }
             if (ls.length > 2) { debugger; }

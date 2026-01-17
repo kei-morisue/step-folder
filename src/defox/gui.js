@@ -36,8 +36,7 @@ export const GUI = {
 
         document.getElementById("flip").onclick = (e) => {
             STEP.flip0 = !STEP.flip0;
-            STEP.update_states();
-            STEP.update_dist();
+            STEP.redraw();
         }
         GUI.setup_number_options(
             ["width_crease", "width_boundary", "width_MMVV"],
@@ -71,6 +70,7 @@ export const GUI = {
         // GUI.open_close("cps", "flex");
         GUI.open_close("option_color", "inline");
         GUI.open_close("option_width", "inline")
+        GUI.open_close("option_layers", "inline")
 
 
         document.getElementById("assign").onchange = (e) => {
@@ -103,10 +103,11 @@ export const GUI = {
 
 
         GUI.setup_range_options(
-            ["p0", "p1", "clip", "p2"],
-            ["p0", "p1", "clip", "p2"],
-            [0, 0.5, 0, 0.5],
-            [DIST, DIST, SEG, DIST]
+            ["p0", "p1", "p2", "clip", "rotate"],
+            ["p0", "p1", "p2", "clip", "rotate"],
+            [0, 0.5, 0.5, 0, 0.5],
+            [DIST, DIST, DIST, SEG, STEP],
+            [STEP.update_dist, STEP.update_dist, STEP.update_dist, STEP.redraw, STEP.redraw]
         );
 
 
@@ -145,21 +146,20 @@ export const GUI = {
         }
     },
 
-    setup_range_options: (ids, props, init, modules) => {
+    setup_range_options: (ids, props, init, modules, dispatches) => {
         for (const [i, id] of ids.entries()) {
             document.getElementById(id).oninput = (e) => {
                 const val = e.target.value
                 modules[i][props[i]] = val
 
-                STEP.update_dist();
+                dispatches[i]();
             }
             document.getElementById(id + "_reset").onclick = (e) => {
                 document.getElementById(id).value = init[i]
                 modules[i][props[i]] = init[i]
-                STEP.update_dist();
+                dispatches[i]();
             }
         }
-
     },
 
     set_svg: (id) => {

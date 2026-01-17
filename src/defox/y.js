@@ -194,12 +194,11 @@ export const Y = {     // CONVERSION
         const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI };
         return [FOLD, CELL];
     },
-    FOLD_CELL_2_STATE: (FOLD, CELL, flip) => {
+    FOLD_CELL_2_STATE: (FOLD, CELL) => {
         const { Ff, FO } = FOLD;
         if (FO == undefined) { return undefined }
         const { P, SE, PP, CP, SC, CF } = CELL;
-        const m = [0.5, 0.5];
-        const Q = P.map(p => (flip ? M.add(M.refX(M.sub(p, m)), m) : p));
+        const Q = P;
         const edges = FO.map(([f1, f2, o]) => {
             return M.encode(((Ff[f2] ? 1 : -1) * o >= 0) ? [f1, f2] : [f2, f1]);
         });
@@ -207,13 +206,21 @@ export const Y = {     // CONVERSION
         const L = L_ ? L_.reverse() : undefined;
 
         const CD = X.CF_edges_2_CD(CF, edges);
-        const Ctop = CD.map(S => flip ? S[0] : S[S.length - 1]);
+        const Ctop = CD.map(S => S[S.length - 1]);
+        const Cbottom = CD.map(S => S[0]);
+
         const Ccolor = Ctop.map(d => {
             if (d == undefined) { return undefined; }
-            if (Ff[d] != flip) { return true; }
+            if (Ff[d]) { return true; }
             else { return false; }
         });
-        return { Q, CD, Ctop, Ccolor, L, edges };
+        const Ccolor_bottom = Cbottom.map(d => {
+            if (d == undefined) { return undefined; }
+            if (Ff[d]) { return true; }
+            else { return false; }
+        });
+
+        return { Q, CD, Ctop, Cbottom, Ccolor, Ccolor_bottom, L, edges };
     },
 
     Ctop_SC_SE_EF_Ff_EA_FE_2_SD: (Ctop, SC, SE, EF, Ff, EA, FE) => {

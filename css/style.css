@@ -2,6 +2,10 @@ input[type="range"] {
     width: 400px;
 }
 
+svg text {
+    pointer-events: none;
+}
+
 .mainpanel {
     width: 100%;
 
