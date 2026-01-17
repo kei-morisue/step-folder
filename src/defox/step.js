@@ -24,7 +24,12 @@ export const STEP = {
         const b = M.sub([.5, .5], N.apply(A, STEP.center));
         return [A, b];
     },
-
+    refresh: () => {
+        STEP.flip0 = false;
+        STEP.rotate = 0.5;
+        STEP.center = [.5, .5];
+        STEP.scale = 1;
+    },
     redraw: () => {
         const T = STEP.get_transform();
         STEP.update_state(STEP.FOLD0, STEP.CELL0, "state0", T);
@@ -39,6 +44,7 @@ export const STEP = {
     },
 
     new: () => {
+        STEP.refresh();
         STEP.update_states();
         const select = document.getElementById("selectG");
         const assign = document.getElementById("assign");

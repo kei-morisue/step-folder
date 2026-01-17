@@ -29,7 +29,6 @@ export const GUI = {
         NOTE.time("Initializing interface");
 
         GUI.set_svg("states")
-        // GUI.set_svg("cps")
 
 
 
@@ -38,6 +37,12 @@ export const GUI = {
             STEP.flip0 = !STEP.flip0;
             STEP.redraw();
         }
+
+        document.getElementById("state3").onwheel = (e) => {
+            e.preventDefault();
+            STEP.scale = Math.max(1, STEP.scale - Math.sign(e.deltaY));
+            STEP.redraw();
+        };
         GUI.setup_number_options(
             ["width_crease", "width_boundary", "width_MMVV"],
             ["F", "B", ["MM", "VV"]],
