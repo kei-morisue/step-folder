@@ -65,14 +65,14 @@ export const SVG3 = {   // DRAWING
     },
     draw_clip_path: (svg, gg, id) => {
         const cp = SVG.append("clipPath", svg);
-        cp.setAttribute("id", "cp_" + id);
+        cp.setAttribute("id", "cpath_" + id);
         const r = .5 * SVG.SCALE;
         const b = 1 + 2 * SVG.MARGIN / SVG.SCALE
         SVG.append("circle", cp, {
             cx: r, cy: r, r: r * b,
         });
 
-        gg.setAttribute("clip-path", "url(#cp_" + id + ")");
+        gg.setAttribute("clip-path", "url(#cpath_" + id + ")");
         return SVG.append("circle", svg, {
             cx: r, cy: r, r: r * b,
             "fill": "none",

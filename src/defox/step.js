@@ -12,6 +12,7 @@ import { DIFF } from "./diff.js";
 import { SEG } from "./segment.js";
 
 export const STEP = {
+    id: 0,
     flip0: false,
     rotate: 0.5,
     cx: .5,
@@ -119,11 +120,11 @@ export const STEP = {
 
     update_state: (FOLD, CELL, svg_state, T) => {
         if (!CELL) {
-            DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, STEP.LIN, T);
+            DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, STEP.LIN, T, STEP.id);
             return undefined;
         } else {
             const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
-            DRAW.draw_state(SVG.clear(svg_state), FOLD, CELL, STATE, T);
+            DRAW.draw_state(SVG.clear(svg_state), FOLD, CELL, STATE, T, STEP.id);
             return STATE
         }
     },

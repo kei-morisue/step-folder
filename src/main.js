@@ -152,7 +152,7 @@ const MAIN = {
         }
         [STEP.FOLD0, STEP.CELL0] = (0 < i) ? MAIN.Cps[i - 1] : MAIN.blank_cp;
         [STEP.FOLD1, STEP.CELL1] = MAIN.Cps[i];
-
+        STEP.id = i;
         [STEP.FOLD, STEP.CELL] = MAIN.States[i];
         [STEP.FOLD_D, STEP.CELL_D, STEP.LIN] = MAIN.States_D[i];
         [STEP.flip0, STEP.rotate, STEP.scale, SEG.clip, DIST.p0, DIST.p1, DIST.p2, DIST.direction_skew, DIST.strength] = MAIN.Params[i]
