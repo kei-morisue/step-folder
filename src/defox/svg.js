@@ -1,5 +1,6 @@
 import { M } from "../flatfolder/math.js";
 import { SVG } from "../flatfolder/svg.js";
+import { DRAW } from "./draw.js";
 
 export const SVG3 = {   // DRAWING
     SCALE: 1000,
@@ -61,5 +62,22 @@ export const SVG3 = {   // DRAWING
                 SVG.draw_label(svg, [x, y], color, i);
             }
         }
+    },
+    draw_clip_path: (svg, gg, id) => {
+        const cp = SVG.append("clipPath", svg);
+        cp.setAttribute("id", "cp_" + id);
+        const r = .5 * SVG.SCALE;
+        const b = 1 + 2 * SVG.MARGIN / SVG.SCALE
+        SVG.append("circle", cp, {
+            cx: r, cy: r, r: r * b,
+        });
+
+        gg.setAttribute("clip-path", "url(#cp_" + id + ")");
+        return SVG.append("circle", svg, {
+            cx: r, cy: r, r: r * b,
+            "fill": "none",
+            "stroke": "black",
+            "stroke-width": DRAW.width.clip_path.body,
+        });
     },
 };

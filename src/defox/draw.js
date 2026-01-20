@@ -2,6 +2,7 @@ import { Y } from "./y.js";
 import { N } from "./nath.js";
 import { SEG } from "./segment.js";
 import { STEP } from "./step.js";
+import { SVG3 } from "./svg.js";
 
 import { M } from "../flatfolder/math.js";
 import { X } from "../flatfolder/conversion.js";
@@ -66,6 +67,9 @@ export const DRAW = {
             RV: 3,
             RM: 3,
             UF: 3,
+        },
+        clip_path: {
+            body: 8,
         }
     },
     pair: (d) => {
@@ -106,8 +110,9 @@ export const DRAW = {
         }
 
     },
-    draw_state: (svg, FOLD, CELL, STATE, T) => {
-        const is_flip = N.det(T[0]) < 0
+    draw_state: (svg, FOLD, CELL, STATE, T, id = 0) => {
+        const det = N.det(T[0]);
+        const is_flip = det < 0
         if (STATE == undefined) {
             DRAW.draw_xray(FOLD, is_flip, svg)
             return
@@ -119,9 +124,16 @@ export const DRAW = {
         const SD = Y.Ctop_SC_SE_EF_Ff_EA_FE_2_SD(is_flip ? Cbottom : Ctop, SC, SE, EF, Ff, EA, FE);
         const Q_ = M.normalize_points(Q).map((v) => N.transform(T, v));
         const cells = CP.map(V => M.expand(V, Q_));
-        const fold_c = SVG.append("g", svg, { id: "fold_c" });
-        const fold_s_crease = SVG.append("g", svg, { id: "fold_s_crease" });
-        const fold_s_edge = SVG.append("g", svg, { id: "fold_s_edge" });
+
+        const gg = SVG.append("g", svg)
+
+        if (Math.abs(det) > 1) {
+            SVG3.draw_clip_path(svg, gg, id);
+        }
+
+        const fold_c = SVG.append("g", gg, { id: "fold_c" });
+        const fold_s_crease = SVG.append("g", gg, { id: "fold_s_crease" });
+        const fold_s_edge = SVG.append("g", gg, { id: "fold_s_edge" });
 
         SVG.draw_polygons(fold_c, cells, {
             id: true,

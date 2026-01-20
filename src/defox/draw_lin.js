@@ -2,6 +2,7 @@ import { Y } from "./y.js"
 import { SEG } from "./segment.js";
 import { DRAW } from "./draw.js";
 import { N } from "./nath.js";
+import { SVG3 } from "./svg.js";
 
 
 import { M } from "../flatfolder/math.js";
@@ -26,8 +27,9 @@ export const DRAW_LIN = {
 
 
 
-    draw_state: (svg, FOLD, L, T) => {
-        const is_flip = N.det(T[0]) < 0;
+    draw_state: (svg, FOLD, L, T, id = 0) => {
+        const det = N.det(T[0]);
+        const is_flip = det < 0;
         if (!L) {
             DRAW.draw_xray(FOLD, flip, svg)
             return
@@ -38,6 +40,12 @@ export const DRAW_LIN = {
         const faces = FV.map(v => M.expand(v, V_));
 
         const gg = SVG.append("g", svg)
+
+        if (Math.abs(det) > 1) {
+            SVG3.draw_clip_path(svg, gg, id);
+
+        }
+
         const L_ = is_flip ? L.toReversed() : L
         for (const [i, top_fs] of L_.entries()) {
             for (const [j, top_f] of top_fs.entries()) {
