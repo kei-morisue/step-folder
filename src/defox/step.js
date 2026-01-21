@@ -41,7 +41,9 @@ export const STEP = {
         const T = STEP.get_transform();
         STEP.update_state(STEP.FOLD0, STEP.CELL0, "state0", T);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
-        STEP.update_state(STEP.FOLD1, STEP.CELL1, "state1", T);
+        // STEP.update_state(STEP.FOLD1, STEP.CELL1, "state1", T);
+        DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"), false)
+
         STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", T);
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
 
@@ -113,11 +115,13 @@ export const STEP = {
         STEP.STATE0 = STEP.update_state(STEP.FOLD0, STEP.CELL0, "state0", T);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
         if (STEP.FOLD1) {
-            STEP.update_state(STEP.FOLD1, STEP.CELL1, "state1", T);
+            // STEP.update_state(STEP.FOLD1, STEP.CELL1, "state1", T);
             [STEP.FOLD, STEP.CELL, STEP.LIN] = DIFF.diff(STEP.FOLD0, STEP.FOLD1, STEP.STATE0.L);
         } else {
             [STEP.FOLD, STEP.CELL, STEP.LIN] = [STEP.FOLD0, STEP.CELL0, STEP.STATE0.L];
         }
+
+        DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"), false)
 
     },
 

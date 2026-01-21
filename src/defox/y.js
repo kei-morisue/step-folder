@@ -259,16 +259,24 @@ export const Y = {     // CONVERSION
                     return a;
                 }
             }
-            let left = undefined, right = undefined;
             // edges in the state
-            for (const ei of SE[si]) {
-                const [fi, fj] = EF[ei];
-                if (Ff[fi] == Ff[fj]) { continue; }
-                if ((fi == F[0]) || (fj == F[0])) { left = ei; }
-                if ((fi == F[1]) || (fj == F[1])) { right = ei; }
+            for (const e0 of FE[F[0]]) {
+                if (SE[si].indexOf(e0) >= 0) {
+                    const a = EA[e0]
+                    if (a == "RM" || a == "RV" || a == "U") {
+                        return a;
+                    };
+                }
             }
-            if (left && right) { return "B"; }
-            return left ? "BL" : "BR";
+            for (const e1 of FE[F[1]]) {
+                if (SE[si].indexOf(e1) >= 0) {
+                    const a = EA[e1]
+                    if (a == "RM" || a == "RV" || a == "U") {
+                        return a;
+                    };
+                }
+            }
+            return "B";
         });
         return SD;
     },
