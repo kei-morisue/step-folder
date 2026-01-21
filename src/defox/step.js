@@ -112,13 +112,19 @@ export const STEP = {
         const T = STEP.get_transform();
         STEP.STATE0 = STEP.update_state(STEP.FOLD0, STEP.CELL0, "state0", T);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
-
-        STEP.STATE1 = STEP.update_state(STEP.FOLD1, STEP.CELL1, "state1", T);
-        [STEP.FOLD, STEP.CELL, STEP.LIN] = DIFF.diff(STEP.FOLD0, STEP.FOLD1, STEP.STATE0.L);
+        if (STEP.FOLD1) {
+            STEP.update_state(STEP.FOLD1, STEP.CELL1, "state1", T);
+            [STEP.FOLD, STEP.CELL, STEP.LIN] = DIFF.diff(STEP.FOLD0, STEP.FOLD1, STEP.STATE0.L);
+        } else {
+            [STEP.FOLD, STEP.CELL, STEP.LIN] = [STEP.FOLD0, STEP.CELL0, STEP.STATE0.L];
+        }
 
     },
 
     update_state: (FOLD, CELL, svg_state, T) => {
+        if (!FOLD) {
+            return;
+        }
         if (!CELL) {
             DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, STEP.LIN, T, STEP.id);
             return undefined;

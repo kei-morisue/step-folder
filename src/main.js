@@ -149,7 +149,7 @@ const MAIN = {
         MAIN.record(0);
 
         [STEP.FOLD0, STEP.CELL0] = [FOLD1, CELL1];
-        [STEP.FOLD1, STEP.CELL1] = [FOLD1, CELL1];
+        [STEP.FOLD1, STEP.CELL1] = [undefined, undefined];
         STEP.new();
 
         MAIN.record(1);
@@ -168,8 +168,8 @@ const MAIN = {
             STEP.FOLD1 = MAIN.steps[i + 1].fold_cp;
             STEP.CELL1 = MAIN.steps[i + 1].cell_cp;
         } else {
-            STEP.FOLD1 = MAIN.steps[i].fold_cp;
-            STEP.CELL1 = MAIN.steps[i].cell_cp;
+            STEP.FOLD1 = undefined;
+            STEP.CELL1 = undefined;
         }
         STEP.id = i;
         STEP.FOLD = MAIN.steps[i].fold;
@@ -179,7 +179,7 @@ const MAIN = {
         STEP.CELL_D = MAIN.steps[i].cell_d;
         STEP.LIN = MAIN.steps[i].lin;
 
-        [STEP.flip0, STEP.rotate, STEP.scale, SEG.clip, DIST.p0, DIST.p1, DIST.p2, DIST.direction_skew, DIST.strength] = MAIN.steps[i].params;
+        [STEP.flip0, STEP.rotate, STEP.scale, SEG.clip, DIST.p0, DIST.p1, DIST.p2, STEP.cx, STEP.cy] = MAIN.steps[i].params;
         document.getElementById("clip").value = SEG.clip;
         document.getElementById("rotate").value = STEP.rotate;
         document.getElementById("p0").value = DIST.p0;
@@ -210,7 +210,9 @@ const MAIN = {
             SEG.clip,
             DIST.p0,
             DIST.p1,
-            DIST.p2]
+            DIST.p2,
+            STEP.cx,
+            STEP.cy,]
     },
 };
 
