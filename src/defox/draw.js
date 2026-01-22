@@ -92,10 +92,10 @@ export const DRAW = {
     },
     draw_cp: (FOLD, svg_cp, text = false) => {
 
-        const { V, FV, EV, EA, Vf } = FOLD;
+        const { V, FV, EV, EA } = FOLD;
 
-        const faces = FV.map(F => M.expand(F, Vf));
-        const lines = EV.map(E => M.expand(E, Vf));
+        const faces = FV.map(F => M.expand(F, V));
+        const lines = EV.map(E => M.expand(E, V));
         const colors = EA.map(a => DRAW.color.segment[a]);
         const widths = EA.map(a => DRAW.width.segment[a]);
         const g1 = SVG.append("g", svg_cp, { id: "flat_f" });
@@ -204,10 +204,10 @@ export const DRAW = {
     },
 
     draw_group_text: (FOLD, CELL, svg, T) => {
-        const { V, FV } = FOLD;
+        const { Vf, FV } = FOLD;
         const { GB, BF, BI } = CELL
         const m = [0.5, 0.5];
-        const Q = V.map((v) => N.transform(T, v));
+        const Q = Vf.map((v) => N.transform(T, v));
 
         const P = GB.map((bs, Gi) => {
             if (Gi == 0) {

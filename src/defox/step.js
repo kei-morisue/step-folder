@@ -77,8 +77,8 @@ export const STEP = {
 
     update_dist: () => {
         const { Vf, FV, EV, EF, FE, Ff, EA, V, VV } = STEP.FOLD
-        const VD = DIST.FOLD_2_VD(V, Vf)
-        STEP.FOLD_D = { V: VD, Vf, FV, EV, EF, FE, Ff, EA, VV }
+        const VD = DIST.FOLD_2_VD(Vf, V)
+        STEP.FOLD_D = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV }
 
 
         if (!STEP.LIN) {

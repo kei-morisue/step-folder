@@ -33,7 +33,7 @@ export const DIST = {    // STATE DISTORTER
     tilt_d: () => {
         return DIST.p2
     },
-    FOLD_2_VD: (V, Vf) => {
+    FOLD_2_VD: (Vf, V) => {
         const p = Math.exp(- 1 / (DIST.tilt()));
         const q = DIST.tilt_d();
 
@@ -46,7 +46,7 @@ export const DIST = {    // STATE DISTORTER
         const sy = Math.sin(t2)
 
         const A = [[r1 + r2 * cy, r2 * sy], [r2 * sy, r1 - r2 * cy]];
-        return Vf.map((vf, i) => { return M.add(V[i], DIST.matprod(A, vf)) });
+        return V.map((v, i) => { return M.add(Vf[i], DIST.matprod(A, v)) });
     },
     infer_FO: (FOLD, CELL_D) => {
         //Solving only with FULL Constraints

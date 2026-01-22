@@ -32,13 +32,13 @@ export const Y = {     // CONVERSION
 
 
     CP_2_FOLD_CELL: (doc, is_flip) => {
-        const [Vf, VV, EV, EA, EF, FV, FE] =
+        const [V, VV, EV, EA, EF, FV, FE] =
             IO.doc_type_side_2_V_VV_EV_EA_EF_FV_FE(doc, "cp", is_flip);
-        if (Vf == undefined) { return; }
-        const [W, Ff] = X.V_FV_EV_EA_2_Vf_Ff(Vf, FV, EV, EA);
-        const V = M.normalize_points(W);
+        if (V == undefined) { return; }
+        const [W, Ff] = X.V_FV_EV_EA_2_Vf_Ff(V, FV, EV, EA);
+        const Vf = M.normalize_points(W);
 
-        const L = EV.map((P) => M.expand(P, V));
+        const L = EV.map((P) => M.expand(P, Vf));
         const [P, SP, SE, eps_i] = X.L_2_V_EV_EL(L);
         const eps = M.min_line_length(L) / (2 ** eps_i);
         const FOLD = { V, Vf, FV, EV, EF, FE, Ff, eps, EA, VV };
@@ -96,7 +96,7 @@ export const Y = {     // CONVERSION
                 EV.push([v0, v1]);
             }
         }
-        const L = EV.map((P) => M.expand(P, FOLD.Vf));
+        const L = EV.map((P) => M.expand(P, FOLD.V));
         let doc = ""
         for (const [_, [p, q]] of L.entries()) {
             doc = doc + "1 " + p[0] + " " + p[1] + " " + q[0] + " " + q[1] + "\r\n"

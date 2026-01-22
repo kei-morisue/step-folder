@@ -34,8 +34,8 @@ export const DRAW_LIN = {
             DRAW.draw_xray(FOLD, flip, svg)
             return
         }
-        const { V, Ff, EF, FE, EA, FV, EV, VV } = FOLD;
-        const V_ = M.normalize_points(V).map((v) => N.transform(T, v));
+        const { Vf, Ff, EF, FE, EA, FV, EV, VV } = FOLD;
+        const V_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
 
         const faces = FV.map(v => M.expand(v, V_));
 

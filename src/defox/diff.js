@@ -9,11 +9,11 @@ import { N } from "./nath.js"
 export const DIFF = {
 
     diff: (F0, F1, LIN0) => {
-        const L0 = F0.EV.map(vs => vs.map(i => F0.Vf[i]));
-        const L1 = F1.EV.map(vs => vs.map(i => F1.Vf[i]));
+        const L0 = F0.EV.map(vs => vs.map(i => F0.V[i]));
+        const L1 = F1.EV.map(vs => vs.map(i => F1.V[i]));
         const L = L0.concat(L1)
         NOTE.time("Constructing points and segments from edges");
-        const [Vf, EV, EL, eps_i] = X.L_2_V_EV_EL(L);
+        const [V, EV, EL, eps_i] = X.L_2_V_EV_EL(L);
         const eps = M.min_line_length(L) / (2 ** eps_i);
 
         const EA = EL.map(ls => {
@@ -50,13 +50,13 @@ export const DIFF = {
             }
         })
 
-        const [VV, FV] = X.V_EV_2_VV_FV(Vf, EV)
+        const [VV, FV] = X.V_EV_2_VV_FV(V, EV)
         const [EF, FE] = X.EV_FV_2_EF_FE(EV, FV);
-        const [V, Ff] = X.V_FV_EV_EA_2_Vf_Ff(Vf, FV, EV, EA)
+        const [Vf, Ff] = X.V_FV_EV_EA_2_Vf_Ff(V, FV, EV, EA)
         const FOLD = { V, Vf, EV, EA, EF, FV, FE, eps, Ff, VV }
         const FF_map = F0.FV.map((vs) => [])
         for (const [i, vs] of FV.entries()) {
-            const c = M.interior_point(M.expand(vs, Vf))
+            const c = M.interior_point(M.expand(vs, V))
             for (const [j, ws] of F0.FV.entries()) {
                 if (N.is_inside(c, M.expand(ws, F0.Vf))
                 ) {
@@ -74,7 +74,7 @@ export const DIFF = {
             }
         }
         if (!LIN0) {
-            const CL = EV.map((P) => M.expand(P, V));
+            const CL = EV.map((P) => M.expand(P, Vf));
             const [P, SP, SE,] = X.L_2_V_EV_EL(CL);
             const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
             const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
