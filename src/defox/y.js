@@ -3,7 +3,7 @@ import { X } from "../flatfolder/conversion.js";
 import { IO } from "../flatfolder/io.js";
 import { SOLVER } from "../flatfolder/solver.js";
 
-import { NOTE } from "../flatfolder/note.js";
+
 import { LIN } from "../linefolder/linear.js";
 
 // import { PAR } from "./parallel.js";
@@ -38,20 +38,15 @@ export const Y = {     // CONVERSION
         const [W, Ff] = X.V_FV_EV_EA_2_Vf_Ff(V, FV, EV, EA);
         const Vf = M.normalize_points(W);
 
-        const L = EV.map((P) => M.expand(P, Vf));
-        const [P, SP, SE, eps_i] = X.L_2_V_EV_EL(L);
-        const eps = M.min_line_length(L) / (2 ** eps_i);
-        const FOLD = { V, Vf, FV, EV, EF, FE, Ff, eps, EA, VV };
-        const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
-        const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
-        const [CF, FC] = X.EF_FV_SP_SE_CP_SC_2_CF_FC(EF, FV, SP, SE, CP, SC);
+        const FOLD = { V, Vf, FV, EV, EF, FE, Ff, EA, VV };
+        const { P, CP, SP, PP, SC, CS, SE, BF, FC, CF } = Y.FOLD_2_CELL(FOLD);
+
         const ExE = X.SE_2_ExE(SE);
         const ExF = X.SE_CF_SC_2_ExF(SE, CF, SC);
-        const BF = X.CF_2_BF(CF);
 
         const BI = new Map();
         for (const [i, F] of BF.entries()) { BI.set(F, i); }
-        NOTE.annotate(BF, "variables_faces");
+
         const BA0 = SOLVER.EF_EA_Ff_BF_BI_2_BA0(EF, EA, Ff, BF, BI);
         const [BT0, BT1, BT2] = X.BF_BI_EF_ExE_ExF_2_BT0_BT1_BT2(BF, BI, EF, ExE, ExF);
         const BT3x = X.FC_BF_BI_BT0_BT1_2_BT3x(FC, BF, BI, BT0, BT1);
@@ -65,7 +60,7 @@ export const Y = {     // CONVERSION
         const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {
             return s * BigInt(A.length);
         }, BigInt(1));
-        NOTE.count(n, "folded states");
+
         const GI = GB.map(() => 0);
         if (n > 0) {
             FOLD.FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff);
@@ -76,15 +71,15 @@ export const Y = {     // CONVERSION
         return [FOLD, CELL];
     },
     FOLD_2_CELL: (FOLD) => {
-        const { V, EV, EF, FV } = FOLD
-        const L = EV.map((P) => M.expand(P, V));
+        const { Vf, EV, EF, FV } = FOLD
+        const L = EV.map((P) => M.expand(P, Vf));
         const [P, SP, SE, eps_i] = X.L_2_V_EV_EL(L);
         const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
         const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
         const [CF, FC] = X.EF_FV_SP_SE_CP_SC_2_CF_FC(EF, FV, SP, SE, CP, SC);
         const BF = X.CF_2_BF(CF);
 
-        return { P, CP, SP, PP, SC, SE, BF, FC, CF }
+        return { P, CP, SP, PP, SC, CS, SE, BF, FC, CF }
     },
 
     FOLD_2_PAPER: (FOLD) => {
@@ -105,95 +100,15 @@ export const Y = {     // CONVERSION
     },
 
     BF_GB_GA_GI_Ff_2_FO: (BF, GB, GA, GI, Ff) => {
-        NOTE.time("Computing state");
+
         const edges = X.BF_GB_GA_GI_2_edges(BF, GB, GA, GI);
         return X.edges_Ff_2_FO(edges, Ff);
     },
 
-    JSON_2_FOLD_CELL: (doc) => {
-        const ex = JSON.parse(doc);
-        const properties = [
-            "vertices_coords", "faces_vertices",
-            "faceOrders"
-        ];
-        const [V_org, FV, FO] = properties.map(property => {
-            const val = ex[property];
-            if (val == undefined) {
-                NOTE.time(`FOLD file must contain ${property}, but not found`);
-                return undefined;
-            }
-            return val;
-        });
-        const V = M.normalize_points(V_org);
-        const [FOLD, CELL] = Y.V_FV_2_FOLD_CELL(V, FV);
-        FOLD.FO = FO;
-        const { Ff, EF, EV } = FOLD
-        const edges = FO.map(([f1, f2, o]) => {
-            return M.encode(((Ff[f2] ? 1 : -1) * o >= 0) ? [f1, f2] : [f2, f1]);
-        });
-        const edge_map = new Set(edges);
-        const EA = EF.map(F => {
-            if (F.length != 2) { return "B"; }
-            const [i, j] = F;
-            if (edge_map.has(M.encode([i, j]))) { return Ff[i] ? "M" : "V"; }
-            if (edge_map.has(M.encode([j, i]))) { return Ff[i] ? "V" : "M"; }
-            return "F";
-        });
-        FOLD.EA = EA;
-        FOLD.Vf = X.V_FV_EV_EA_2_Vf_Ff(V, FV, EV, EA)[0];
-        if (M.polygon_area2(M.expand(FOLD.FV[0], FOLD.Vf)) < 0) {
-            FOLD.Vf = FOLD.Vf.map(v => M.add(M.refY(v), [0, 1]));
-        }
-        const v0 = FOLD.Vf[0];
-        FOLD.Vf = FOLD.Vf.map(p => M.sub(p, v0));
-        const [c1, s1] = FOLD.Vf[1];
-        FOLD.Vf = FOLD.Vf.map(p => M.rotate_cos_sin(p, c1, -s1));
-        FOLD.Vf = FOLD.Vf.map(p => M.rotate_cos_sin(p, 0, 1));
-        FOLD.Vf = M.normalize_points(FOLD.Vf);
-        return [FOLD, CELL];
-    },
+
     FV_V_2_Ff: (FV, V) => FV.map(fV => (M.polygon_area2(fV.map(i => V[i])) < 0)),
 
-    V_FV_2_FOLD_CELL: (V, FV) => {
-        const Ff = Y.FV_V_2_Ff(FV, V);
-        const EV_set = new Set();
-        for (const fV of FV) {
-            let i = fV.length - 1;
-            for (let j = 0; j < fV.length; ++j) {
-                EV_set.add(M.encode_order_pair([fV[i], fV[j]]));
-                i = j;
-            }
-        }
-        const EV = Array.from(EV_set).sort().map(k => M.decode(k));
-        const [EF, FE] = X.EV_FV_2_EF_FE(EV, FV);
-        const L = EV.map(vs => vs.map(i => V[i]));
-        NOTE.time("Constructing points and segments from edges");
-        const [P, SP, SE, eps_i] = X.L_2_V_EV_EL(L);
-        const eps = M.min_line_length(L) / (2 ** eps_i);
-        NOTE.annotate(P, "points_coords");
-        NOTE.annotate(SP, "segments_points");
-        NOTE.annotate(SE, "segments_edges");
-        NOTE.lap();
-        NOTE.time("Constructing cells from segments");
-        const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
-        NOTE.annotate(CP, "cells_points");
-        NOTE.lap();
-        NOTE.time("Computing segments_cells");
-        const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
-        NOTE.annotate(SC, "segments_cells");
-        NOTE.annotate(CS, "cells_segments");
-        NOTE.lap();
-        NOTE.time("Making face-cell maps");
-        const [CF, FC] = X.EF_FV_SP_SE_CP_SC_2_CF_FC(EF, FV, SP, SE, CP, SC);
-        const BF = X.EF_SP_SE_CP_CF_2_BF(EF, SP, SE, CP, CF);
-        const BI = new Map();
-        for (const [i, F] of BF.entries()) { BI.set(F, i); }
-        NOTE.annotate(BF, "variables_faces");
-        NOTE.lap();
-        const FOLD = { V, FV, EV, EF, FE, Ff, eps };
-        const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI };
-        return [FOLD, CELL];
-    },
+
     FOLD_CELL_2_STATE: (FOLD, CELL) => {
         const { Ff, FO } = FOLD;
         if (FO == undefined) { return undefined }
