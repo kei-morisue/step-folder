@@ -45,4 +45,30 @@ export const N = {
         const b = T[1];
         return M.add(N.apply(A, v), b);
     },
+    transpose: (A) => {
+        const [[a, b], [c, d]] = A;
+        return [[a, c], [b, d]];
+    },
+    matprod: (A, B) => {
+        const [[a, b], [c, d]] = B;
+        return N.transpose([N.apply(A, [a, c]), N.apply(A, [b, d])]);
+    },
+    matadd: (A, B) => {
+        const [a, b] = A;
+        const [c, d] = B;
+        return [M.add(a, c), M.add(b, d)];
+    },
+    matsub: (A, B) => {
+        const [a, b] = A;
+        const [c, d] = B;
+        return [M.sub(a, c), M.sub(b, d)];
+    },
+    matmul: (A, k) => {
+        const [[a, b], [c, d]] = A;
+        return [[k * a, k * b], [k * c, k * d]];
+    },
+    proj: (v) => {
+        const [a, b] = v;
+        return N.matmul([[a * a, a * b], [a * b, b * b]], 1 / M.magsq(v));
+    },
 }

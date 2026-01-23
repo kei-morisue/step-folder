@@ -101,7 +101,7 @@ const MAIN = {
         if (!doc) {
             return false;
         }
-        const [FOLD1, CELL1] = Y.CP_2_FOLD_CELL(doc, true);
+        const [FOLD1, CELL1] = Y.CP_2_FOLD_CELL(doc);
         if (FOLD1 == undefined) {
             alert("unfoldable Crease Pattern: " + path)
             return false;
@@ -130,7 +130,7 @@ const MAIN = {
             return false;
         }
 
-        const [FOLD1, CELL1] = Y.CP_2_FOLD_CELL(doc, true);
+        const [FOLD1, CELL1] = Y.CP_2_FOLD_CELL(doc);
         if (FOLD1 == undefined) {
             alert("unfoldable Crease Pattern: " + path)
             return false;

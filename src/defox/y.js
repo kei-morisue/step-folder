@@ -1,12 +1,11 @@
 import { M } from "../flatfolder/math.js";
 import { X } from "../flatfolder/conversion.js";
-import { IO } from "../flatfolder/io.js";
 import { SOLVER } from "../flatfolder/solver.js";
 
-
 import { LIN } from "../linefolder/linear.js";
+import { IO3 } from "./io.js"
+import { N } from "./nath.js";
 
-// import { PAR } from "./parallel.js";
 
 export const Y = {     // CONVERSION
     FO_Ff_BF_2_BA0: (FO, Ff, BF) => {
@@ -29,16 +28,88 @@ export const Y = {     // CONVERSION
             return (out == undefined) ? 0 : out;
         });
     },
+    V_FV_EV_EA_FU_UV_2_Vf_Ff: (V, FV, EV, EA, FU, UV) => {
+        const EA_map = new Map();
+        for (const [i, vs] of EV.entries()) {
+            EA_map.set(M.encode_order_pair(vs), EA[i]);
+        }
+        const EF_map = new Map();
+        for (const [i, F] of FV.entries()) {
+            for (const [j, v1] of F.entries()) {
+                const v2 = F[(j + 1) % F.length];
+                EF_map.set(M.encode([v2, v1]), i);
+            }
+        }
+        const Vf = V.map((p) => undefined);
+        const Id = [[1, 0], [0, 1]];
+        const R = [[0, -1], [1, 0]];
+        const seen = new Set();
+        seen.add(0);                    // start search at face 0
+        const [v1, v2,] = FV[0];        // first edge of first face
+        for (const i of [v1, v2]) {
+            Vf[i] = V[i];
+        }            // [face, edge, len, parity]
+        const Ff = new Array(FV.length);
 
+        const d0 = M.sub(V[v1], V[v2]);
+        const A0 = N.matadd(Id, N.matmul(N.proj(N.apply(R, d0)), -2));
+        const b0 = N.apply(N.matsub(Id, A0), V[v2]);
+        const queue = [[0, v1, v2, Infinity, true, A0, b0]];
+        let next = 0;
+        while (next < queue.length) {                   // Prim's algorithm to
+            const [fi, i1, i2, l, s, Ai, bi] = queue[next];     // traverse face graph
+            Ff[fi] = !s;                                // over spanning tree
+            next += 1;                                  // crossing edges of
+            const F = FV[fi];                           // maximum length
+            const d = M.sub(V[i2], V[i1]);
+            const A_ = N.matadd(Id, N.matmul(N.proj(N.apply(R, d)), -2));
+            const A = N.matprod(Ai, A_);
+            const b = M.add(bi, N.apply(N.matsub(Ai, A), V[i2]));
+            for (const ui of FU[fi]) {
+                for (const w of UV[ui]) {
+                    if (Vf[w] == undefined) {
+                        Vf[w] = M.add(b, N.apply(A, V[w]));
+                    }
+                }
+            }
+            let vi = F[F.length - 1];
+            for (const vj of F) {
+                if (Vf[vj] == undefined) {
+                    Vf[vj] = M.add(b, N.apply(A, V[vj]));
+                }
+                const len = M.distsq(V[vi], V[vj]);
+                const f = EF_map.get(M.encode([vi, vj]));
+                const a = EA_map.get(M.encode_order_pair([vi, vj]));
+                const new_s = (a == "M" || a == "V" || a == "U" || a == "RV" || a == "RM" || a == "UF") ? !s : s;
+                if ((f != undefined) && !seen.has(f)) {
+                    queue.push([f, vj, vi, len, new_s, A, b]);
+                    seen.add(f);
+                    let prev = len;
+                    for (let i = queue.length - 1; i > next; --i) {
+                        const curr = queue[i - 1][3];   // O(n^2) but could be
+                        if (curr < prev) {              // O(n log n)
+                            [queue[i], queue[i - 1]] = [queue[i - 1], queue[i]];
+                        } else {
+                            break;
+                        }
+                        prev = curr;
+                    }
+                }
+                vi = vj;
+            }
+        }
+        for (const p of Vf) { if (p == undefined) { debugger; } }
+        return [Vf, Ff];
+    },
 
-    CP_2_FOLD_CELL: (doc, is_flip) => {
-        const [V, VV, EV, EA, EF, FV, FE] =
-            IO.doc_type_side_2_V_VV_EV_EA_EF_FV_FE(doc, "cp", is_flip);
+    CP_2_FOLD_CELL: (doc) => {
+        const [V, VV, EV, EA, EF, FV, FE, UV, FU, Vc] =
+            IO3.cp_2_V_VV_EV_EA_EF_FV_FE(doc);
         if (V == undefined) { return; }
-        const [W, Ff] = X.V_FV_EV_EA_2_Vf_Ff(V, FV, EV, EA);
+        const [W, Ff] = Y.V_FV_EV_EA_FU_UV_2_Vf_Ff(V, FV, EV, EA, FU, UV);
         const Vf = M.normalize_points(W);
 
-        const FOLD = { V, Vf, FV, EV, EF, FE, Ff, EA, VV };
+        const FOLD = { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc };
         const { P, CP, SP, PP, SC, CS, SE, BF, FC, CF } = Y.FOLD_2_CELL(FOLD);
 
         const ExE = X.SE_2_ExE(SE);
@@ -54,7 +125,6 @@ export const Y = {     // CONVERSION
         const BT = BF.map((F, i) => [BT0[i], BT1[i], BT2[i], BT3[i]]);
 
         const BA = SOLVER.initial_assignment(BA0, BF, BT, BI)
-        if (BA.length == 3 && !isNaN(BA[0])) { return [undefined, undefined] }
         const GB = SOLVER.get_components(BI, BF, BT, BA);
         const GA = SOLVER.solve(BI, BF, BT, BA, GB, Infinity);
         const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {
@@ -96,7 +166,7 @@ export const Y = {     // CONVERSION
         for (const [_, [p, q]] of L.entries()) {
             doc = doc + "1 " + p[0] + " " + p[1] + " " + q[0] + " " + q[1] + "\r\n"
         }
-        return Y.CP_2_FOLD_CELL(doc, true)
+        return Y.CP_2_FOLD_CELL(doc)
     },
 
     BF_GB_GA_GI_Ff_2_FO: (BF, GB, GA, GI, Ff) => {

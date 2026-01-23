@@ -34,7 +34,7 @@ export const DRAW_LIN = {
             DRAW.draw_xray(FOLD, flip, svg)
             return
         }
-        const { Vf, Ff, EF, FE, EA, FV, EV, VV } = FOLD;
+        const { Vf, Ff, EF, FE, EA, FV, EV, Vc, UV, FU } = FOLD;
         const V_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
 
         const faces = FV.map(v => M.expand(v, V_));
@@ -74,22 +74,20 @@ export const DRAW_LIN = {
                         return w ? w : DRAW.width.edge["B"];
                     })
                 });
-                if (SEG.clip == 0) {
-                    DRAW_LIN.draw_creases(g, segs, EA, FE[top_f]);
-                } else {
-                    const lines_clipped = SEG.clip_edges(FE[top_f], VV, EA, EV, V_);
-                    DRAW_LIN.draw_creases(g, lines_clipped, EA, FE[top_f]);
+                if (FU) {
+                    const lines_clipped = SEG.clip_edges(FU[top_f], UV, V_, Vc, SEG.clip);
+                    DRAW_LIN.draw_creases(g, lines_clipped);
                 }
             }
         }
     },
 
 
-    draw_creases: (svg, lines, EA, Es) => {
+    draw_creases: (svg, lines) => {
         SVG.draw_segments(svg, lines, {
             id: true,
             stroke: DRAW.color.edge["F"],
-            filter: (i) => EA[Es[i]] == "F",
+
             stroke_width: DRAW.width.edge.F,
         });
     },
