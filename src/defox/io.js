@@ -85,6 +85,7 @@ export const IO3 = {    // INPUT-OUTPUT
                 Vc[v] = true;
             }
         }
-        return [V, VV, EV, EA, EF, FV, FE, UV, FU, Vc];
+        const UA = UV.map(_ => "F");
+        return [V, VV, EV, EA, EF, FV, FE, UV, FU, Vc, UA];
     },
 }

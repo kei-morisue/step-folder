@@ -34,7 +34,7 @@ export const DRAW_LIN = {
             DRAW.draw_xray(FOLD, flip, svg)
             return
         }
-        const { Vf, Ff, EF, FE, EA, FV, EV, Vc, UV, FU } = FOLD;
+        const { Vf, Ff, EF, FE, EA, FV, EV, Vc, UV, FU, UA } = FOLD;
         const V_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
 
         const faces = FV.map(v => M.expand(v, V_));
@@ -61,8 +61,7 @@ export const DRAW_LIN = {
                 const segs = FE[top_f].map((e) => M.expand(EV[e], V_))
                 const is_pair = is_Ff ^ is_flip;
                 SVG.draw_segments(g, segs, {
-                    id: true,
-                    filter: (i) => EA[FE[top_f][i]] != "F",
+
                     stroke: FE[top_f].map((e) => {
                         if (is_pair) {
                             return DRAW_LIN.color.edge[DRAW.pair(EA[e])];
@@ -74,21 +73,27 @@ export const DRAW_LIN = {
                         return w ? w : DRAW.width.edge["B"];
                     })
                 });
-                if (FU) {
-                    const lines_clipped = SEG.clip_edges(FU[top_f], UV, V_, Vc, SEG.clip);
-                    DRAW_LIN.draw_creases(g, lines_clipped);
-                }
+
+                const a = FU[top_f].map((ui) => UA[ui]);
+                const lines_clipped = SEG.clip_edges(FU[top_f], UV, V_, Vc, SEG.clip);
+                DRAW_LIN.draw_creases(g, lines_clipped, a, is_pair);
             }
         }
     },
 
 
-    draw_creases: (svg, lines) => {
+    draw_creases: (svg, lines, as, is_pair) => {
         SVG.draw_segments(svg, lines, {
-            id: true,
-            stroke: DRAW.color.edge["F"],
-
-            stroke_width: DRAW.width.edge.F,
+            stroke: as.map((a) => {
+                if (is_pair) {
+                    return DRAW_LIN.color.edge[DRAW.pair(a)];
+                }
+                return DRAW_LIN.color.edge[a];
+            }),
+            stroke_width: as.map((a) => {
+                const w = DRAW.width.edge[a]
+                return w ? w : DRAW.width.edge["B"];
+            })
         });
     },
 

@@ -103,13 +103,13 @@ export const Y = {     // CONVERSION
     },
 
     CP_2_FOLD_CELL: (doc) => {
-        const [V, VV, EV, EA, EF, FV, FE, UV, FU, Vc] =
+        const [V, VV, EV, EA, EF, FV, FE, UV, FU, Vc, UA] =
             IO3.cp_2_V_VV_EV_EA_EF_FV_FE(doc);
         if (V == undefined) { return; }
         const [W, Ff] = Y.V_FV_EV_EA_FU_UV_2_Vf_Ff(V, FV, EV, EA, FU, UV);
         const Vf = M.normalize_points(W);
 
-        const FOLD = { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc };
+        const FOLD = { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA };
         const { P, CP, SP, PP, SC, CS, SE, BF, FC, CF } = Y.FOLD_2_CELL(FOLD);
 
         const ExE = X.SE_2_ExE(SE);
@@ -182,7 +182,7 @@ export const Y = {     // CONVERSION
     FOLD_CELL_2_STATE: (FOLD, CELL) => {
         const { Ff, FO } = FOLD;
         if (FO == undefined) { return undefined }
-        const { P, SE, PP, CP, SC, CF } = CELL;
+        const { P, CF } = CELL;
         const Q = P;
         const edges = FO.map(([f1, f2, o]) => {
             return M.encode(((Ff[f2] ? 1 : -1) * o >= 0) ? [f1, f2] : [f2, f1]);

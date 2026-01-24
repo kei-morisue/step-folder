@@ -92,22 +92,25 @@ export const DRAW = {
     },
     draw_cp: (FOLD, svg_cp, text = false) => {
 
-        const { V, FV, EV, EA } = FOLD;
+        const { V, FV, EV, EA, UA, UV } = FOLD;
 
         const faces = FV.map(F => M.expand(F, V));
         const lines = EV.map(E => M.expand(E, V));
+        const creases = UV.map(U => M.expand(U, V));
+
         const colors = EA.map(a => DRAW.color.segment[a]);
         const widths = EA.map(a => DRAW.width.segment[a]);
         const g1 = SVG.append("g", svg_cp, { id: "flat_f" });
         SVG.draw_polygons(g1, faces, { fill: "white", id: true });
         const g2 = SVG.append("g", svg_cp, { id: "flat_e" });
-        SVG.draw_segments(g2, lines, { stroke_width: widths, stroke: colors, id: true });
+        SVG.draw_segments(g2, lines, { stroke_width: widths, stroke: colors });
+
+        const colors_c = UA.map(a => DRAW.color.segment[a]);
+        const widths_c = UA.map(a => DRAW.width.segment[a]);
+        SVG.draw_segments(g2, creases, { stroke_width: widths_c, stroke: colors_c });
 
 
-        if (text) {
-            const cp_text = SVG.append("g", svg_cp, { id: "cp_text" });
-            DRAW.draw_text(FOLD, cp_text)
-        }
+
 
     },
     draw_state: (svg, FOLD, CELL, STATE, T, id = 0) => {
@@ -117,7 +120,7 @@ export const DRAW = {
             DRAW.draw_xray(FOLD, is_flip, svg)
             return
         }
-        const { Ff, EF, FE, EA } = FOLD;
+        const { Ff, EF, FE, EA, FU, UV, Vc, UA, Vf } = FOLD;
         const { P, PP, CP, CF, SP, SC, SE } = CELL;
         const { Q, Ctop, Cbottom, L, Ccolor, Ccolor_bottom } = STATE;
         const color = is_flip ? Ccolor_bottom : Ccolor;
@@ -156,52 +159,48 @@ export const DRAW = {
                 return DRAW.width.edge[d];
             }),
         });
-        if (SEG.clip == 0) {
-            DRAW.draw_creases(fold_s_crease, lines, SC, SD, Ccolor);
-        } else {
-            const lines_clipped = SEG.clip_lines(lines, CELL, SD, Q_);
-            DRAW.draw_creases(fold_s_crease, lines_clipped, SC, SD, Ccolor);
-        }
+
 
         SVG.draw_segments(fold_s_edge, lines, {
             id: true, stroke: DRAW.color.edge.B,
             filter: (i) => SD[i][0] == "B",
             stroke_width: DRAW.width.edge.B,
         });
+        const Vf_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
+        const FD = is_flip ? Cbottom : Ctop;
+        for (const [ci, fi] of FD.entries()) {
+            const gg = SVG.append("g", fold_s_crease);
+            if (FU[fi].length > 0) {
+                const cp = SVG.append("clipPath", fold_s_crease);
+                SVG.draw_polygons(cp, [cells[ci]], { id: true, });
+                cp.setAttribute("id", "cpath_" + id + "_" + ci);
+            }
 
-    },
-
-    draw_creases: (svg, lines, SC, SD, Ccolor) => {
-        SVG.draw_segments(svg, lines, {
-            id: true, stroke: SD.map((d, i) => {
-                const [c0, c1] = SC[i];
-
-                if (Ccolor[c0] && Ccolor[c1]) {
-                    return DRAW.color.edge[DRAW.pair(d)];
-                }
-                return DRAW.color.edge[d];
-            }),
-            filter: (i) => SD[i] == "F",
-            stroke_width: DRAW.width.edge.F,
-        });
-    },
-
-    draw_text: (FOLD, group) => {
-        const G = {};
-        for (const id of ["f", "e", "v"]) {
-            G[id] = SVG.append("g", group, { id: `text_${id}` });
+            gg.setAttribute("clip-path", "url(#cpath_" + id + "_" + ci + ")");
+            const creases = FU[fi].map((ui) => M.expand(UV[ui], Vf_));
+            const as = FU[fi].map((ui) => UA[ui]);
+            // const lines_clipped = SEG.clip_lines(creases, CELL, SD, Q_);
+            DRAW.draw_creases(gg, creases, as, is_flip ^ Ff[fi]);
         }
-        const { Vf, EV, EA, FV } = FOLD;
-        const F = FV.map(f => M.expand(f, Vf));
-        const shrunk = F.map(f => {
-            const c = M.centroid(f);
-            return f.map(p => M.add(M.mul(M.sub(p, c), 0.5), c));
-        });
-        SVG.draw_polygons(G.f, shrunk, { text: true, opacity: 0.2 });
-        const line_centers = EV.map(l => M.centroid(M.expand(l, Vf)));
-        const colors = "red";
-        SVG.draw_points(G.e, line_centers, { text: true, fill: colors });
+
     },
+
+
+    draw_creases: (svg, lines, as, is_pair) => {
+        SVG.draw_segments(svg, lines, {
+            stroke: as.map((a) => {
+                if (is_pair) {
+                    return DRAW.color.edge[DRAW.pair(a)];
+                }
+                return DRAW.color.edge[a];
+            }),
+            stroke_width: as.map((a) => {
+                const w = DRAW.width.edge[a]
+                return w ? w : DRAW.width.edge["B"];
+            })
+        });
+    },
+
 
     draw_group_text: (FOLD, CELL, svg, T) => {
         const { Vf, FV } = FOLD;
@@ -248,8 +247,8 @@ export const DRAW = {
     },
 
     draw_xray: (FOLD, is_flip, svg) => {
-        const { FV, V } = FOLD
-        const P = DRAW.transform_points(V, is_flip, 0, true)
+        const { FV, Vf } = FOLD
+        const P = DRAW.transform_points(Vf, is_flip, 0, true)
         const F = FV.map(f => M.expand(f, P));
         SVG.draw_polygons(svg, F, { opacity: 0.05 });
     },
