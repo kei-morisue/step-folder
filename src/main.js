@@ -32,13 +32,13 @@ const MAIN = {
         };
 
         document.getElementById("export").onclick = (e) => {
-            IO3.write(MAIN.steps[MAIN.current_idx].state_d, "state3", "hoge")
+            IO3.write(MAIN.steps[MAIN.current_idx].fold_d, "state3", "hoge")
         };
 
         document.getElementById("next").onclick = MAIN.next;
         document.getElementById("prev").onclick = MAIN.prev;
         document.getElementById("import0").onchange = MAIN.read;
-        MAIN.import_new("sample", SMPL.owo);
+        MAIN.import_new("sample", SMPL.nonlin);
 
 
 

@@ -88,7 +88,6 @@ export const DIFF = {
             }
         }
         const [Vf, Ff] = Y.V_FV_EV_EA_FU_UV_2_Vf_Ff(V, FV, EV, EA, FU, UV)
-        const FOLD = { V, Vf, EV, EA, EF, FV, FE, Ff, VV, FU, UV, Vc, UA }
         const FF_map = F0.FV.map((vs) => [])
         for (const [i, vs] of FV.entries()) {
             const c = M.interior_point(M.expand(vs, V))
@@ -100,6 +99,16 @@ export const DIFF = {
                 }
             }
         }
+        const FO = []
+        for (const [, [f1, f2, o]] of F0.FO.entries()) {
+            for (const [, gi] of FF_map[f1].entries()) {
+                for (const [, hi] of FF_map[f2].entries()) {
+                    if (BF.includes(M.encode_order_pair([gi, hi]))) {
+                        FO.push([gi, hi, o])
+                    }
+                }
+            }
+        }
         for (const [i, Fs] of FF_map.entries()) {
             if (Fs.length == 1) {
                 if (F0.Ff[i] != Ff[Fs[0]]) {
@@ -108,6 +117,8 @@ export const DIFF = {
                 }
             }
         }
+        const FOLD = { V, Vf, EV, EA, EF, FV, FE, Ff, VV, FU, UV, Vc, UA, FO }
+
         if (!LIN0) {
             const CL = EV.map((P) => M.expand(P, Vf));
             const [P, SP, SE,] = X.L_2_V_EV_EL(CL);
@@ -115,28 +126,13 @@ export const DIFF = {
             const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
             const [CF, FC] = X.EF_FV_SP_SE_CP_SC_2_CF_FC(EF, FV, SP, SE, CP, SC);
             const BF = X.CF_2_BF(CF);
-            const BI = new Map();
-            for (const [i, F] of BF.entries()) { BI.set(F, i); }
-            const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI };
 
-            const FO = []
-            for (const [, [f1, f2, o]] of F0.FO.entries()) {
-                for (const [, gi] of FF_map[f1].entries()) {
-                    for (const [, hi] of FF_map[f2].entries()) {
-                        if (BF.includes(M.encode_order_pair([gi, hi]))) {
-                            FO.push([gi, hi, o])
-                        }
-                    }
-                }
-            }
-            FOLD.FO = FO
-            return [FOLD, CELL, undefined]
+            return [FOLD, undefined]
         }
 
         const LIN = LIN0.map((fs) => {
             const f1 = []
             for (const [, f] of fs.entries()) {
-
                 for (const [, f0] of FF_map[f].entries()) {
                     f1.push(f0);
                 }
@@ -144,6 +140,6 @@ export const DIFF = {
             return f1;
         }
         );
-        return [FOLD, undefined, LIN];
+        return [FOLD, LIN];
     },
 }

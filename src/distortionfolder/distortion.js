@@ -48,14 +48,15 @@ export const DIST = {    // STATE DISTORTER
         const A = [[r1 + r2 * cy, r2 * sy], [r2 * sy, r1 - r2 * cy]];
         return V.map((v, i) => { return M.add(Vf[i], DIST.matprod(A, v)) });
     },
+
     infer_FO: (FOLD, CELL_D) => {
-        //Solving only with FULL Constraints
         const { EF, FO, Ff } = FOLD
         const { BF, SE, CF, SC, SP, FC, CP } = CELL_D
         const BI_map = new Map();
         for (const [i, k] of BF.entries()) {
             BI_map.set(k, i);
         }
+
         const BA0 = BF.map(() => 0);
         for (const [i, [f1, f2, o]] of FO.entries()) {
             const k = M.encode_order_pair([f1, f2]);
@@ -82,53 +83,10 @@ export const DIST = {    // STATE DISTORTER
         if (n > 0) {
             const GI = GB.map(() => 0);// take the first solution
             //Inferring FO
-            return X.edges_Ff_2_FO(X.BF_GB_GA_GI_2_edges(BF, GB, GA, GI), Ff)
+            const edges = X.BF_GB_GA_GI_2_edges(BF, GB, GA, GI);
+            return X.edges_Ff_2_FO(edges, Ff)
         }
         return
     },
 
-
-    write: (FOLD) => {
-        const { V, Vf, EV, EA, FV, FO } = FOLD;
-        const path = document.getElementById("import").value.split("\\");
-        const name = path[path.length - 1].split(".")[0];
-        FOLD = {
-            file_spec: 1.1,
-            file_creator: "flat-distorter",
-            file_title: `${name}_dist`,
-            file_classes: ["singleModel"],
-            vertices_coords: V,
-            edges_vertices: EV,
-            edges_assignment: EA,
-            faces_vertices: FV,
-        };
-        const data = {};
-        if (FO != undefined) {
-            FOLD.faceOrders = FO;   // TODO: remove implied face orders?
-        }
-        data.fold = new Blob([JSON.stringify(FOLD, undefined, 2)], {
-            type: "application/json"
-        });
-        data.svg = new Blob([document.getElementById("output").outerHTML], {
-            type: "image/svg+xml"
-        });
-        data.log = new Blob([NOTE.lines.join("\n")], {
-            type: "text/plain"
-        });
-        const ex = SVG.clear("export");
-        for (const [type, ext] of [
-            ["fold", "fold"],
-            ["svg", "svg"],
-            ["log", "txt"]
-        ]) {
-            const link = document.createElement("a");
-            const button = document.createElement("input");
-            ex.appendChild(link);
-            link.appendChild(button);
-            link.setAttribute("download", `${name}_dist.${ext}`);
-            link.setAttribute("href", window.URL.createObjectURL(data[type]));
-            button.setAttribute("type", "button");
-            button.setAttribute("value", type);
-        }
-    },
 }

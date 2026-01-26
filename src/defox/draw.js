@@ -113,7 +113,7 @@ export const DRAW = {
 
 
     },
-    draw_state: (svg, FOLD, CELL, STATE, T, id = 0) => {
+    draw_state: (svg, FOLD, CELL, STATE, T, draw_creases, id = 0) => {
         const det = N.det(T[0]);
         const is_flip = det < 0
         if (STATE == undefined) {
@@ -166,6 +166,9 @@ export const DRAW = {
             filter: (i) => SD[i][0] == "B",
             stroke_width: DRAW.width.edge.B,
         });
+        if (!draw_creases) {
+            return;
+        }
         const Vf_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
         const FD = is_flip ? Cbottom : Ctop;
         for (const [ci, fi] of FD.entries()) {
@@ -174,13 +177,12 @@ export const DRAW = {
                 const cp = SVG.append("clipPath", fold_s_crease);
                 SVG.draw_polygons(cp, [cells[ci]], { id: true, });
                 cp.setAttribute("id", "cpath_" + id + "_" + ci);
+                gg.setAttribute("clip-path", "url(#cpath_" + id + "_" + ci + ")");
+                const as = FU[fi].map((ui) => UA[ui]);
+                const creases_clipped = SEG.clip_edges(FU[fi], UV, Vf_, Vc, SEG.clip);
+                DRAW.draw_creases(gg, creases_clipped, as, is_flip ^ Ff[fi]);
             }
 
-            gg.setAttribute("clip-path", "url(#cpath_" + id + "_" + ci + ")");
-            const creases = FU[fi].map((ui) => M.expand(UV[ui], Vf_));
-            const as = FU[fi].map((ui) => UA[ui]);
-            // const lines_clipped = SEG.clip_lines(creases, CELL, SD, Q_);
-            DRAW.draw_creases(gg, creases, as, is_flip ^ Ff[fi]);
         }
 
     },
