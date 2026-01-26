@@ -81,7 +81,7 @@ export const STEP = {
         STEP.FOLD_D = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA }
 
 
-        if (!STEP.LIN) {
+        if (STEP.LIN.cycle.length != 0) {
             STEP.CELL_D = Y.FOLD_2_CELL(STEP.FOLD_D)
             const FO_D = DIST.infer_FO(STEP.FOLD, STEP.CELL_D)
             STEP.FOLD_D.FO = FO_D
@@ -92,7 +92,6 @@ export const STEP = {
 
 
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
-        // DRAW.draw_cp(STEP.FOLD, document.getElementById("cp3"), false);
         return STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", STEP.get_transform());
 
     },
@@ -115,10 +114,9 @@ export const STEP = {
         STEP.STATE0 = STEP.update_state(STEP.FOLD0, STEP.CELL0, "state0", T);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
         if (STEP.FOLD1) {
-            // STEP.update_state(STEP.FOLD1, STEP.CELL1, "state1", T);
-            [STEP.FOLD, STEP.CELL, STEP.LIN] = DIFF.diff(STEP.FOLD0, STEP.FOLD1, STEP.STATE0.L);
+            [STEP.FOLD, STEP.LIN] = DIFF.diff(STEP.FOLD0, STEP.FOLD1, STEP.STATE0.L);
         } else {
-            [STEP.FOLD, STEP.CELL, STEP.LIN] = [STEP.FOLD0, STEP.CELL0, STEP.STATE0.L];
+            [STEP.FOLD, STEP.LIN] = [STEP.FOLD0, STEP.STATE0.L];
         }
 
         DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"), false)
@@ -130,7 +128,7 @@ export const STEP = {
             return;
         }
         if (!CELL) {
-            DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, STEP.LIN, T, STEP.id);
+            DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, STEP.LIN.S, T, STEP.id);
             return undefined;
         } else {
             const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);

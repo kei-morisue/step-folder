@@ -101,13 +101,9 @@ export const DIFF = {
         }
         const FO = []
         for (const [, [f1, f2, o]] of F0.FO.entries()) {
-            for (const [, gi] of FF_map[f1].entries()) {
-                for (const [, hi] of FF_map[f2].entries()) {
-                    if (BF.includes(M.encode_order_pair([gi, hi]))) {
-                        FO.push([gi, hi, o])
-                    }
-                }
-            }
+            const gi = FF_map[f1][0];
+            const hi = FF_map[f2][0];
+            FO.push([gi, hi, o])
         }
         for (const [i, Fs] of FF_map.entries()) {
             if (Fs.length == 1) {
@@ -119,27 +115,14 @@ export const DIFF = {
         }
         const FOLD = { V, Vf, EV, EA, EF, FV, FE, Ff, VV, FU, UV, Vc, UA, FO }
 
-        if (!LIN0) {
-            const CL = EV.map((P) => M.expand(P, Vf));
-            const [P, SP, SE,] = X.L_2_V_EV_EL(CL);
-            const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
-            const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
-            const [CF, FC] = X.EF_FV_SP_SE_CP_SC_2_CF_FC(EF, FV, SP, SE, CP, SC);
-            const BF = X.CF_2_BF(CF);
-
-            return [FOLD, undefined]
-        }
-
-        const LIN = LIN0.map((fs) => {
-            const f1 = []
-            for (const [, f] of fs.entries()) {
-                for (const [, f0] of FF_map[f].entries()) {
-                    f1.push(f0);
-                }
-            }
-            return f1;
+        const S = LIN0.S.map((f0) => {
+            return FF_map[f0][0];
         }
         );
-        return [FOLD, LIN];
+        const cycle = LIN0.cycle.map((s) => {
+            const [f, g] = M.decode(s);
+            return M.encode(FF_map[f][0], FF_map[g][0]);
+        });
+        return [FOLD, { S, cycle }];
     },
 }

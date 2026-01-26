@@ -113,7 +113,7 @@ export const DRAW = {
 
 
     },
-    draw_state: (svg, FOLD, CELL, STATE, T, draw_creases, id = 0) => {
+    draw_state: (svg, FOLD, CELL, STATE, T, id = 0) => {
         const det = N.det(T[0]);
         const is_flip = det < 0
         if (STATE == undefined) {
@@ -128,12 +128,12 @@ export const DRAW = {
         const Q_ = M.normalize_points(Q).map((v) => N.transform(T, v));
         const cells = CP.map(V => M.expand(V, Q_));
 
+        const defs = SVG.append("defs", svg);
         const gg = SVG.append("g", svg)
 
         if (Math.abs(det) > 1) {
             SVG3.draw_clip_path(svg, gg, id);
         }
-
         const fold_c = SVG.append("g", gg, { id: "fold_c" });
         const fold_s_crease = SVG.append("g", gg, { id: "fold_s_crease" });
         const fold_s_edge = SVG.append("g", gg, { id: "fold_s_edge" });
@@ -166,15 +166,13 @@ export const DRAW = {
             filter: (i) => SD[i][0] == "B",
             stroke_width: DRAW.width.edge.B,
         });
-        if (!draw_creases) {
-            return;
-        }
+
         const Vf_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
         const FD = is_flip ? Cbottom : Ctop;
         for (const [ci, fi] of FD.entries()) {
-            const gg = SVG.append("g", fold_s_crease);
             if (FU[fi].length > 0) {
-                const cp = SVG.append("clipPath", fold_s_crease);
+                const gg = SVG.append("g", fold_s_crease);
+                const cp = SVG.append("clipPath", defs);
                 SVG.draw_polygons(cp, [cells[ci]], { id: true, });
                 cp.setAttribute("id", "cpath_" + id + "_" + ci);
                 gg.setAttribute("clip-path", "url(#cpath_" + id + "_" + ci + ")");

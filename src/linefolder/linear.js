@@ -2,7 +2,41 @@ import { M } from "../flatfolder/math.js";
 
 
 export const LIN = {
-
+    serialize: (edges, n) => {
+        const Adj = Array(n).fill(0).map(() => []);
+        for (const s of edges) {
+            const [f1, f2] = M.decode(s);
+            Adj[f1].push(f2);
+        }
+        const S = [];
+        const seen = Array(n).fill(false);
+        const dfs = (i) => {
+            if (seen[i]) { return; }
+            seen[i] = true;
+            for (const j of Adj[i]) {
+                dfs(j);
+            }
+            S.push(i);
+        };
+        for (let i = 0; i < n; ++i) {
+            dfs(i);
+        }
+        S.reverse();
+        console.assert(S.length == n);
+        const idx_map = Array(n).fill(undefined);
+        for (let i = 0; i < n; ++i) {
+            const fi = S[i];
+            idx_map[fi] = i;
+        }
+        const cycle = []
+        for (const s of edges) {
+            const [f1, f2] = M.decode(s);
+            if (idx_map[f1] > idx_map[f2]) {
+                cycle.push(s);
+            }
+        }
+        return { S, cycle };
+    },
     linearize: (edges, n) => {
         const Adj = Array(n).fill(0).map(() => []);
         for (const s of edges) {
