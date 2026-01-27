@@ -9,6 +9,8 @@ import { CON } from "../flatfolder/constraints.js";
 import { DIST } from "../distortionfolder/distortion.js";
 
 import { STEP } from "./step.js";
+import { N } from "./nath.js";
+
 import { DRAW } from "./draw.js";
 import { Y } from "./y.js";
 import { SEG } from "./segment.js";
@@ -55,9 +57,11 @@ export const GUI = {
             const w = SVG.SCALE + 2 * SVG.MARGIN;
             const b = SVG.MARGIN / SVG.SCALE;
             const z = STEP.get_zoom();
-            [STEP.cx, STEP.cy] = [
-                STEP.cx + (cursorpt.x / w - .5 + b) / z,
-                STEP.cy + (cursorpt.y / w - .5 + b) / z];
+            const th = (2 * STEP.rotate - 1) * Math.PI;
+            const Ainv = N.mat(false, 1 / z, -th);
+            const x0 = (cursorpt.x / w - .5 + b);
+            const y0 = (cursorpt.y / w - .5 + b);
+            [STEP.cx, STEP.cy] = M.add([STEP.cx, STEP.cy], N.apply(Ainv, [x0, y0]));
             STEP.redraw();
         }
         GUI.setup_number_options(
@@ -71,8 +75,7 @@ export const GUI = {
         for (const [i, id] of ["T0", "T1", "T2", "T3"].entries()) {
             document.getElementById("cb_" + id).onchange = (e) => {
                 DIST[id] = e.target.checked;
-                STEP.update_states();
-                STEP.update_dist();
+                STEP.recalculate();
             }
         }
         document.getElementById("topcolor").onchange = (e) => {
@@ -109,7 +112,7 @@ export const GUI = {
         }
 
         document.getElementById("apply_tt").onclick = (e) => {
-            STEP.update_lin()
+            STEP.recalculate()
         }
         document.getElementById("reset_tt").onclick = (e) => {
             STEP.update_states()

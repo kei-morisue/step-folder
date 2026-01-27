@@ -38,7 +38,7 @@ const MAIN = {
         document.getElementById("next").onclick = MAIN.next;
         document.getElementById("prev").onclick = MAIN.prev;
         document.getElementById("import0").onchange = MAIN.read;
-        MAIN.import_new("sample", SMPL.windmil);
+        MAIN.import_new("sample", SMPL.nonlin);
 
 
 
@@ -163,6 +163,7 @@ const MAIN = {
         }
         STEP.FOLD0 = MAIN.steps[i].fold_cp;
         STEP.CELL0 = MAIN.steps[i].cell_cp;
+        STEP.STATE0 = MAIN.steps[i].state_cp;
 
         if (i < MAIN.steps.length - 1) {
             STEP.FOLD1 = MAIN.steps[i + 1].fold_cp;
@@ -173,7 +174,6 @@ const MAIN = {
         }
         STEP.id = i;
         STEP.FOLD = MAIN.steps[i].fold;
-        STEP.CELL = MAIN.steps[i].cell;
 
         STEP.FOLD_D = MAIN.steps[i].fold_d;
         STEP.CELL_D = MAIN.steps[i].cell_d;
@@ -194,8 +194,8 @@ const MAIN = {
         if (MAIN.steps.length - 1 < i) {
             return;
         }
+        MAIN.steps[i].state_cp = STEP.STATE0;
         MAIN.steps[i].fold = STEP.FOLD;
-        MAIN.steps[i].cell = STEP.CELL;
         MAIN.steps[i].fold_d = STEP.FOLD_D;
         MAIN.steps[i].cell_d = STEP.CELL_D;
         MAIN.steps[i].lin = STEP.LIN;

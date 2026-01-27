@@ -40,16 +40,16 @@ export const STEP = {
     },
     redraw: () => {
         const T = STEP.get_transform();
-        STEP.update_state(STEP.FOLD0, STEP.CELL0, "state0", T);
+        DRAW.draw_state(SVG.clear("state0"), STEP.FOLD0, STEP.CELL0, STEP.STATE0, T, STEP.id);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
         DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"))
 
-        STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", T);
+        STEP.update_serial_state(STEP.FOLD_D, STEP.LIN.S, "state3", T, STEP.CELL_D);
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
 
         const select = document.getElementById("selectG");
         const assign = document.getElementById("assign");
-        STEP.update_component(STEP.FOLD0, STEP.CELL0, select, assign);
+        STEP.update_component(STEP.CELL0, select, assign);
     },
 
     new: () => {
@@ -57,47 +57,34 @@ export const STEP = {
         STEP.update_states();
         const select = document.getElementById("selectG");
         const assign = document.getElementById("assign");
-        STEP.update_component(STEP.FOLD0, STEP.CELL0, select, assign);
+        STEP.update_component(STEP.CELL0, select, assign);
         DIST.refresh();
         SEG.refresh();
         STEP.update_dist();
     },
 
-    update_lin: () => {
-        STEP.LIN = undefined;
-
-        [STEP.FOLD, STEP.CELL,] = DIFF.diff(STEP.FOLD0, STEP.FOLD1, undefined);
-        const state = STEP.update_dist();
-        if (state.L) {
-            STEP.LIN = state.L
-            STEP.CELL_D = undefined;
-            STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", STEP.get_transform());
-        }
+    recalculate: () => {
+        const FOLD = STEP.FOLD;
+        const CELL = Y.FOLD_2_CELL(STEP.FOLD_D);
+        const FO = DIST.infer_FO(FOLD, CELL);
+        STEP.FOLD_D.FO = FO;
+        const T = STEP.get_transform();
+        STEP.update_state(STEP.FOLD_D, CELL, "state3", T)
     },
 
     update_dist: () => {
         const { Vf, FV, EV, EF, FE, Ff, EA, V, VV, Vc, FU, UV, UA } = STEP.FOLD
         const VD = DIST.FOLD_2_VD(Vf, V)
-        STEP.FOLD_D = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA }
-
+        STEP.FOLD_D = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA };
 
         if (STEP.LIN.cycle.length != 0) {
             NOTE.annotate(STEP.LIN.S, "serials");
             NOTE.annotate(STEP.LIN.cycle, "cycles");
-            STEP.CELL_D = Y.FOLD_2_CELL(STEP.FOLD_D);
-            const FO_D = DIST.infer_FO(STEP.FOLD, STEP.CELL_D);
-            STEP.FOLD_D.FO = FO_D;
         }
-        else {
-            STEP.CELL_D = undefined;
-        }
-
-
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
-        return STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", STEP.get_transform());
-
+        return STEP.update_serial_state(STEP.FOLD_D, STEP.LIN.S, "state3", STEP.get_transform());
     },
-    update_component: (FOLD, CELL, el_select, el_assign) => {
+    update_component: (CELL, el_select, el_assign) => {
         const { GB, GA } = CELL
         SVG.clear(el_select.id)
         el_assign.max = GA[0].length
@@ -120,22 +107,22 @@ export const STEP = {
         } else {
             [STEP.FOLD, STEP.LIN] = [STEP.FOLD0, STEP.STATE0.L];
         }
-
-        DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"))
-
+        DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"));
     },
 
     update_state: (FOLD, CELL, svg_state, T) => {
         if (!FOLD) {
             return;
         }
-        if (!CELL) {
-            DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, STEP.LIN.S, T, STEP.id);
-            return undefined;
-        } else {
-            const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
-            DRAW.draw_state(SVG.clear(svg_state), FOLD, CELL, STATE, T, STEP.id);
-            return STATE
+        const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
+        DRAW.draw_state(SVG.clear(svg_state), FOLD, CELL, STATE, T, STEP.id);
+        return STATE
+    },
+    update_serial_state: (FOLD, S, svg_state, T, CELL = undefined) => {
+        if (!FOLD) {
+            return;
         }
+        DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, S, T, STEP.id);
+        return undefined;
     },
 };
