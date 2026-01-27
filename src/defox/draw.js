@@ -90,7 +90,7 @@ export const DRAW = {
                 return d;
         }
     },
-    draw_cp: (FOLD, svg_cp, text = false) => {
+    draw_cp: (FOLD, svg_cp) => {
 
         const { V, FV, EV, EA, UA, UV } = FOLD;
 
@@ -108,9 +108,6 @@ export const DRAW = {
         const colors_c = UA.map(a => DRAW.color.segment[a]);
         const widths_c = UA.map(a => DRAW.width.segment[a]);
         SVG.draw_segments(g2, creases, { stroke_width: widths_c, stroke: colors_c });
-
-
-
 
     },
     draw_state: (svg, FOLD, CELL, STATE, T, id = 0) => {
@@ -134,9 +131,9 @@ export const DRAW = {
         if (Math.abs(det) > 1) {
             SVG3.draw_clip_path(svg, gg, id);
         }
-        const fold_c = SVG.append("g", gg, { id: "fold_c" });
-        const fold_s_crease = SVG.append("g", gg, { id: "fold_s_crease" });
-        const fold_s_edge = SVG.append("g", gg, { id: "fold_s_edge" });
+        const fold_c = SVG.append("g", gg, { id: svg.id + "_fold_c_" + id });
+        const fold_s_crease = SVG.append("g", gg, { id: svg.id + "_fold_s_crease_" + id });
+        const fold_s_edge = SVG.append("g", gg, { id: svg.id + "_fold_s_edge_" + id });
 
         SVG.draw_polygons(fold_c, cells, {
             id: true,
@@ -174,8 +171,8 @@ export const DRAW = {
                 const gg = SVG.append("g", fold_s_crease);
                 const cp = SVG.append("clipPath", defs);
                 SVG.draw_polygons(cp, [cells[ci]], { id: true, });
-                cp.setAttribute("id", "cpath_" + id + "_" + ci);
-                gg.setAttribute("clip-path", "url(#cpath_" + id + "_" + ci + ")");
+                cp.setAttribute("id", svg.id + "_cpath_" + id + "_" + ci);
+                gg.setAttribute("clip-path", "url(#" + svg.id + "_cpath_" + id + "_" + ci + ")");
                 const as = FU[fi].map((ui) => UA[ui]);
                 const creases_clipped = SEG.clip_edges(FU[fi], UV, Vf_, Vc, SEG.clip);
                 DRAW.draw_creases(gg, creases_clipped, as, is_flip ^ Ff[fi]);

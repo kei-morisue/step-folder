@@ -70,9 +70,9 @@ export const GUI = {
 
         for (const [i, id] of ["T0", "T1", "T2", "T3"].entries()) {
             document.getElementById("cb_" + id).onchange = (e) => {
-                DIST[id] = e.target.checked
-                STEP.update_states()
-                STEP.update_dist()
+                DIST[id] = e.target.checked;
+                STEP.update_states();
+                STEP.update_dist();
             }
         }
         document.getElementById("topcolor").onchange = (e) => {

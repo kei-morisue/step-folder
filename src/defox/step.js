@@ -10,6 +10,7 @@ import { DRAW_LIN } from "./draw_lin.js";
 import { DRAW } from "./draw.js";
 import { DIFF } from "./diff.js";
 import { SEG } from "./segment.js";
+import { NOTE } from "../flatfolder/note.js";
 
 export const STEP = {
     id: 0,
@@ -41,8 +42,7 @@ export const STEP = {
         const T = STEP.get_transform();
         STEP.update_state(STEP.FOLD0, STEP.CELL0, "state0", T);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
-        // STEP.update_state(STEP.FOLD1, STEP.CELL1, "state1", T);
-        DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"), false)
+        DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"))
 
         STEP.update_state(STEP.FOLD_D, STEP.CELL_D, "state3", T);
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
@@ -82,9 +82,11 @@ export const STEP = {
 
 
         if (STEP.LIN.cycle.length != 0) {
-            STEP.CELL_D = Y.FOLD_2_CELL(STEP.FOLD_D)
-            const FO_D = DIST.infer_FO(STEP.FOLD, STEP.CELL_D)
-            STEP.FOLD_D.FO = FO_D
+            NOTE.annotate(STEP.LIN.S, "serials");
+            NOTE.annotate(STEP.LIN.cycle, "cycles");
+            STEP.CELL_D = Y.FOLD_2_CELL(STEP.FOLD_D);
+            const FO_D = DIST.infer_FO(STEP.FOLD, STEP.CELL_D);
+            STEP.FOLD_D.FO = FO_D;
         }
         else {
             STEP.CELL_D = undefined;
@@ -119,7 +121,7 @@ export const STEP = {
             [STEP.FOLD, STEP.LIN] = [STEP.FOLD0, STEP.STATE0.L];
         }
 
-        DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"), false)
+        DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"))
 
     },
 
