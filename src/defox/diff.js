@@ -121,7 +121,7 @@ export const DIFF = {
         );
         const cycle = LIN0.cycle.map((s) => {
             const [f, g] = M.decode(s);
-            return M.encode(FF_map[f][0], FF_map[g][0]);
+            return M.encode([FF_map[f][0], FF_map[g][0]]);
         });
         return [FOLD, { S, cycle }];
     },

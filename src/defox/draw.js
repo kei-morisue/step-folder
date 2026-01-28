@@ -166,13 +166,24 @@ export const DRAW = {
 
         const Vf_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
         const FD = is_flip ? Cbottom : Ctop;
+        const FC_map = new Map();
         for (const [ci, fi] of FD.entries()) {
+            const cis = FC_map.get(fi);
+            if (cis) {
+                cis.push(ci);
+                FC_map.set(fi, cis);
+            }
+            else {
+                FC_map.set(fi, [ci]);
+            }
+        }
+        for (const [fi, cis] of FC_map.entries()) {
             if (FU[fi].length > 0) {
                 const gg = SVG.append("g", fold_s_crease);
                 const cp = SVG.append("clipPath", defs);
-                SVG.draw_polygons(cp, [cells[ci]], { id: true, });
-                cp.setAttribute("id", svg.id + "_cpath_" + id + "_" + ci);
-                gg.setAttribute("clip-path", "url(#" + svg.id + "_cpath_" + id + "_" + ci + ")");
+                SVG.draw_polygons(cp, cells, { filter: (ci) => cis.indexOf(ci) != -1 });
+                cp.setAttribute("id", svg.id + "_cpath_" + id + "_" + fi);
+                gg.setAttribute("clip-path", "url(#" + svg.id + "_cpath_" + id + "_" + fi + ")");
                 const as = FU[fi].map((ui) => UA[ui]);
                 const creases_clipped = SEG.clip_edges(FU[fi], UV, Vf_, Vc, SEG.clip);
                 DRAW.draw_creases(gg, creases_clipped, as, is_flip ^ Ff[fi]);
