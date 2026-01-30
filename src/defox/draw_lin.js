@@ -54,13 +54,13 @@ export const DRAW_LIN = {
             SVG.draw_polygons(g, [face], {
                 id: true,
                 fill: is_Ff ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom,
-                stroke: is_Ff ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom,
-                stroke_width: 3
+                stroke: DRAW.color.edge["B"],
+                stroke_width: DRAW.width.edge["B"]
             });
             const segs = FE[top_f].map((e) => M.expand(EV[e], V_))
             const is_pair = is_Ff ^ is_flip;
             SVG.draw_segments(g, segs, {
-
+                filter: (e) => EA[e] != "B",
                 stroke: FE[top_f].map((e) => {
                     if (is_pair) {
                         return DRAW_LIN.color.edge[DRAW.pair(EA[e])];
