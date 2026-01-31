@@ -12,10 +12,10 @@ import { SVG } from "../flatfolder/svg.js";
 
 export const DRAW = {
     color: {
-        background: "#0F0",
+        background: "#FFF",
         face: {
-            top: "#888",
-            bottom: "#FFF",
+            top: "#f8ebb8",
+            bottom: "#53d8f9",
         },
         edge: {
             U: "black",

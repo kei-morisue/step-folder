@@ -1,8 +1,8 @@
 import { M } from "../flatfolder/math.js";
 import { X } from "../flatfolder/conversion.js";
 import { SOLVER } from "../flatfolder/solver.js";
-import { NOTE } from "../flatfolder/note.js";
-import { SVG } from "../flatfolder/svg.js";
+
+import { N } from "../defox/nath.js";
 
 export const DIST = {    // STATE DISTORTER
     p0: .0,
@@ -16,7 +16,7 @@ export const DIST = {    // STATE DISTORTER
     refresh: () => {
         DIST.p0 = 0.0;
         DIST.p1 = 0.5;
-        DIST.p2 = 0.5;
+        DIST.p2 = 0.0;
         DIST.T0 = true;
         DIST.T1 = true;
         DIST.T2 = true;
@@ -46,7 +46,9 @@ export const DIST = {    // STATE DISTORTER
         const sy = Math.sin(t2)
 
         const A = [[r1 + r2 * cy, r2 * sy], [r2 * sy, r1 - r2 * cy]];
-        return V.map((v, i) => { return M.add(Vf[i], DIST.matprod(A, v)) });
+        const V_ = V.map((v, i) => { return M.add(Vf[i], DIST.matprod(A, v)) });
+        const B = N.inv(N.matadd([[1, 0], [0, 1]], A));
+        return V_.map((v) => N.apply(B, v));
     },
 
     infer_FO: (FOLD, CELL_D) => {

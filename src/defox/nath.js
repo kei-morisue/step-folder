@@ -26,7 +26,12 @@ export const N = {
         }
         return N.near_zero(wind + 2 * Math.PI)
     },
-
+    inv: (A) => {
+        const [a, b] = A[0];
+        const [c, d] = A[1];
+        const det = N.det(A);
+        return [[d / det, -b / det], [-c / det, a / det]];
+    },
     mat: (flip, scale, rotate) => {
         const s = scale * Math.sin(rotate);
         const c = scale * Math.cos(rotate);

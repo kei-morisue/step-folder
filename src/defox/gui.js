@@ -130,7 +130,7 @@ export const GUI = {
         GUI.setup_range_options(
             ["p0", "p1", "p2", "clip", "rotate"],
             ["p0", "p1", "p2", "clip", "rotate"],
-            [0, 0.5, 0.5, 0, 0.5],
+            [0, 0.5, 0, 0, 0.5],
             [DIST, DIST, DIST, SEG, STEP],
             [STEP.update_dist, STEP.update_dist, STEP.update_dist, STEP.redraw, STEP.redraw]
         );

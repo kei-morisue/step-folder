@@ -38,7 +38,7 @@ const MAIN = {
         document.getElementById("next").onclick = MAIN.next;
         document.getElementById("prev").onclick = MAIN.prev;
         document.getElementById("import0").onchange = MAIN.read;
-        MAIN.import_new("sample", SMPL.windmil);
+        MAIN.import_new("sample", SMPL.hanikamu);
 
 
 
