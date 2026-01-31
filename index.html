@@ -34,11 +34,14 @@
         <button id="next">Next</button>
         <p>
             <b>View Options</b>
+            <button id="cp_layers">CP/Layers</button>
             <button id="flip">Flip</button>
-
             <label for="rotate">rotate</label>
             <input id="rotate" type="range" max="1" min="0" value="0.5" step="0.0833333333">
             <button id="rotate_reset">Reset</button>
+        </p>
+        <p>
+            <b>Render Options</b>
             <label for="clip">Crease Clip</label>
             <input id="clip" type="range" max="1" min="0" value="0.0" step="0.001">
             <button id="clip_reset">Reset</button>
@@ -49,9 +52,8 @@
     <div>
         <div id="states" class="mainpanel">
             <svg id="state0" class="paint"></svg>
+            <svg id="cp3" class="paint" style="display: none;"></svg>
             <svg id="state3" class="paint"></svg>
-            <!-- <svg id="state1" class="paint"></svg> -->
-            <svg id="cp3" class="paint"></svg>
         </div>
         <div>
             <p>

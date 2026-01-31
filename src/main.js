@@ -40,7 +40,15 @@ const MAIN = {
         document.getElementById("import0").onchange = MAIN.read;
         MAIN.import_new("sample", SMPL.hanikamu);
 
-
+        document.getElementById("cp_layers").onclick = () => {
+            if (document.getElementById("cp3").style.display == "none") {
+                document.getElementById("state0").setAttribute("style", "display: none;");
+                document.getElementById("cp3").setAttribute("style", "display: default;");
+            } else {
+                document.getElementById("state0").setAttribute("style", "display: default;");
+                document.getElementById("cp3").setAttribute("style", "display: none;");
+            }
+        };
 
     },
 

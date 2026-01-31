@@ -5,8 +5,7 @@ import { STEP } from "./step.js";
 import { SVG3 } from "./svg.js";
 
 import { M } from "../flatfolder/math.js";
-import { X } from "../flatfolder/conversion.js";
-import { IO } from "../flatfolder/io.js";
+
 import { SVG } from "../flatfolder/svg.js";
 
 

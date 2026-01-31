@@ -1,9 +1,7 @@
 import { M } from "../flatfolder/math.js";
 import { NOTE } from "../flatfolder/note.js";
 import { SVG } from "../flatfolder/svg.js";
-import { IO } from "../flatfolder/io.js";
-import { X } from "../flatfolder/conversion.js";
-import { SOLVER } from "../flatfolder/solver.js";
+
 import { CON } from "../flatfolder/constraints.js";
 
 import { DIST } from "../distortionfolder/distortion.js";
@@ -57,8 +55,8 @@ export const GUI = {
             const w = SVG.SCALE + 2 * SVG.MARGIN;
             const b = SVG.MARGIN / SVG.SCALE;
             const z = STEP.get_zoom();
-            const th = (2 * STEP.rotate - 1) * Math.PI;
-            const Ainv = N.mat(STEP.flip0, 1 / z, -th);
+            const th = (2 * STEP.rotate - 1) * Math.PI * (2 * STEP.flip0 - 1);
+            const Ainv = N.mat(STEP.flip0, 1 / z, th);
             const x0 = (cursorpt.x / w - .5 + b);
             const y0 = (cursorpt.y / w - .5 + b);
             [STEP.cx, STEP.cy] = M.add([STEP.cx, STEP.cy], N.apply(Ainv, [x0, y0]));
