@@ -17,22 +17,18 @@ svg text {
     border: 1px solid #000;
 }
 
-.historypanel {
-    width: 100%;
-    /* height: 30vh; */
+.editpanel {
+    width: 30%;
     border: 1px solid #000;
-    /* overflow-y: scroll;
-    overflow-x: scroll; */
+    display: block;
+}
+
+.editpanel span p {
     display: flex;
 }
 
-
-.history {
-    height: 100%;
-    /* width: 30%; */
-    border: 1px solid #000;
-    overflow-y: scroll;
-    overflow-x: scroll;
+.editpanel span b {
+    pointer-events: none;
 }
 
 .openclose {

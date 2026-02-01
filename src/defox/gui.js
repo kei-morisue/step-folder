@@ -37,7 +37,10 @@ export const GUI = {
             STEP.flip0 = !STEP.flip0;
             STEP.redraw();
         }
-
+        document.getElementById("render_reset").onclick = (e) => {
+            STEP.refresh();
+            STEP.redraw();
+        }
         document.getElementById("state3").onwheel = (e) => {
             e.preventDefault();
             const lvl = STEP.scale - Math.sign(e.deltaY);
@@ -92,8 +95,13 @@ export const GUI = {
         }
         // GUI.open_close("cps", "flex");
         GUI.open_close("option_color", "inline");
-        GUI.open_close("option_width", "inline")
-        GUI.open_close("option_layers", "inline")
+        GUI.open_close("option_width", "inline");
+        GUI.open_close("option_layers", "inline");
+        GUI.open_close("option_text", "inline");
+        GUI.open_close("edit_dist", "inline");
+        GUI.open_close("edit_render", "inline");
+        GUI.open_close("edit_symbol", "inline");
+
 
 
         document.getElementById("assign").onchange = (e) => {

@@ -32,21 +32,6 @@
         <b>/ </b>
         <b id="steps">1</b>
         <button id="next">Next</button>
-        <p>
-            <b>View Options</b>
-            <button id="cp_layers">CP/Layers</button>
-            <button id="flip">Flip</button>
-            <label for="rotate">rotate</label>
-            <input id="rotate" type="range" max="1" min="0" value="0.5" step="0.0833333333">
-            <button id="rotate_reset">Reset</button>
-        </p>
-        <p>
-            <b>Render Options</b>
-            <label for="clip">Crease Clip</label>
-            <input id="clip" type="range" max="1" min="0" value="0.0" step="0.001">
-            <button id="clip_reset">Reset</button>
-        </p>
-
     </span>
 
     <div>
@@ -54,19 +39,59 @@
             <svg id="state0" class="paint"></svg>
             <svg id="cp3" class="paint" style="display: none;"></svg>
             <svg id="state3" class="paint"></svg>
+            <div id="edit" class="editpanel">
+                <span id="edit_render_b" class="openclose"><b>Render</b></span>
+                <span id="edit_render">
+                    <p>
+                        <button id="cp_layers">Show CP/ Show Dia</button>
+                        <button id="flip">Flip</button>
+                        <button id="render_reset">Reset</button>
+                    </p>
+                    <p>
+                        <label for="rotate">Angle</label>
+                        <input id="rotate" type="range" max="1" min="0" value="0.5" step="0.0833333333">
+                        <button id="rotate_reset">Reset</button>
+                    </p>
+                    <p>
+                        <label for="clip">Clip</label>
+                        <input id="clip" type="range" max="1" min="0" value="0.0" step="0.001">
+                        <button id="clip_reset">Reset</button>
+                    </p>
+                </span>
+                <span id="edit_dist_b" class="openclose"><b>Distortion</b></span>
+                <span id="edit_dist" style="display: inline;">
+                    <p>
+                        <label for="p0">Level</label>
+                        <input type="range" id="p0" min="0" max="1" value="0.0" step="0.0001">
+                        <button id="p0_reset">Reset</button>
+                    </p>
+                    <p>
+                        <label for="p2">Skew</label>
+                        <input type="range" id="p2" min="0" max="1" value="0.0" step="0.0001">
+                        <button id="p2_reset">Reset</button>
+                    </p>
+                    <p>
+                        <label for="p1">Angle</label>
+                        <input type="range" id="p1" min="0" max="1" value="0.5" step="0.0001">
+                        <button id="p1_reset">Reset</button>
+                    </p>
+                </span>
+                <span id="edit_symbol_b" class="openclose"><b>Add Symbols</b></span>
+                <span id="edit_symbol" style="display: inline;">
+
+                </span>
+                <span id="option_layers_b" class="openclose"><b>Manual Layer Control</b></span>
+                <span id="option_layers" style="display: none;">
+                    <label for="selectG">Group</label>
+                    <select id="selectG"></select>
+                    <label for="assign">state</label>
+                    <input type="number" id="assign" min="1" max="1" value="1">
+                    <a id="assigns">/ 1</a>
+                </span>
+            </div>
         </div>
         <div>
             <p>
-                <b>Distortion</b>
-                <label for="p0">Level</label>
-                <input type="range" id="p0" min="0" max="1" value="0.0" step="0.0001">
-                <button id="p0_reset">Reset</button>
-                <label for="p2">Skew Level</label>
-                <input type="range" id="p2" min="0" max="1" value="0.0" step="0.0001">
-                <button id="p2_reset">Reset</button>
-                <label for="p1">Skew Angle</label>
-                <input type="range" id="p1" min="0" max="1" value="0.5" step="0.0001">
-                <button id="p1_reset">Reset</button>
             </p>
 
             <b>Collision Constraints</b>
@@ -83,15 +108,6 @@
         </div>
     </div>
     <div id="option">
-        <span id="option_layers_b" class="openclose"><b>Manual Layer Control</b></span>
-        <span id="option_layers" style="display: none;">
-            <label for="selectG">Group</label>
-            <select id="selectG"></select>
-            <label for="assign">state</label>
-            <input type="number" id="assign" min="1" max="1" value="1">
-            <a id="assigns">/ 1</a>
-
-        </span>
         <span id="option_color_b" class="openclose"><b>Color Options</b></span>
         <span id="option_color" style="display: none;">
             <label for="topcolor">Top Color</label>
@@ -112,6 +128,14 @@
             <label for="width_MMVV">MV Crease Width</label>
             <input id="width_MMVV" type="number" max="10" min="1" value="6">
             <button id="width_MMVV_reset">Reset</button>
+        </span>
+        <span id="option_text_b" class="openclose"><b>Text Options</b></span>
+        <span id="option_text">
+            <p>
+                <label for="size_text">Text Size</label>
+                <input id="size_text" type="number" max="100" min="1" value="30">
+                <button id="size_text_reset">Reset</button>
+            </p>
         </span>
     </div>
 
