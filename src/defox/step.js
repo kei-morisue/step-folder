@@ -21,15 +21,19 @@ export const STEP = {
     scale: 1,
 
     get_transform: () => {
-        const scale = STEP.get_zoom();
-        const theta = (2 * STEP.rotate - 1) * Math.PI;
-        const A = N.mat(STEP.flip0, scale, theta);
-        const b = M.sub([.5, .5], N.apply(A, [STEP.cx, STEP.cy]));
+        return STEP.get_T(STEP.flip0, STEP.rotate, STEP.scale, STEP.cx, STEP.cy);
+    },
+
+    get_T: (flip0, rotate, scale, cx, cy) => {
+        const s = STEP.get_zoom(scale);
+        const theta = (2 * rotate - 1) * Math.PI;
+        const A = N.mat(flip0, s, theta);
+        const b = M.sub([.5, .5], N.apply(A, [cx, cy]));
         return [A, b];
     },
 
-    get_zoom: () => {
-        return Math.pow(2, (STEP.scale - 1) / 2);
+    get_zoom: (scale) => {
+        return Math.pow(2, (scale - 1) / 2);
     },
     refresh: () => {
         STEP.flip0 = false;
@@ -40,7 +44,7 @@ export const STEP = {
     },
     redraw: () => {
         const T = STEP.get_transform();
-        DRAW.draw_state(SVG.clear("state0"), STEP.FOLD0, STEP.CELL0, STEP.STATE0, T, STEP.id);
+        DRAW.draw_state(SVG.clear("state0"), STEP.FOLD0, STEP.CELL0, STEP.STATE0, T, SEG.clip, STEP.id);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
         DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"))
 
@@ -128,14 +132,14 @@ export const STEP = {
             return;
         }
         const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
-        DRAW.draw_state(SVG.clear(svg_state), FOLD, CELL, STATE, T, STEP.id);
+        DRAW.draw_state(SVG.clear(svg_state), FOLD, CELL, STATE, T, SEG.clip, STEP.id);
         return STATE
     },
     update_serial_state: (FOLD, S, svg_state, T, CELL = undefined) => {
         if (!FOLD) {
             return;
         }
-        DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, S, T, STEP.id);
+        DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, S, T, SEG.clip, STEP.id);
         return undefined;
     },
 };

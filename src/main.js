@@ -5,6 +5,7 @@ import { GUI } from "./defox/gui.js";
 import { SMPL } from "./defox/sample.js"
 import { STEP } from "./defox/step.js"
 import { SEG } from "./defox/segment.js";
+import { PAGE } from "./defox/page.js";
 
 window.onload = () => { MAIN.startup(); };  // entry point
 
@@ -32,9 +33,11 @@ const MAIN = {
         };
 
         document.getElementById("export").onclick = (e) => {
-            IO3.write(MAIN.steps[MAIN.current_idx].fold_d, "state3", "hoge")
+            IO3.write("state3", "step_" + MAIN.current_idx);
         };
-
+        document.getElementById("page_export").onclick = (e) => {
+            IO3.write("page", "page_" + PAGE.current_idx);
+        };
         document.getElementById("next").onclick = MAIN.next;
         document.getElementById("prev").onclick = MAIN.prev;
         document.getElementById("import0").onchange = MAIN.read;
@@ -50,6 +53,14 @@ const MAIN = {
             }
         };
 
+
+        document.getElementById("page_next").onclick = MAIN.page_next;
+        document.getElementById("page_prev").onclick = MAIN.page_prev;
+
+        document.getElementById("page_reload").onclick = (e) => {
+            MAIN.record(MAIN.current_idx);
+            PAGE.redraw(document.getElementById("page"), MAIN.steps);
+        }
     },
 
     prev: () => {
@@ -221,6 +232,23 @@ const MAIN = {
             DIST.p2,
             STEP.cx,
             STEP.cy,]
+    },
+
+    page_prev: () => {
+        if (PAGE.current_idx == 0) {
+            return;
+        }
+        PAGE.current_idx = PAGE.current_idx - 1;
+        PAGE.redraw(document.getElementById("page"), MAIN.steps);
+
+    },
+    page_next: () => {
+
+        if (PAGE.get_pages(MAIN.steps) - 1 < PAGE.current_idx + 1) {
+            return;
+        }
+        PAGE.current_idx = PAGE.current_idx + 1;
+        PAGE.redraw(document.getElementById("page"), MAIN.steps);
     },
 };
 

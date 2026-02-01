@@ -27,7 +27,7 @@ export const DRAW_LIN = {
 
 
 
-    draw_state: (svg, FOLD, S, T, id = 0) => {
+    draw_state: (svg, FOLD, S, T, clip_c, id = 0) => {
         const det = N.det(T[0]);
         const is_flip = det < 0;
         if (!S) {
@@ -74,7 +74,7 @@ export const DRAW_LIN = {
             });
 
             const a = FU[top_f].map((ui) => UA[ui]);
-            const lines_clipped = SEG.clip_edges(FU[top_f], UV, V_, Vc, SEG.clip);
+            const lines_clipped = SEG.clip_edges(FU[top_f], UV, V_, Vc, clip_c);
             DRAW_LIN.draw_creases(g, lines_clipped, a, is_pair);
         }
     },

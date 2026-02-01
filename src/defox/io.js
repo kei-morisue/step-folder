@@ -7,9 +7,7 @@ import { N } from "./nath.js";
 
 
 export const IO3 = {    // INPUT-OUTPUT
-    write: (FOLD, svg_id, name) => {
-        const { V, Vf, EV, EA, FV, FO } = FOLD;
-
+    write: (svg_id, name) => {
         const img = new Blob([document.getElementById(svg_id).outerHTML], {
             type: "image/svg+xml"
         });

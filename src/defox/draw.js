@@ -109,7 +109,7 @@ export const DRAW = {
         SVG.draw_segments(g2, creases, { stroke_width: widths_c, stroke: colors_c });
 
     },
-    draw_state: (svg, FOLD, CELL, STATE, T, id = 0) => {
+    draw_state: (svg, FOLD, CELL, STATE, T, clip_c, id = 0) => {
         const det = N.det(T[0]);
         const is_flip = det < 0
         if (STATE == undefined) {
@@ -184,7 +184,7 @@ export const DRAW = {
                 cp.setAttribute("id", svg.id + "_cpath_" + id + "_" + fi);
                 gg.setAttribute("clip-path", "url(#" + svg.id + "_cpath_" + id + "_" + fi + ")");
                 const as = FU[fi].map((ui) => UA[ui]);
-                const creases_clipped = SEG.clip_edges(FU[fi], UV, Vf_, Vc, SEG.clip);
+                const creases_clipped = SEG.clip_edges(FU[fi], UV, Vf_, Vc, clip_c);
                 DRAW.draw_creases(gg, creases_clipped, as, is_flip ^ Ff[fi]);
             }
 

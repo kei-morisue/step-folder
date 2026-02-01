@@ -12,6 +12,7 @@ import { N } from "./nath.js";
 import { DRAW } from "./draw.js";
 import { Y } from "./y.js";
 import { SEG } from "./segment.js";
+
 export const GUI = {
 
     opacity: {
@@ -41,6 +42,7 @@ export const GUI = {
             STEP.refresh();
             STEP.redraw();
         }
+
         document.getElementById("state3").onwheel = (e) => {
             e.preventDefault();
             const lvl = STEP.scale - Math.sign(e.deltaY);
@@ -57,7 +59,7 @@ export const GUI = {
             var cursorpt = pt.matrixTransform(svg.getScreenCTM().inverse());
             const w = SVG.SCALE + 2 * SVG.MARGIN;
             const b = SVG.MARGIN / SVG.SCALE;
-            const z = STEP.get_zoom();
+            const z = STEP.get_zoom(STEP.scale);
             const th = (2 * STEP.rotate - 1) * Math.PI * (2 * STEP.flip0 - 1);
             const Ainv = N.mat(STEP.flip0, 1 / z, th);
             const x0 = (cursorpt.x / w - .5 + b);
@@ -210,8 +212,7 @@ export const GUI = {
             }
         }
     },
-    refresh: () => {
-    },
+
 
 
 

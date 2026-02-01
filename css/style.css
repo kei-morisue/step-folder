@@ -17,6 +17,21 @@ svg text {
     border: 1px solid #000;
 }
 
+.preview div {
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+.preview {
+    margin: 0 auto;
+}
+
+.page {
+    max-width: 50%;
+    border: 1px solid #000;
+}
+
 .editpanel {
     width: 30%;
     border: 1px solid #000;

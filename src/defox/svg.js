@@ -3,7 +3,11 @@ import { SVG } from "../flatfolder/svg.js";
 import { DRAW } from "./draw.js";
 
 export const SVG3 = {   // DRAWING
-    SCALE: 1000,
+    INI_SCALE: 1000,
+
+    reset: () => {
+        SVG.SCALE = SVG3.INI_SCALE;
+    },
     get_val: (val, i, def) => {
         if (val == undefined) { return def; }
         if (Array.isArray(val)) { return val[i]; }
@@ -67,7 +71,7 @@ export const SVG3 = {   // DRAWING
         const cp = SVG.append("clipPath", svg);
         cp.setAttribute("id", "cpath_" + svg.id + "_" + id);
         const r = .5 * SVG.SCALE;
-        const b = 1 + 2 * SVG.MARGIN / SVG.SCALE
+        const b = 1;
         SVG.append("circle", cp, {
             cx: r, cy: r, r: r * b,
         });

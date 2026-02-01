@@ -25,13 +25,15 @@
             <input type="file" multiple id="import0" accept="cp/plain" />
         </p>
     </span>
-    <span><b>Steps</b></span>
-    <span>
-        <button id="prev">Prev</button>
-        <b id="step">1</b>
-        <b>/ </b>
-        <b id="steps">1</b>
-        <button id="next">Next</button>
+    <span class="preview">
+        <div>
+            <b>Steps</b>
+            <button id="prev">Prev</button>
+            <b id="step">1</b>
+            <b>/ </b>
+            <b id="steps">1</b>
+            <button id="next">Next</button>
+        </div>
     </span>
 
     <div>
@@ -139,6 +141,25 @@
         </span>
     </div>
 
+    <div id="preview" class="preview">
+        <div>
+            <b>Pages</b>
+            <button id="page_prev">Prev</button>
+            <b id="page_idx">1</b>
+            <b>/ </b>
+            <b id="pages">1</b>
+            <button id="page_next">Next</button>
+            <button id="page_reload">Reload</button>
+            <button id="page_export">Export</button>
+        </div>
+        <div>
+            <svg id="page" class="page">
+                <svg id="page_body">
+
+                </svg>
+            </svg>
+        </div>
+    </div>
     <b>© Kei Morisue 2024, 2026</b>
     <p>
         <a href="https://github.com/kei-morisue/step-folder">Repository</a>
