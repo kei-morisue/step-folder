@@ -43,6 +43,7 @@ export const STEP = {
         STEP.scale = 1;
     },
     redraw: () => {
+        STEP.CELL_D = undefined;
         const T = STEP.get_transform();
         DRAW.draw_state(SVG.clear("state0"), STEP.FOLD0, STEP.CELL0, STEP.STATE0, T, SEG.clip, STEP.id);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
@@ -76,6 +77,7 @@ export const STEP = {
     recalculate: () => {
         const FOLD = STEP.FOLD;
         const CELL = Y.FOLD_2_CELL(STEP.FOLD_D);
+        STEP.CELL_D = CELL;
         const FO = DIST.infer_FO(FOLD, CELL);
         STEP.FOLD_D.FO = FO;
         const T = STEP.get_transform();

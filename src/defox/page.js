@@ -22,6 +22,12 @@ export const PAGE = {
         cols: 3,
         blank: 1,
     },
+    text: {
+        color: "black",
+        size: 100,
+        font: "Arial",
+        weght: "bold"
+    },
     is_river: false,
     river_flow: 1,
     current_idx: 0,
@@ -58,8 +64,20 @@ export const PAGE = {
             const [flip0, rotate, scale, clip, , , , cx, cy] = steps[i].params;
 
             const T = STEP.get_T(flip0, rotate, scale, cx, cy);
-            DRAW_LIN.draw_state(panel_d,
-                steps[i].fold_d, steps[i].lin.S, T, clip, i);
+            const FOLD = steps[i].fold_d;
+            const CELL = steps[i].cell_d;
+
+            if (steps[i].cell_d) {
+                const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
+                DRAW.draw_state(panel_d, FOLD, CELL, STATE, T, clip, i);
+            } else {
+                DRAW_LIN.draw_state(panel_d, FOLD, steps[i].lin.S, T, clip, i);
+            }
+            const t = PAGE.text.size;
+            const l = SVG.draw_label(panel, [t, t], PAGE.text.color, i + 1, t);
+            l.setAttribute("font-family", PAGE.text.font);
+            l.setAttribute("font-weight", PAGE.text.weght);
+
 
         }
         SVG3.reset();
