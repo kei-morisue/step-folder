@@ -43,21 +43,26 @@ export const STEP = {
         STEP.scale = 1;
     },
     redraw: () => {
-        STEP.CELL_D = undefined;
         const T = STEP.get_transform();
         DRAW.draw_state(SVG.clear("state0"), STEP.FOLD0, STEP.CELL0, STEP.STATE0, T, SEG.clip, STEP.id);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
         DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"))
-
-        STEP.update_serial_state(STEP.FOLD_D, STEP.LIN.S, "state3", T, STEP.CELL_D);
-        document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
-        if (STEP.LIN.cycle.length != 0) {
-            NOTE.annotate(STEP.LIN.S, "serials");
-            NOTE.annotate(STEP.LIN.cycle, "cycles");
-            document.getElementById("apply_tt").setAttribute("style", "background: red")
+        if (STEP.CELL_D) {
+            const FOLD = STEP.FOLD_D;
+            const CELL = STEP.CELL_D;
+            STEP.update_state(FOLD, CELL, "state3", T);
+            document.getElementById("apply_tt").setAttribute("style", "background: default");
         } else {
-            document.getElementById("apply_tt").setAttribute("style", "background: default")
+            STEP.update_serial_state(STEP.FOLD_D, STEP.LIN.S, "state3", T, STEP.CELL_D);
+            if (STEP.LIN.cycle.length != 0) {
+                NOTE.annotate(STEP.LIN.S, "serials");
+                NOTE.annotate(STEP.LIN.cycle, "cycles");
+                document.getElementById("apply_tt").setAttribute("style", "background: red");
+            } else {
+                document.getElementById("apply_tt").setAttribute("style", "background: default");
+            }
         }
+        document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
         const select = document.getElementById("selectG");
         const assign = document.getElementById("assign");
         STEP.update_component(STEP.CELL0, select, assign);

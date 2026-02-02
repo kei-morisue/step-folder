@@ -39,6 +39,10 @@ const MAIN = {
         document.getElementById("page_export").onclick = (e) => {
             IO3.write("page", "page_" + PAGE.current_idx);
         };
+        document.getElementById("save_proj").onclick = (e) => {
+            IO3.save(MAIN.steps, "hoge");
+        };
+        document.getElementById("import_proj").onclick = MAIN.read_project;
         document.getElementById("next").onclick = MAIN.next;
         document.getElementById("prev").onclick = MAIN.prev;
         document.getElementById("range_steps").oninput = MAIN.jump;
@@ -69,7 +73,17 @@ const MAIN = {
             MAIN.record(MAIN.current_idx);
             MAIN.redraw_page();
         }
-
+        for (const [i, id] of ["T0", "T1", "T2", "T3"].entries()) {
+            document.getElementById("cb_" + id).onchange = (e) => {
+                DIST[id] = e.target.checked;
+                STEP.recalculate();
+                MAIN.record(MAIN.current_idx);
+            }
+        }
+        document.getElementById("apply_tt").onclick = (e) => {
+            STEP.recalculate();
+            MAIN.record(MAIN.current_idx);
+        }
         MAIN.setup_number_options(
             ["width_crease",
                 "width_boundary",
@@ -327,5 +341,25 @@ const MAIN = {
         }
     },
 
+    read_project: (e) => {
+        const button = document.createElement("input");
+        button.setAttribute("type", "file");
+        button.setAttribute("accept", ".defox");
+        button.click();
+        button.onchange = (e) => {
+            if (e.target.files.length > 0) {
+                const file_reader = new FileReader();
+                file_reader.onload = (e) => {
+                    const doc = e.target.result;
+                    MAIN.steps = JSON.parse(doc);
+                    MAIN.restore(MAIN.steps.length - 1);
+                    STEP.redraw();
+                    MAIN.redraw_page();
+                };
+                file_reader.readAsText(e.target.files[0]);
+            }
+        }
+
+    },
 };
 

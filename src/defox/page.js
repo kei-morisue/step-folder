@@ -68,7 +68,7 @@ export const PAGE = {
             const FOLD = steps[i].fold_d;
             const CELL = steps[i].cell_d;
 
-            if (steps[i].cell_d) {
+            if (CELL) {
                 const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
                 DRAW.draw_state(panel_d, FOLD, CELL, STATE, T, clip, i);
             } else {

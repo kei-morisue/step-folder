@@ -70,12 +70,7 @@ export const GUI = {
         }
 
 
-        for (const [i, id] of ["T0", "T1", "T2", "T3"].entries()) {
-            document.getElementById("cb_" + id).onchange = (e) => {
-                DIST[id] = e.target.checked;
-                STEP.recalculate();
-            }
-        }
+
         document.getElementById("topcolor").onchange = (e) => {
             DRAW.color.face.top = e.target.value
             STEP.redraw()
@@ -117,9 +112,6 @@ export const GUI = {
             STEP.update_dist();
         }
 
-        document.getElementById("apply_tt").onclick = (e) => {
-            STEP.recalculate()
-        }
         document.getElementById("reset_tt").onclick = (e) => {
             STEP.update_states()
         }

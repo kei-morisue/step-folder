@@ -11,17 +11,29 @@ export const IO3 = {    // INPUT-OUTPUT
         const img = new Blob([document.getElementById(svg_id).outerHTML], {
             type: "image/svg+xml"
         });
-        const type = "img";
         const ext = "svg";
         const link = document.createElement("a");
         const button = document.createElement("input");
         link.appendChild(button);
-        link.setAttribute("download", `${name}_${type}.${ext}`);
+        link.setAttribute("download", `${name}.${ext}`);
         link.setAttribute("href", window.URL.createObjectURL(img));
         button.setAttribute("type", "button");
-        button.setAttribute("value", type);
         button.click();
 
+    },
+
+    save: (data, name) => {
+        const json = new Blob([JSON.stringify(data, undefined, 2)], {
+            type: "application/json"
+        })
+        const ext = "defox";
+        const link = document.createElement("a");
+        const button = document.createElement("input");
+        link.appendChild(button);
+        link.setAttribute("download", `${name}.${ext}`);
+        link.setAttribute("href", window.URL.createObjectURL(json));
+        button.setAttribute("type", "button");
+        button.click();
     },
 
     cp_2_V_VV_EV_EA_EF_FV_FE: (doc) => {
