@@ -11,21 +11,6 @@ import { SVG } from "../flatfolder/svg.js";
 
 
 export const DRAW_LIN = {
-    color: {
-        edge: {
-            F: "black",
-            B: "black",
-            V: "black",
-            M: "black",
-            VV: "red",
-            MM: "blue",
-            RV: "red",
-            RM: "blue",
-            UF: "magenta",
-            FF: "magenta",
-        },
-    },
-
 
 
     draw_state: (svg, FOLD, S, T, clip_c, id = 0) => {
@@ -48,34 +33,35 @@ export const DRAW_LIN = {
         }
 
         const S_ = is_flip ? S.toReversed() : S
-        for (const [i, top_f] of S_.entries()) {
-            const g = SVG.append("g", gg, { id: "face_" + top_f })
-            const face = faces[top_f];
-            const is_Ff = Ff[top_f];
+        for (const [i, face_idx] of S_.entries()) {
+            const g = SVG.append("g", gg, { id: "face_" + face_idx })
+            const face = faces[face_idx];
+            const is_Ff = Ff[face_idx];
             SVG.draw_polygons(g, [face], {
                 id: true,
                 fill: is_Ff ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom,
                 stroke: DRAW.color.edge["B"],
                 stroke_width: DRAW.width.edge["B"]
             });
-            const segs = FE[top_f].map((e) => M.expand(EV[e], V_))
+            const segs = FE[face_idx].map((e) => M.expand(EV[e], V_));
+            const assigns = FE[face_idx].map((e) => EA[e]);
             const is_pair = is_Ff ^ is_flip;
             SVG.draw_segments(g, segs, {
-                filter: (e) => EA[e] != "B",
-                stroke: FE[top_f].map((e) => {
+                filter: (e) => assigns[e] == "UF" || assigns[e] == "RM" || assigns[e] == "RV",
+                stroke: FE[face_idx].map((e) => {
                     if (is_pair) {
-                        return DRAW_LIN.color.edge[DRAW.pair(EA[e])];
+                        return DRAW.color.edge[DRAW.pair(EA[e])];
                     }
-                    return DRAW_LIN.color.edge[EA[e]];
+                    return DRAW.color.edge[EA[e]];
                 }),
-                stroke_width: FE[top_f].map((e) => {
+                stroke_width: FE[face_idx].map((e) => {
                     const w = DRAW.width.edge[EA[e]]
-                    return w ?? DRAW.width.edge["B"];
+                    return w;
                 })
             });
 
-            const a = FU[top_f].map((ui) => UA[ui]);
-            const lines_clipped = SEG.clip_edges(FU[top_f], UV, V_, Vc, clip_c);
+            const a = FU[face_idx].map((ui) => UA[ui]);
+            const lines_clipped = SEG.clip_edges(FU[face_idx], UV, V_, Vc, clip_c);
             DRAW_LIN.draw_creases(g, lines_clipped, a, is_pair);
         }
     },
@@ -85,9 +71,9 @@ export const DRAW_LIN = {
         SVG.draw_segments(svg, lines, {
             stroke: as.map((a) => {
                 if (is_pair) {
-                    return DRAW_LIN.color.edge[DRAW.pair(a)];
+                    return DRAW.color.edge[DRAW.pair(a)];
                 }
-                return DRAW_LIN.color.edge[a];
+                return DRAW.color.edge[a];
             }),
             stroke_width: as.map((a) => {
                 const w = DRAW.width.edge[a]
