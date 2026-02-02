@@ -99,17 +99,15 @@ export const PRJ = {
 
         const step = { fold_cp: FOLD1, cell_cp: CELL1 };
         PRJ.steps.splice(PRJ.current_idx + 1, 0, step);
-        const [f, c] = [STEP.FOLD1, STEP.CELL1];
-
+        PRJ.restore(PRJ.current_idx);
         [STEP.FOLD1, STEP.CELL1] = [FOLD1, CELL1];
         STEP.new();
         PRJ.record(PRJ.current_idx);
-
-        [STEP.FOLD0, STEP.CELL0] = [FOLD1, CELL1];
-        [STEP.FOLD1, STEP.CELL1] = [f, c];
-        STEP.new();
-        PRJ.record(PRJ.current_idx + 1);
         PRJ.restore(PRJ.current_idx + 1);
+
+        STEP.new();
+        PRJ.record(PRJ.current_idx);
+        PRJ.restore(PRJ.current_idx);
 
         return true
     },
@@ -197,12 +195,15 @@ export const PRJ = {
         STEP.CELL_D = PRJ.steps[i].cell_d;
         STEP.LIN = PRJ.steps[i].lin;
 
-        [STEP.flip0, STEP.rotate, STEP.scale, SEG.clip, DIST.p0, DIST.p1, DIST.p2, STEP.cx, STEP.cy] = PRJ.steps[i].params;
-        document.getElementById("clip").value = SEG.clip;
-        document.getElementById("rotate").value = STEP.rotate;
-        document.getElementById("p0").value = DIST.p0;
-        document.getElementById("p1").value = DIST.p1;
-        document.getElementById("p2").value = DIST.p2;
+        const p = PRJ.steps[i].params;
+        if (p) {
+            [STEP.flip0, STEP.rotate, STEP.scale, SEG.clip, DIST.p0, DIST.p1, DIST.p2, STEP.cx, STEP.cy] = p;
+            document.getElementById("clip").value = SEG.clip;
+            document.getElementById("rotate").value = STEP.rotate;
+            document.getElementById("p0").value = DIST.p0;
+            document.getElementById("p1").value = DIST.p1;
+            document.getElementById("p2").value = DIST.p2;
+        }
 
         PRJ.current_idx = i
         document.getElementById("steps").innerHTML = PRJ.steps.length;
