@@ -10,23 +10,25 @@
 </head>
 
 <body style="background:darkgray">
-    <div>
+    <div class="openclose">
         <span style="font-family:sans-serif">
             <img src="./icon-512x512.png" alt="DEFOX_icon" style="width: 15px;">
             <b>DEFOX&nbsp;&nbsp;</b>
-            <button id="new">New</button>
-            <button id="export">Export</button>
+            <button id="new">New Project</button>
             <button id="save_proj">Save Project</button>
+            <input type="text" id="proj_name" value="NewProject">
             <button id="import_proj">Import Project</button>
-        </span>
+            <button id="import0">Insert Steps</button>
+            <button id="remove">Remove Step</button>
+            <button id="duplicate">Duplicate Step</button>
+            <button id="export">Export Step</button>
+            <select id="export_ext">
+                <option value="svg">.svg</option>
+                <option value="png">.png</option>
+            </select>
 
+        </span>
     </div>
-    <span class="openclose" id="imports_b">
-        <p id="imports">
-            <label for="import0"><b>Insert CP</b></label>
-            <input type="file" multiple id="import0" accept=".cp" />
-        </p>
-    </span>
     <span class="step_preview">
         <div>
             <b>Steps</b>
@@ -196,13 +198,17 @@
                 </div>
 
                 <div>
+                    <button id="page_reload">Reload</button>
                     <button id="page_prev">Prev</button>
                     <b id="page_idx">1</b>
                     <b>/ </b>
                     <b id="pages">1</b>
                     <button id="page_next">Next</button>
-                    <button id="page_reload">Reload</button>
                     <button id="page_export">Export</button>
+                    <select id="page_export_ext">
+                        <option value="svg">.svg</option>
+                        <option value="png">.png</option>
+                    </select>
                 </div>
                 <div>
                     <svg id="page" class="page">

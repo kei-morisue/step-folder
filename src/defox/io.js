@@ -7,19 +7,40 @@ import { N } from "./nath.js";
 
 
 export const IO3 = {    // INPUT-OUTPUT
-    write: (svg_id, name) => {
+    write: (svg_id, name, ext) => {
+        if (ext == "png") {
+            return IO3.write_png(svg_id, name);
+        }
+        if (ext == "svg") {
+            return IO3.write_svg(svg_id, name);
+        }
+    },
+    write_svg: (svg_id, name) => {
         const img = new Blob([document.getElementById(svg_id).outerHTML], {
             type: "image/svg+xml"
         });
-        const ext = "svg";
         const link = document.createElement("a");
-        const button = document.createElement("input");
-        link.appendChild(button);
-        link.setAttribute("download", `${name}.${ext}`);
+        link.setAttribute("download", `${name}.svg`);
         link.setAttribute("href", window.URL.createObjectURL(img));
-        button.setAttribute("type", "button");
-        button.click();
+        link.dispatchEvent(new MouseEvent("click"));
+    },
+    write_png: (svg_id, name) => {
+        var svg = document.getElementById(svg_id);
+        var svgData = new XMLSerializer().serializeToString(svg);
+        var canvas = document.createElement("canvas");
+        canvas.width = svg.width.baseVal.value;
+        canvas.height = svg.height.baseVal.value;
 
+        var ctx = canvas.getContext("2d");
+        var image = new Image;
+        image.onload = function () {
+            ctx.drawImage(image, 0, 0);
+            var a = document.createElement("a");
+            a.href = canvas.toDataURL("image/png");
+            a.setAttribute("download", `${name}.png`);
+            a.dispatchEvent(new MouseEvent("click"));
+        }
+        image.src = "data:image/svg+xml;charset=utf-8;base64," + btoa(unescape(encodeURIComponent(svgData)));
     },
 
     save: (data, name) => {

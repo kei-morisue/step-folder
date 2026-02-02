@@ -34,13 +34,16 @@ const MAIN = {
         };
 
         document.getElementById("export").onclick = (e) => {
-            IO3.write("state3", "step_" + MAIN.current_idx);
+            const ext = document.getElementById("export_ext").value;
+            IO3.write("state3", "step_" + MAIN.current_idx, ext);
         };
         document.getElementById("page_export").onclick = (e) => {
-            IO3.write("page", "page_" + PAGE.current_idx);
+            const ext = document.getElementById("page_export_ext").value;
+            IO3.write("page", "page_" + PAGE.current_idx, ext);
         };
         document.getElementById("save_proj").onclick = (e) => {
-            IO3.save(MAIN.steps, "hoge");
+            const pj = document.getElementById("proj_name").value;
+            IO3.save(MAIN.steps, pj);
         };
         document.getElementById("import_proj").onclick = MAIN.read_project;
         document.getElementById("next").onclick = MAIN.next;
@@ -48,7 +51,7 @@ const MAIN = {
         document.getElementById("range_steps").oninput = MAIN.jump;
 
 
-        document.getElementById("import0").onchange = MAIN.read;
+        document.getElementById("import0").onclick = MAIN.read;
         MAIN.import_new("sample", SMPL.hanikamu);
         MAIN.redraw_page();
         document.getElementById("cp_layers").onclick = () => {
@@ -151,32 +154,40 @@ const MAIN = {
 
 
     read: (e) => {
-        const l = e.target.files.length;
-        const el = e.target;
-        if (l > 0) {
-            const file_reader = new FileReader();
-            let i = 0;
-            const fn = () => {
-                file_reader.readAsText(el.files[i]);
-                file_reader.onload = (e) => {
-                    let res = undefined;
-                    if (MAIN.steps.length == 0) {
-                        res = MAIN.import_new(el.files[i].name, e.target.result);
+        const button = document.createElement("input");
+        button.setAttribute("type", "file");
+        button.setAttribute("multiple", true);
+        button.setAttribute("accept", ".cp");
+        button.click();
+        button.onchange = (e) => {
+            if (e.target.files.length > 0) {
+                const l = e.target.files.length;
+                const el = e.target;
+                if (l > 0) {
+                    const file_reader = new FileReader();
+                    let i = 0;
+                    const fn = () => {
+                        file_reader.readAsText(el.files[i]);
+                        file_reader.onload = (e) => {
+                            let res = undefined;
+                            if (MAIN.steps.length == 0) {
+                                res = MAIN.import_new(el.files[i].name, e.target.result);
+                            }
+                            else {
+                                res = MAIN.import(el.files[i].name, e.target.result);
+                            }
+                            if (res && i < l - 1) {
+                                i++;
+                                fn();
+                            }
+                            else {
+                                return true;
+                            }
+                        }
                     }
-                    else {
-                        res = MAIN.import(el.files[i].name, e.target.result);
-                    }
-                    if (res && i < l - 1) {
-                        i++;
-                        fn();
-                    }
-                    else {
-                        return true;
-                    }
+                    fn();
                 }
             }
-            fn();
-
         }
     },
     import: (path, doc) => {
@@ -351,6 +362,11 @@ const MAIN = {
                 const file_reader = new FileReader();
                 file_reader.onload = (e) => {
                     const doc = e.target.result;
+                    let pj = button.value.split("\\");
+                    pj = pj[pj.length - 1];
+                    pj = pj.split(".defox");
+                    pj = pj[0];
+                    document.getElementById("proj_name").value = pj;
                     MAIN.steps = JSON.parse(doc);
                     MAIN.restore(MAIN.steps.length - 1);
                     STEP.redraw();
