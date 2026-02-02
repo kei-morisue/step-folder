@@ -149,6 +149,34 @@ export const PRJ = {
 
         return true
     },
+
+    remove: () => {
+        const i = PRJ.current_idx;
+        if (PRJ.steps.length == 2 || i == 0) {
+            return;
+        }
+        if (confirm("Are you sure to remove current step " + (i + 1) + "? ")) {
+            PRJ.steps.splice(i, 1);
+            if (PRJ.steps[i - 1]) {
+                PRJ.restore(i - 1);
+                STEP.update_states();
+                STEP.update_dist();
+                PRJ.record(i - 1);
+            }
+            PRJ.restore(i);
+            STEP.update_states();
+            STEP.update_dist();
+            PRJ.record(i);
+
+            document.getElementById("steps").innerHTML--;
+            document.getElementById("range_steps").max--;
+            STEP.redraw();
+            PRJ.redraw_page();
+        }
+    },
+    duplicate: () => {
+
+    },
     restore: (i) => {
         if (i > PRJ.steps.length - 1) {
             return;
@@ -189,6 +217,8 @@ export const PRJ = {
         if (PRJ.steps.length - 1 < i) {
             return;
         }
+        PRJ.steps[i].fold_cp = STEP.FOLD0;
+        PRJ.steps[i].cell_cp = STEP.CELL0;
         PRJ.steps[i].state_cp = STEP.STATE0;
         PRJ.steps[i].fold = STEP.FOLD;
         PRJ.steps[i].fold_d = STEP.FOLD_D;

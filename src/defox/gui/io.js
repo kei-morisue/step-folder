@@ -1,4 +1,5 @@
 import { PRJ } from "../project.js";
+import { IO3 } from "../io.js";
 
 
 export const GUI_IO = {
@@ -24,6 +25,10 @@ export const GUI_IO = {
             IO3.save(PRJ.steps, pj);
         };
         document.getElementById("import_proj").onclick = PRJ.read_project;
+
+        document.getElementById("remove").onclick = PRJ.remove;
+        document.getElementById("duplicate").onclick = PRJ.duplicate;
+
 
     },
 }

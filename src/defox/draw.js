@@ -26,7 +26,8 @@ export const DRAW = {
             MM: "blue",
             RV: "red",
             RM: "blue",
-            UF: "magenta",
+            UF: "green",
+            FF: "magenta",
         },
 
         segment: {
@@ -39,6 +40,8 @@ export const DRAW = {
             RV: "red",
             RM: "blue",
             UF: "green",
+            FF: "magenta",
+
         },
         rand: [
             "lightpink", "lightgreen", "lightskyblue", "gold",
@@ -55,6 +58,7 @@ export const DRAW = {
             RV: 3,
             RM: 3,
             UF: 3,
+            FF: 3,
         },
         segment: {
             F: 1,
@@ -66,6 +70,7 @@ export const DRAW = {
             RV: 3,
             RM: 3,
             UF: 3,
+            FF: 3,
         },
         clip_path: {
             body: 8,
@@ -187,7 +192,6 @@ export const DRAW = {
                 const creases_clipped = SEG.clip_edges(FU[fi], UV, Vf_, Vc, clip_c);
                 DRAW.draw_creases(gg, creases_clipped, as, is_flip ^ Ff[fi]);
             }
-
         }
 
     },

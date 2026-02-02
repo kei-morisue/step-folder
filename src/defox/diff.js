@@ -16,7 +16,7 @@ export const DIFF = {
             const a1 = EA1[i - L0.length]
             switch (a1) {
                 case "F":
-                    return "F";
+                    return "FF";
                 case "B":
                     return "B";
                 case "M":
@@ -58,7 +58,7 @@ export const DIFF = {
         const EA = [];
         const UA = [];
         for (const [ei_, a_] of EA_.entries()) {
-            if (a_ == "F" || a_ == "MM" || a_ == "VV") {
+            if (a_ == "FF" || a_ == "F" || a_ == "MM" || a_ == "VV") {
                 UV.push(EV_[ei_]);
                 UA.push(a_);
             }

@@ -21,7 +21,8 @@ export const DRAW_LIN = {
             MM: "blue",
             RV: "red",
             RM: "blue",
-            UF: "magenta",
+            UF: "green",
+            FF: "magenta",
         },
     },
 
