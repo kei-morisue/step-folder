@@ -1,5 +1,3 @@
-import { NOTE } from "../flatfolder//note.js";
-import { SVG } from "../flatfolder//svg.js";
 import { IO } from "../flatfolder/io.js";
 import { M } from "../flatfolder/math.js";
 import { X } from "../flatfolder/conversion.js";
