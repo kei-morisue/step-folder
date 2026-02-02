@@ -12,6 +12,7 @@ import { N } from "./nath.js";
 import { DRAW } from "./draw.js";
 import { Y } from "./y.js";
 import { SEG } from "./segment.js";
+import { PAGE } from "./page.js";
 
 export const GUI = {
 
@@ -67,12 +68,6 @@ export const GUI = {
             [STEP.cx, STEP.cy] = M.add([STEP.cx, STEP.cy], N.apply(Ainv, [x0, y0]));
             STEP.redraw();
         }
-        GUI.setup_number_options(
-            ["width_crease", "width_boundary", "width_MMVV"],
-            ["F", "B", ["MM", "VV"]],
-            [1, 3, 6],
-            DRAW.width.edge
-        )
 
 
         for (const [i, id] of ["T0", "T1", "T2", "T3"].entries()) {
@@ -95,12 +90,15 @@ export const GUI = {
             DRAW.color.background = e.target.value
             STEP.update_dist()
         }
-        // GUI.open_close("cps", "flex");
         GUI.open_close("option_color", "inline");
         GUI.open_close("option_width", "inline");
         GUI.open_close("option_layers", "inline");
         GUI.open_close("option_text", "inline");
+        GUI.open_close("option_layout", "inline");
+        GUI.open_close("option_dim", "inline");
+
         GUI.open_close("edit_dist", "inline");
+        GUI.open_close("edit_symbol", "inline");
         GUI.open_close("edit_render", "inline");
         GUI.open_close("edit_symbol", "inline");
 
@@ -153,28 +151,6 @@ export const GUI = {
             }
             else {
                 el.style.display = display_style;
-            }
-        }
-    },
-    setup_number_options: (ids, edge_props, init, module) => {
-        for (const [i, id] of ids.entries()) {
-            const props = edge_props[i]
-            document.getElementById(id).onchange = (e) => {
-                if (Array.isArray(props)) {
-                    props.map(p => module[p] = e.target.value)
-                } else {
-                    module[props] = e.target.value
-                }
-                STEP.redraw()
-            }
-            document.getElementById(id + "_reset").onclick = (e) => {
-                if (Array.isArray(props)) {
-                    props.map(p => module[p] = init[i])
-                } else {
-                    module[props] = init[i]
-                }
-                document.getElementById(id).value = init[i]
-                STEP.redraw()
             }
         }
     },

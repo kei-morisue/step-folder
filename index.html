@@ -26,7 +26,7 @@
             <input type="file" multiple id="import0" accept="cp/plain" />
         </p>
     </span>
-    <span class="preview">
+    <span class="step_preview">
         <div>
             <b>Steps</b>
             <button id="prev">Prev</button>
@@ -34,6 +34,8 @@
             <b>/ </b>
             <b id="steps">1</b>
             <button id="next">Next</button>
+        </div>
+        <div>
             <input id="range_steps" type="range" min="1" max="2" value="2">
         </div>
     </span>
@@ -83,20 +85,115 @@
                     </p>
                 </span>
                 <span id="edit_symbol_b" class="openclose"><b>Add Symbols</b></span>
-                <span id="edit_symbol" style="display: inline;">
-
+                <span id="edit_symbol" style="display: none;">
+                    <p>
+                        <button id="add">Add</button>
+                    </p>
                 </span>
                 <span id="option_layers_b" class="openclose"><b>Manual Layer Control</b></span>
-                <span id="option_layers" style="display: none;">
+                <span id="option_layers">
                     <label for="selectG">Group</label>
                     <select id="selectG"></select>
                     <label for="assign">state</label>
                     <input type="number" id="assign" min="1" max="1" value="1">
                     <a id="assigns">/ 1</a>
+                    <p>
+                        <label for="cb_T0">taco-taco</label>
+                        <input type="checkbox" id="cb_T0" checked="true">
+                        <label for="cb_T1">taco-tortilla</label>
+                        <input type="checkbox" id="cb_T1" checked="true">
+                    </p>
+                    <p>
+                        <label for="cb_T2">tortilla-tortilla</label>
+                        <input type="checkbox" id="cb_T2" checked="true">
+                        <label for="cb_T3">transitivity</label>
+                        <input type="checkbox" id="cb_T3" checked="true">
+                        <button id="apply_tt">Apply</button>
+                        <button id="reset_tt">Reset</button>
+                    </p>
                 </span>
             </div>
             <div id="preview" class="preview">
-                <span id="pages_b" class="openclose"><b>Pages</b></span>
+                <div id="option">
+                    <span id="option_color_b" class="openclose"><b>Color Options</b></span>
+                    <span id="option_color" style="display: none;">
+                        <label for="topcolor">Top Color</label>
+                        <input type="color" id="topcolor" value="#8F8F8F">
+                        <label for="bottomcolor">Bottom Color</label>
+                        <input type="color" id="bottomcolor" value="#FFFFFF">
+                        <label for="bottomcolor">BG Color</label>
+                        <input type="color" id="bgcolor" value="#00FF00">
+                    </span>
+                    <span id="option_width_b" class="openclose"><b>Segment Options</b></span>
+                    <span id="option_width" style="display: none;">
+                        <p>
+                            <label for="width_crease">Crease Width</label>
+                            <input id="width_crease" type="number" max="10" min="1" value="1">
+                            <button id="width_crease_reset">Reset</button>
+                        </p>
+                        <p>
+                            <label for="width_boundary">Boundary Width</label>
+                            <input id="width_boundary" type="number" max="10" min="1" value="3">
+                            <button id="width_boundary_reset">Reset</button>
+                        </p>
+                        <p>
+                            <label for="width_MMVV">MV Crease Width</label>
+                            <input id="width_MMVV" type="number" max="10" min="1" value="6">
+                            <button id="width_MMVV_reset">Reset</button>
+                        </p>
+                    </span>
+                    <span id="option_text_b" class="openclose"><b>Text Options</b></span>
+                    <span id="option_text" style="display: none;">
+                        <p>
+                            <label for="size_text">Text Size</label>
+                            <input id="size_text" type="number" max="500" min="20" value="100" step="1">
+                            <button id="size_text_reset">Reset</button>
+                            <label for="loc_text">Locatoion</label>
+                            <select id="loc_text">
+                                <option value="Top">Top</option>
+                                <option value="Bottom">Bottom</option>
+                            </select>
+                        </p>
+                    </span>
+                    <span id="option_layout_b" class="openclose"><b>Layout Options</b></span>
+                    <span id="option_layout">
+                        <p>
+                            <label>Rows x Cols</label>
+                            <input id="dim_r" type="number" max="10" min="1" value="4" step="1">
+                            <button id="dim_r_reset">Reset</button>
+                            <input id="dim_c" type="number" max="10" min="1" value="3" step="1">
+                            <button id="dim_c_reset">Reset</button>
+                        </p>
+                        <p>
+                            <label for="dim_b">Blanks</label>
+                            <input id="dim_b" type="number" max="10" min="0" value="1" step="1">
+                            <button id="dim_b_reset">Reset</button>
+                        </p>
+                    </span>
+                    <span id="option_dim_b" class="openclose"><b>Dimension Options</b></span>
+                    <span id="option_dim" style="display: none;">
+                        <p>
+                            <label>Width x Height (px)</label>
+                            <input id="dim_w" type="number" max="100000" min="100" value="2894" step="1">
+                            <button id="dim_w_reset">Reset</button>
+                            <input id="dim_h" type="number" max="200000" min="200" value="4093" step="1">
+                            <button id="dim_h_reset">Reset</button>
+                        </p>
+                        <p>
+                            <label>Margin (px)</label>
+                            <input id="dim_x" type="number" max="1000" min="0" value="50" step="1">
+                            <button id="dim_x_reset">Reset</button>
+                            <input id="dim_y" type="number" max="1000" min="0" value="80" step="1">
+                            <button id="dim_y_reset">Reset</button>
+                        </p>
+                        <p>
+                            <label>Steps Margin (%)</label>
+                            <input id="step_x" type="number" max="50" min="0" value="20" step="5">
+                            <button id="step_x_reset">Reset</button>
+                        </p>
+                    </span>
+                </div>
+
                 <div>
                     <button id="page_prev">Prev</button>
                     <b id="page_idx">1</b>
@@ -114,51 +211,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div>
-        <b>Collision Constraints</b>
-        <label for="cb_T0">taco-taco</label>
-        <input type="checkbox" id="cb_T0" checked="true">
-        <label for="cb_T1">taco-tortilla</label>
-        <input type="checkbox" id="cb_T1" checked="true">
-        <label for="cb_T2">tortilla-tortilla</label>
-        <input type="checkbox" id="cb_T2" checked="true">
-        <label for="cb_T3">transitivity</label>
-        <input type="checkbox" id="cb_T3" checked="true">
-        <button id="apply_tt">Apply</button>
-        <button id="reset_tt">Reset</button>
-    </div>
-
-    <div id="option">
-        <span id="option_color_b" class="openclose"><b>Color Options</b></span>
-        <span id="option_color" style="display: none;">
-            <label for="topcolor">Top Color</label>
-            <input type="color" id="topcolor" value="#8F8F8F">
-            <label for="bottomcolor">Bottom Color</label>
-            <input type="color" id="bottomcolor" value="#FFFFFF">
-            <label for="bottomcolor">BG Color</label>
-            <input type="color" id="bgcolor" value="#00FF00">
-        </span>
-        <span id="option_width_b" class="openclose"><b>Segment Options</b></span>
-        <span id="option_width" style="display: none;">
-            <label for="width_crease">Crease Width</label>
-            <input id="width_crease" type="number" max="10" min="1" value="1">
-            <button id="width_crease_reset">Reset</button>
-            <label for="width_boundary">Boundary Width</label>
-            <input id="width_boundary" type="number" max="10" min="1" value="3">
-            <button id="width_boundary_reset">Reset</button>
-            <label for="width_MMVV">MV Crease Width</label>
-            <input id="width_MMVV" type="number" max="10" min="1" value="6">
-            <button id="width_MMVV_reset">Reset</button>
-        </span>
-        <span id="option_text_b" class="openclose"><b>Text Options</b></span>
-        <span id="option_text">
-            <p>
-                <label for="size_text">Text Size</label>
-                <input id="size_text" type="number" max="100" min="1" value="30">
-                <button id="size_text_reset">Reset</button>
-            </p>
-        </span>
     </div>
 
 

@@ -15,18 +15,19 @@ export const PAGE = {
         height: 4093,
         margin_x: 50,
         margin_y: 80,
-        margin_step: 0.2,
+        margin_step: 20,
     },
     layout: {
         rows: 4,
         cols: 3,
-        blank: 1,
+        blanks: 1,
     },
     text: {
         color: "black",
         size: 100,
         font: "Arial",
-        weght: "bold"
+        weght: "bold",
+        location: "Top",
     },
     is_river: false,
     river_flow: 1,
@@ -35,7 +36,7 @@ export const PAGE = {
     get_pages: (steps) => {
         const c = PAGE.layout.cols;
         const r = PAGE.layout.rows;
-        const b = PAGE.layout.blank;
+        const b = PAGE.layout.blanks;
         return Math.ceil((steps.length + b) / (r * c));
     },
     redraw: (svg, steps) => {
@@ -57,7 +58,7 @@ export const PAGE = {
             const panel = PAGE.draw_panel(body, w, h, w * c, h * r, "step_" + i);
 
             const s = Math.min(w, h);
-            const d = s * (1 - PAGE.dim.margin_step)
+            const d = s * (1.0 - PAGE.dim.margin_step * 0.01);
             SVG.SCALE = d;
             const panel_d = PAGE.draw_panel(panel, s, s, (s - d) / 2, (s - d) / 2, "diagram_" + i);
 
@@ -74,7 +75,13 @@ export const PAGE = {
                 DRAW_LIN.draw_state(panel_d, FOLD, steps[i].lin.S, T, clip, i);
             }
             const t = PAGE.text.size;
-            const l = SVG.draw_label(panel, [t, t], PAGE.text.color, i + 1, t);
+            let num = i + 1;
+            const loc = [t, t];
+            if (PAGE.text.location == "Bottom") {
+                loc[1] = h;
+                num = num + ". "
+            }
+            const l = SVG.draw_label(panel, loc, PAGE.text.color, num, t);
             l.setAttribute("font-family", PAGE.text.font);
             l.setAttribute("font-weight", PAGE.text.weght);
 
@@ -86,10 +93,10 @@ export const PAGE = {
     get_row_col: (idx) => {
         const c = PAGE.layout.cols;
         const r = PAGE.layout.rows;
-        const b = PAGE.layout.blank;
+        const b = PAGE.layout.blanks;
 
         if (PAGE.current_idx == 0) {
-            if (idx < r * c - b) {
+            if (idx + b <= r * c) {
                 const c_ = (idx + b) % c;
                 const r_ = (idx + b - c_) / c;
                 return [r_, c_];

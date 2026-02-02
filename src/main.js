@@ -6,6 +6,7 @@ import { SMPL } from "./defox/sample.js"
 import { STEP } from "./defox/step.js"
 import { SEG } from "./defox/segment.js";
 import { PAGE } from "./defox/page.js";
+import { DRAW } from "./defox/draw.js";
 
 window.onload = () => { MAIN.startup(); };  // entry point
 
@@ -45,7 +46,7 @@ const MAIN = {
 
         document.getElementById("import0").onchange = MAIN.read;
         MAIN.import_new("sample", SMPL.hanikamu);
-
+        MAIN.redraw_page();
         document.getElementById("cp_layers").onclick = () => {
             if (document.getElementById("cp3").style.display == "none") {
                 document.getElementById("state0").setAttribute("style", "display: none;");
@@ -57,13 +58,49 @@ const MAIN = {
         };
 
 
+        document.getElementById("loc_text").onchange = (e) => {
+            PAGE.text.location = e.target.value;
+            MAIN.redraw_page();
+        }
         document.getElementById("page_next").onclick = MAIN.page_next;
         document.getElementById("page_prev").onclick = MAIN.page_prev;
 
         document.getElementById("page_reload").onclick = (e) => {
             MAIN.record(MAIN.current_idx);
-            PAGE.redraw(document.getElementById("page"), MAIN.steps);
+            MAIN.redraw_page();
         }
+
+        MAIN.setup_number_options(
+            ["width_crease",
+                "width_boundary",
+                "width_MMVV"],
+            ["F", "B", ["MM", "VV"]],
+            [1, 3, 6],
+            DRAW.width.edge
+        );
+        MAIN.setup_number_options(
+            ["size_text"],
+            ["size"],
+            [100],
+            PAGE.text
+        );
+        MAIN.setup_number_options(
+            ["dim_r", "dim_c", "dim_b"],
+            ["rows", "cols", "blanks"],
+            [4, 3, 1],
+            PAGE.layout
+        );
+        MAIN.setup_number_options(
+            ["dim_w", "dim_h", "dim_x", "dim_y", "step_x"],
+            ["width", "height", "margin_x", "margin_y", "margin_step"],
+            [2894, 4093, 50, 80, 20],
+            PAGE.dim
+        );
+
+    },
+
+    redraw_page: () => {
+        PAGE.redraw(document.getElementById("page"), MAIN.steps);
     },
 
     prev: () => {
@@ -254,8 +291,7 @@ const MAIN = {
             return;
         }
         PAGE.current_idx = PAGE.current_idx - 1;
-        PAGE.redraw(document.getElementById("page"), MAIN.steps);
-
+        MAIN.redraw_page();
     },
     page_next: () => {
 
@@ -263,7 +299,33 @@ const MAIN = {
             return;
         }
         PAGE.current_idx = PAGE.current_idx + 1;
-        PAGE.redraw(document.getElementById("page"), MAIN.steps);
+        MAIN.redraw_page();
     },
+
+    setup_number_options: (ids, edge_props, init, module) => {
+        for (const [i, id] of ids.entries()) {
+            const props = edge_props[i]
+            document.getElementById(id).onchange = (e) => {
+                if (Array.isArray(props)) {
+                    props.map(p => module[p] = e.target.value)
+                } else {
+                    module[props] = parseInt(e.target.value);
+                }
+                STEP.redraw();
+                MAIN.redraw_page();
+            }
+            document.getElementById(id + "_reset").onclick = (e) => {
+                if (Array.isArray(props)) {
+                    props.map(p => module[p] = init[i])
+                } else {
+                    module[props] = init[i]
+                }
+                document.getElementById(id).value = init[i]
+                STEP.redraw();
+                MAIN.redraw_page();
+            }
+        }
+    },
+
 };
 

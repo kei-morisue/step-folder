@@ -21,21 +21,29 @@ svg text {
     width: 50%;
 }
 
-.paint {
-    height: 50%;
+.step_preview {
     width: 100%;
-    border: 1px solid #000;
+    margin: 0 auto;
 }
 
-.preview div {
+.step_preview div {
     display: flex;
     align-items: center;
     justify-content: center
 }
 
+.paint {
+    height: calc(var(--width)/3);
+    width: 100%;
+    border: 1px solid #000;
+}
+
+.preview div {
+    display: inline;
+}
+
 .preview {
     width: 100%;
-    margin: 0 auto;
     border: 1px solid #000;
 }
 
