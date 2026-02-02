@@ -26,7 +26,7 @@ export const DRAW = {
             MM: "blue",
             RV: "red",
             RM: "blue",
-            UF: "green",
+            UF: "magenta",
             FF: "magenta",
         },
 
@@ -35,18 +35,13 @@ export const DRAW = {
             B: "black",
             V: "red",
             M: "blue",
-            VV: "magenta",
-            MM: "cyan",
+            VV: "red",
+            MM: "blue",
             RV: "red",
             RM: "blue",
             UF: "green",
             FF: "magenta",
-
         },
-        rand: [
-            "lightpink", "lightgreen", "lightskyblue", "gold",
-            "lightsalmon", "powderblue", "lavender", "sandybrown"
-        ],
     },
 
     width: {
@@ -55,22 +50,22 @@ export const DRAW = {
             B: 3,
             VV: 6,
             MM: 6,
-            RV: 3,
-            RM: 3,
-            UF: 3,
-            FF: 3,
+            RV: 6,
+            RM: 6,
+            UF: 6,
+            FF: 6,
         },
         segment: {
             F: 1,
             B: 1,
             V: 1,
             M: 1,
-            VV: 3,
-            MM: 3,
-            RV: 3,
-            RM: 3,
-            UF: 3,
-            FF: 3,
+            VV: 6,
+            MM: 6,
+            RV: 6,
+            RM: 6,
+            UF: 6,
+            FF: 6,
         },
         clip_path: {
             body: 8,
@@ -147,7 +142,8 @@ export const DRAW = {
         });
         const lines = SP.map((ps) => M.expand(ps, Q_));
         SVG.draw_segments(fold_s_crease, lines, {
-            id: true, stroke: SD.map((d, i) => {
+            id: true,
+            stroke: SD.map((d, i) => {
                 const [c0, c1] = SC[i];
 
                 if (color[c0] && color[c1]) {
@@ -155,7 +151,7 @@ export const DRAW = {
                 }
                 return DRAW.color.edge[d];
             }),
-            filter: (i) => SD[i] == "MM" || SD[i] == "VV" || SD[i] == "U" || SD[i] == "RM" || SD[i] == "RV",
+            filter: (i) => SD[i] == "UF" || SD[i] == "RM" || SD[i] == "RV",
             stroke_width: SD.map((d, i) => {
                 return DRAW.width.edge[d];
             }),

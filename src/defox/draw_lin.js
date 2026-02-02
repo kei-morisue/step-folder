@@ -21,7 +21,7 @@ export const DRAW_LIN = {
             MM: "blue",
             RV: "red",
             RM: "blue",
-            UF: "green",
+            UF: "magenta",
             FF: "magenta",
         },
     },
@@ -70,7 +70,7 @@ export const DRAW_LIN = {
                 }),
                 stroke_width: FE[top_f].map((e) => {
                     const w = DRAW.width.edge[EA[e]]
-                    return w ? w : DRAW.width.edge["B"];
+                    return w ?? DRAW.width.edge["B"];
                 })
             });
 

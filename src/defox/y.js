@@ -209,56 +209,29 @@ export const Y = {     // CONVERSION
     },
 
     Ctop_SC_SE_EF_Ff_EA_FE_2_SD: (Ctop, SC, SE, EF, Ff, EA, FE) => {
-        const EF_set = new Set(
-            EF.filter(F => F.length == 2).map(F => M.encode_order_pair(F)));
-        const FE_map = new Map()
-        for (const [ei, F] of EF.entries()) {
-            FE_map.set(M.encode_order_pair(F), ei)
-        }
 
         const SD = SC.map((C, si) => {
             const F = C.map(ci => Ctop[ci]);
             if (F[0] == F[1]) { return "N"; }
             // borders of a state
-            if ((F[0] == undefined) || (F[1] == undefined)) {
-                // const face = F[0] ?? F[1];
-                // for (const ei of SE[si]) {
-                //     const [fi, fj] = EF[ei];
-
-                //     if ((fi == face) || (fj == face)) {
-                //         const a = EA[ei]
-                //         return (a == "M" || a == "V" || a == "B") ? "B" : a;
-                //     }
-                // }
-                return "B";
-            }
-            const flips = F.map(fi => Ff[fi]);
-            const pair = M.encode_order_pair(F);
-            //creases inside the state
-            if ((flips[0] == flips[1]) &&
-                EF_set.has(pair)) {
-                const ei = FE_map.get(pair);
-
-                const a = EA[ei]
-                if (a != undefined) {
-                    return a;
+            if ((F[0] != undefined)) {
+                for (const e0 of FE[F[0]]) {
+                    if (SE[si].indexOf(e0) >= 0) {
+                        const a = EA[e0]
+                        if (a == "RM" || a == "RV" || a == "UF") {
+                            return a;
+                        };
+                    }
                 }
             }
-            // edges in the state
-            for (const e0 of FE[F[0]]) {
-                if (SE[si].indexOf(e0) >= 0) {
-                    const a = EA[e0]
-                    if (a == "RM" || a == "RV" || a == "U") {
-                        return a;
-                    };
-                }
-            }
-            for (const e1 of FE[F[1]]) {
-                if (SE[si].indexOf(e1) >= 0) {
-                    const a = EA[e1]
-                    if (a == "RM" || a == "RV" || a == "U") {
-                        return a;
-                    };
+            if ((F[1] != undefined)) {
+                for (const e1 of FE[F[1]]) {
+                    if (SE[si].indexOf(e1) >= 0) {
+                        const a = EA[e1]
+                        if (a == "RM" || a == "RV" || a == "UF") {
+                            return a;
+                        };
+                    }
                 }
             }
             return "B";

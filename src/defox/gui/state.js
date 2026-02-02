@@ -64,7 +64,12 @@ export const GUI_STATE = {
         }
 
         document.getElementById("reset_tt").onclick = (e) => {
-            STEP.update_states()
+            for (const [i, id] of ["T0", "T1", "T2", "T3"].entries()) {
+                DIST[id] = true;
+                document.getElementById("cb_" + id).checked = true;
+            }
+            STEP.recalculate();
+            PRJ.record(PRJ.current_idx);
         }
 
         document.getElementById("selectG").onchange = (e) => {
