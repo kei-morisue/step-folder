@@ -29,9 +29,8 @@ export const PRJ = {
         STEP.redraw();
     },
     next: () => {
-
         if (PRJ.steps.length - 1 < PRJ.current_idx + 1) {
-            document.getElementById("import0").click();
+            return;
         }
         else {
             const i = PRJ.current_idx;
@@ -39,7 +38,6 @@ export const PRJ = {
             PRJ.restore(i + 1);
             STEP.redraw();
         }
-
     },
     jump: (e) => {
         const j = e.target.value;
@@ -57,7 +55,7 @@ export const PRJ = {
         button.setAttribute("type", "file");
         button.setAttribute("multiple", true);
         button.setAttribute("accept", ".cp");
-        button.click();
+        button.dispatchEvent(new MouseEvent("click"));
         button.onchange = (e) => {
             if (e.target.files.length > 0) {
                 const l = e.target.files.length;
