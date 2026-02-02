@@ -12,8 +12,18 @@ svg text {
     display: flex;
 }
 
+.mainpanel .panels {
+    width: 100%;
+    display: inline;
+}
+
+.mainpanel .control_panels {
+    width: 50%;
+}
+
 .paint {
-    height: 100%;
+    height: 50%;
+    width: 100%;
     border: 1px solid #000;
 }
 
@@ -24,16 +34,18 @@ svg text {
 }
 
 .preview {
+    width: 100%;
     margin: 0 auto;
+    border: 1px solid #000;
 }
 
 .page {
-    max-width: 50%;
+
     border: 1px solid #000;
 }
 
 .editpanel {
-    width: 30%;
+    width: 100%;
     border: 1px solid #000;
     display: block;
 }

@@ -40,6 +40,9 @@ const MAIN = {
         };
         document.getElementById("next").onclick = MAIN.next;
         document.getElementById("prev").onclick = MAIN.prev;
+        document.getElementById("range_steps").oninput = MAIN.jump;
+
+
         document.getElementById("import0").onchange = MAIN.read;
         MAIN.import_new("sample", SMPL.hanikamu);
 
@@ -84,6 +87,15 @@ const MAIN = {
             STEP.redraw();
         }
 
+    },
+    jump: (e) => {
+        const j = e.target.value;
+        MAIN.jump_to(j - 1);
+    },
+    jump_to: (idx) => {
+        MAIN.record(MAIN.current_idx);
+        MAIN.restore(idx);
+        STEP.redraw();
     },
 
 
@@ -208,6 +220,9 @@ const MAIN = {
         MAIN.current_idx = i
         document.getElementById("steps").innerHTML = MAIN.steps.length;
         document.getElementById("step").innerHTML = i + 1;
+        document.getElementById("range_steps").max = MAIN.steps.length;
+        document.getElementById("range_steps").value = i + 1;
+
     },
     record: (i) => {
         if (MAIN.steps.length - 1 < i) {

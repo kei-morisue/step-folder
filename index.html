@@ -6,6 +6,7 @@
     <title>DEFOX</title>
     <link rel="icon" href="./icon-512x512.png">
     <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/style_1200.css">
 </head>
 
 <body style="background:darkgray">
@@ -33,14 +34,17 @@
             <b>/ </b>
             <b id="steps">1</b>
             <button id="next">Next</button>
+            <input id="range_steps" type="range" min="1" max="2" value="2">
         </div>
     </span>
 
-    <div>
-        <div id="states" class="mainpanel">
+    <div class="mainpanel">
+        <div id="states" class="panels">
+            <svg id="state3" class="paint"></svg>
             <svg id="state0" class="paint"></svg>
             <svg id="cp3" class="paint" style="display: none;"></svg>
-            <svg id="state3" class="paint"></svg>
+        </div>
+        <div class="control_panels">
             <div id="edit" class="editpanel">
                 <span id="edit_render_b" class="openclose"><b>Render</b></span>
                 <span id="edit_render">
@@ -91,24 +95,40 @@
                     <a id="assigns">/ 1</a>
                 </span>
             </div>
-        </div>
-        <div>
-            <p>
-            </p>
-
-            <b>Collision Constraints</b>
-            <label for="cb_T0">taco-taco</label>
-            <input type="checkbox" id="cb_T0" checked="true">
-            <label for="cb_T1">taco-tortilla</label>
-            <input type="checkbox" id="cb_T1" checked="true">
-            <label for="cb_T2">tortilla-tortilla</label>
-            <input type="checkbox" id="cb_T2" checked="true">
-            <label for="cb_T3">transitivity</label>
-            <input type="checkbox" id="cb_T3" checked="true">
-            <button id="apply_tt">Apply</button>
-            <button id="reset_tt">Reset</button>
+            <div id="preview" class="preview">
+                <span id="pages_b" class="openclose"><b>Pages</b></span>
+                <div>
+                    <button id="page_prev">Prev</button>
+                    <b id="page_idx">1</b>
+                    <b>/ </b>
+                    <b id="pages">1</b>
+                    <button id="page_next">Next</button>
+                    <button id="page_reload">Reload</button>
+                    <button id="page_export">Export</button>
+                </div>
+                <div>
+                    <svg id="page" class="page">
+                        <svg id="page_body">
+                        </svg>
+                    </svg>
+                </div>
+            </div>
         </div>
     </div>
+    <div>
+        <b>Collision Constraints</b>
+        <label for="cb_T0">taco-taco</label>
+        <input type="checkbox" id="cb_T0" checked="true">
+        <label for="cb_T1">taco-tortilla</label>
+        <input type="checkbox" id="cb_T1" checked="true">
+        <label for="cb_T2">tortilla-tortilla</label>
+        <input type="checkbox" id="cb_T2" checked="true">
+        <label for="cb_T3">transitivity</label>
+        <input type="checkbox" id="cb_T3" checked="true">
+        <button id="apply_tt">Apply</button>
+        <button id="reset_tt">Reset</button>
+    </div>
+
     <div id="option">
         <span id="option_color_b" class="openclose"><b>Color Options</b></span>
         <span id="option_color" style="display: none;">
@@ -141,25 +161,7 @@
         </span>
     </div>
 
-    <div id="preview" class="preview">
-        <div>
-            <b>Pages</b>
-            <button id="page_prev">Prev</button>
-            <b id="page_idx">1</b>
-            <b>/ </b>
-            <b id="pages">1</b>
-            <button id="page_next">Next</button>
-            <button id="page_reload">Reload</button>
-            <button id="page_export">Export</button>
-        </div>
-        <div>
-            <svg id="page" class="page">
-                <svg id="page_body">
 
-                </svg>
-            </svg>
-        </div>
-    </div>
     <b>© Kei Morisue 2024, 2026</b>
     <p>
         <a href="https://github.com/kei-morisue/step-folder">Repository</a>

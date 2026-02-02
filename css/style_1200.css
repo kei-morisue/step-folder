@@ -1,0 +1,28 @@
+@media screen and (width >=1200px) {
+    .mainpanel {
+        display: flex;
+    }
+
+    .mainpanel .panels {
+        width: 35%;
+    }
+
+    .editpanel {
+        width: 50%;
+    }
+
+    .mainpanel .control_panels {
+        display: flex;
+        width: 65%;
+    }
+
+    .preview {
+        display: inline;
+    }
+
+    .panels .paint {
+        width: 100%;
+        display: flex;
+    }
+
+}
