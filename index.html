@@ -25,13 +25,13 @@
             <button id="duplicate">Duplicate Step</button>
             <button id="export">Export Step</button>
             <select id="export_ext">
+                <option value="cp">.cp</option>
                 <option value="svg">.svg</option>
                 <option value="png">.png</option>
             </select>
-            <p>
-                <input type="checkbox" id="crease_interp" checked>
-                <label for="crease_interp">Crease Interpolation</label>
-            </p>
+            <input type="checkbox" id="crease_interp" checked>
+            <label for="crease_interp">Crease Interpolation</label>
+
         </span>
     </div>
     <span class="step_preview">
@@ -211,8 +211,8 @@
                     <button id="page_next">Next</button>
                     <button id="page_export">Export</button>
                     <select id="page_export_ext">
-                        <option value="svg">.svg</option>
                         <option value="png">.png</option>
+                        <option value="svg">.svg</option>
                         <option value="cp">.cp</option>
                     </select>
                 </div>

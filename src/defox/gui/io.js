@@ -15,10 +15,6 @@ export const GUI_IO = {
                 PRJ.refresh();
             }
         };
-        document.getElementById("export").onclick = (e) => {
-            const ext = document.getElementById("export_ext").value;
-            IO3.write("state3", "step_" + PRJ.current_idx, ext);
-        };
         document.getElementById("import0").onclick = () => {
             const is_interp = document.getElementById("crease_interp").checked;
             GUI_IO.import_cps(is_interp)
@@ -32,10 +28,15 @@ export const GUI_IO = {
         document.getElementById("remove").onclick = PRJ.remove;
         document.getElementById("duplicate").onclick = PRJ.duplicate;
 
+        document.getElementById("export").onclick = (e) => {
+            const ext = document.getElementById("export_ext").value;
+            const pj = document.getElementById("proj_name").value;
+            IO3.write("state3", pj, ext, PRJ.current_idx);
+        };
         document.getElementById("page_export").onclick = (e) => {
             const ext = document.getElementById("page_export_ext").value;
             const pj = document.getElementById("proj_name").value;
-            IO3.write("page", pj + "_page_" + PAGE.current_idx, ext);
+            IO3.write("page", pj, ext);
         };
 
 

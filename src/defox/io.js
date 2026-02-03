@@ -4,22 +4,39 @@ import { X } from "../flatfolder/conversion.js";
 import { N } from "./nath.js";
 import { Y } from "./y.js";
 import { PRJ } from "./project.js";
+import { PAGE } from "./page.js";
 
 
 export const IO3 = {    // INPUT-OUTPUT
-    write: (svg_id, name, ext) => {
+    write: (svg_id, name, ext, idx = undefined) => {
         if (ext == "png") {
-            return IO3.write_png(svg_id, name);
+            return IO3.write_pngs(svg_id, name, idx);
         }
         if (ext == "svg") {
-            return IO3.write_svg(svg_id, name);
+            return IO3.write_svgs(svg_id, name, idx);
         }
         if (ext == "cp") {
-            return IO3.write_cps(name);
+            return IO3.write_cps(name, idx);
         }
     },
 
-    write_cps: (name) => {
+    format_num: (n) => {
+        return ((n + 1) + "").padStart(3, '0');
+    },
+
+    write_cps: (name, idx = undefined) => {
+        if (idx) {
+            const FOLD = PRJ.steps[idx].fold_cp;
+            const cp = Y.FOLD_2_CP(FOLD);
+            let blob = new Blob([cp], { type: "text/plain" });
+            let link = document.createElement("a"); // aタグのエレメントを作成
+            link.href = window.URL.createObjectURL(blob);
+            const num = IO3.format_num(idx);
+            link.download = num + ".cp";
+            link.click();
+            return;
+        }
+
         const zip = new JSZip();
 
         for (const [idx, step] of PRJ.steps.entries()) {
@@ -28,7 +45,7 @@ export const IO3 = {    // INPUT-OUTPUT
             }
             const FOLD = step.fold_cp;
             const cp = Y.FOLD_2_CP(FOLD);
-            const num = ((idx * 10) + "").padStart(4, '0');
+            const num = IO3.format_num(idx - 1);
             zip.file(num + ".cp", cp);
         }
         zip.generateAsync({ type: "blob" }).then(function (content) {
@@ -37,16 +54,41 @@ export const IO3 = {    // INPUT-OUTPUT
 
     },
 
-    write_svg: (svg_id, name) => {
+    write_svgs: (svg_id, name, idx = undefined) => {
+        if (idx) {
+            PRJ.restore(idx);
+            IO3.write_svg(svg_id, name, idx);
+            return;
+        }
+        for (let j = 0; j < PAGE.get_pages(PRJ.steps); j++) {
+            PAGE.current_idx = j;
+            PRJ.redraw_page();
+            IO3.write_svg(svg_id, name + "_page_", j);
+        }
+    },
+    write_svg: (svg_id, name, idx) => {
         const img = new Blob([document.getElementById(svg_id).outerHTML], {
             type: "image/svg+xml"
         });
         const link = document.createElement("a");
-        link.setAttribute("download", `${name}.svg`);
+        const num = IO3.format_num(idx);
+        link.setAttribute("download", `${name}_${num}.svg`);
         link.setAttribute("href", window.URL.createObjectURL(img));
         link.dispatchEvent(new MouseEvent("click"));
     },
-    write_png: (svg_id, name) => {
+    write_pngs: (svg_id, name, idx = undefined) => {
+        if (idx) {
+            PRJ.restore(idx);
+            IO3.write_png(svg_id, name, idx);
+            return;
+        }
+        for (let j = 0; j < PAGE.get_pages(PRJ.steps); j++) {
+            PAGE.current_idx = j;
+            PRJ.redraw_page();
+            IO3.write_png(svg_id, name + "_page_", j);
+        }
+    },
+    write_png: (svg_id, name, idx) => {
         var svg = document.getElementById(svg_id);
         var svgData = new XMLSerializer().serializeToString(svg);
         var canvas = document.createElement("canvas");
@@ -59,7 +101,8 @@ export const IO3 = {    // INPUT-OUTPUT
             ctx.drawImage(image, 0, 0);
             var a = document.createElement("a");
             a.href = canvas.toDataURL("image/png");
-            a.setAttribute("download", `${name}.png`);
+            const num = IO3.format_num(idx);
+            a.setAttribute("download", `${name}_${num}.png`);
             a.dispatchEvent(new MouseEvent("click"));
         }
         image.src = "data:image/svg+xml;charset=utf-8;base64," + btoa(unescape(encodeURIComponent(svgData)));
