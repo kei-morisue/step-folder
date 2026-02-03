@@ -102,9 +102,12 @@ export const Y = {     // CONVERSION
         return [Vf, Ff];
     },
 
-    CP_2_FOLD_CELL: (doc) => {
+
+
+    CP_2_FOLD_CELL: (doc, FOLD_infer) => {
+        const L_add = FOLD_infer ? Y.FOLD_2_L(FOLD_infer) : undefined;
         const [V, VV, EV, EA, EF, FV, FE, UV, FU, Vc, UA] =
-            IO3.cp_2_V_VV_EV_EA_EF_FV_FE(doc);
+            IO3.cp_2_V_VV_EV_EA_EF_FV_FE(doc, L_add);
         if (V == undefined) { return; }
         const [W, Ff] = Y.V_FV_EV_EA_FU_UV_2_Vf_Ff(V, FV, EV, EA, FU, UV);
         const Vf = M.normalize_points(W);
@@ -152,8 +155,22 @@ export const Y = {     // CONVERSION
         return { P, CP, SP, PP, SC, CS, SE, BF, FC, CF }
     },
 
+
+    FOLD_2_L: (FOLD) => {
+        const L_ = FOLD.UV.map((P) => {
+            const l = M.expand(P, FOLD.V)
+            l.push("F");
+            return l
+        });
+        const L = FOLD.EV.map((P) => {
+            const l = M.expand(P, FOLD.V)
+            l.push("F");
+            return l
+        });
+        return L.concat(L_);
+    },
+
     FOLD_2_PAPER: (FOLD) => {
-        //TODO stub
         const EV = []
         for (const [i, a] of FOLD.EA.entries()) {
             if (a == "B") {

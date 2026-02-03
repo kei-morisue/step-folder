@@ -54,16 +54,38 @@ export const IO3 = {    // INPUT-OUTPUT
         button.setAttribute("type", "button");
         button.click();
     },
+    normalize_L: (L) => {
+        const P = [];
+        L.map((l) => {
+            P.push(l[0]);
+            P.push(l[1]);
+        });
+        const Q = M.normalize_points(P);
 
-    cp_2_V_VV_EV_EA_EF_FV_FE: (doc) => {
+        return L.map((_, l_i) => {
+            return [Q[2 * l_i], Q[2 * l_i + 1], L[l_i][2]];
+        });
+    },
+
+    cp_2_V_VV_EV_EA_EF_FV_FE: (doc, L_add = undefined) => {
         let V, EV_, EV, EA_, EA, EF, FE, VV, FV;
         let UV, FU;
         let L, EL;
         L = IO.CP_2_L(doc);
-
+        if (L_add) {
+            const L_norm = IO3.normalize_L(L)
+            L = L_add.concat(L_norm);
+        }
         [V, EV_, EL,] = X.L_2_V_EV_EL(L);
-        EA_ = EL.map((l) => {
-            const a = L[l[0]][2];
+        EA_ = EL.map((ls) => {
+            let a = "F";
+            for (const l_i of ls) {
+                const b = L[l_i][2];
+                if (b != "F") {
+                    a = b;
+                    break;
+                }
+            }
             return (a == "M") ? "V" : ((a == "V") ? "M" : a);
         });
 

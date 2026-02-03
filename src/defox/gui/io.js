@@ -60,7 +60,8 @@ export const GUI_IO = {
         if (!doc) {
             return false;
         }
-        const [FOLD1, CELL1] = Y.CP_2_FOLD_CELL(doc);
+        const FOLD_infer = is_new ? undefined : PRJ.steps[PRJ.current_idx].fold_cp;
+        const [FOLD1, CELL1] = Y.CP_2_FOLD_CELL(doc, FOLD_infer);
         if (FOLD1 == undefined) {
             alert("unfoldable Crease Pattern: " + path)
             return false;
@@ -86,7 +87,7 @@ export const GUI_IO = {
         PRJ.record(PRJ.current_idx);
         PRJ.restore(PRJ.current_idx);
 
-        return true
+        return true;
     },
 
     import_project: (e) => {
