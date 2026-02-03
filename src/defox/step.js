@@ -41,6 +41,7 @@ export const STEP = {
         STEP.cx = .5;
         STEP.cy = .5;
         STEP.scale = 1;
+        SEG.clip = .0;
     },
     redraw: () => {
         const T = STEP.get_transform();
@@ -94,9 +95,9 @@ export const STEP = {
     },
 
     update_dist: () => {
-        const { Vf, FV, EV, EF, FE, Ff, EA, V, VV, Vc, FU, UV, UA } = STEP.FOLD
+        const { Vf, FV, EV, EF, FE, Ff, EA, V, VV, Vc, FU, UV, UA, FO } = STEP.FOLD
         const VD = DIST.FOLD_2_VD(Vf, V)
-        STEP.FOLD_D = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA };
+        STEP.FOLD_D = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA, FO };
 
         if (STEP.LIN.cycle.length != 0) {
             NOTE.annotate(STEP.LIN.S, "serials");

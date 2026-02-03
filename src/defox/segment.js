@@ -1,11 +1,5 @@
 import { Y } from "./y.js"
 import { M } from "../flatfolder/math.js";
-import { X } from "../flatfolder/conversion.js";
-import { IO } from "../flatfolder/io.js";
-import { SVG } from "../flatfolder/svg.js";
-
-import { NOTE } from "../flatfolder/note.js";
-import { LIN } from "../linefolder/linear.js";
 
 export const SEG = {
     clip: .0,

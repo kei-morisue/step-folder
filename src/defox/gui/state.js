@@ -68,7 +68,7 @@ export const GUI_STATE = {
                 DIST[id] = true;
                 document.getElementById("cb_" + id).checked = true;
             }
-            STEP.recalculate();
+            STEP.CELL_D = undefined;
             PRJ.record(PRJ.current_idx);
         }
 

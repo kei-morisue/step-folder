@@ -203,6 +203,8 @@ export const PRJ = {
             document.getElementById("p0").value = DIST.p0;
             document.getElementById("p1").value = DIST.p1;
             document.getElementById("p2").value = DIST.p2;
+        } else {
+            STEP.refresh();
         }
 
         PRJ.current_idx = i
