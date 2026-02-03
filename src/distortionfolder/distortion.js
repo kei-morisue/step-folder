@@ -21,6 +21,9 @@ export const DIST = {    // STATE DISTORTER
         DIST.T1 = true;
         DIST.T2 = true;
         DIST.T3 = true;
+        document.getElementById("p0").value = DIST.p0;
+        document.getElementById("p1").value = DIST.p1;
+        document.getElementById("p2").value = DIST.p2
     },
 
     matprod: (A, x) => {

@@ -42,6 +42,8 @@ export const STEP = {
         STEP.cy = .5;
         STEP.scale = 1;
         SEG.clip = .0;
+        document.getElementById("clip").value = SEG.clip;
+        document.getElementById("rotate").value = STEP.rotate;
     },
     redraw: () => {
         const T = STEP.get_transform();
