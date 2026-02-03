@@ -36,14 +36,33 @@ export const PRJ = {
             STEP.update_dist();
             PRJ.record(i);
 
-            document.getElementById("steps").innerHTML--;
-            document.getElementById("range_steps").max--;
             STEP.redraw();
             PRJ.redraw_page();
         }
     },
     duplicate: () => {
+        const i = PRJ.current_idx;
+        const s = PRJ.steps[i];
+        const step = {
+            fold_cp: s.fold_cp,
+            cell_cp: s.cell_cp,
+            params: s.params
+        };
 
+        PRJ.steps.splice(i + 1, 0, step);
+        PRJ.restore(i);
+        STEP.update_states();
+        STEP.update_dist();
+        PRJ.record(i);
+        if (PRJ.steps[i + 1]) {
+            PRJ.restore(i + 1);
+            STEP.update_states();
+            STEP.update_dist();
+            PRJ.record(i + 1);
+        }
+        PRJ.restore(i);
+        STEP.redraw();
+        PRJ.redraw_page();
     },
     restore: (i) => {
         if (i > PRJ.steps.length - 1) {
