@@ -29,11 +29,6 @@ export const GUI_PAGE = {
             PRJ.redraw_page();
         }
 
-        document.getElementById("page_export").onclick = (e) => {
-            const ext = document.getElementById("page_export_ext").value;
-            IO3.write("page", "page_" + PAGE.current_idx, ext);
-        };
-
 
         document.getElementById("loc_text").onchange = (e) => {
             PAGE.text.location = e.target.value;

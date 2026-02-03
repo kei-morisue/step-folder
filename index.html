@@ -7,6 +7,8 @@
     <link rel="icon" href="./icon-512x512.png">
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/style_1200.css">
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 </head>
 
 <body style="background:darkgray">
@@ -26,7 +28,10 @@
                 <option value="svg">.svg</option>
                 <option value="png">.png</option>
             </select>
-
+            <p>
+                <input type="checkbox" id="crease_interp" checked>
+                <label for="crease_interp">Crease Interpolation</label>
+            </p>
         </span>
     </div>
     <span class="step_preview">
@@ -208,6 +213,7 @@
                     <select id="page_export_ext">
                         <option value="svg">.svg</option>
                         <option value="png">.png</option>
+                        <option value="cp">.cp</option>
                     </select>
                 </div>
                 <div>

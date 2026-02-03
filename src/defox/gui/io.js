@@ -1,3 +1,5 @@
+import { PAGE } from "../page.js";
+
 import { PRJ } from "../project.js";
 import { IO3 } from "../io.js";
 import { STEP } from "../step.js";
@@ -8,7 +10,8 @@ export const GUI_IO = {
     startup: () => {
         document.getElementById("new").onclick = (e) => {
             if (confirm("Are you sure to discard current sequence?")) {
-                GUI_IO.import_cps();
+                const is_interp = document.getElementById("crease_interp").checked;
+                GUI_IO.import_cps(is_interp);
                 PRJ.refresh();
             }
         };
@@ -16,7 +19,10 @@ export const GUI_IO = {
             const ext = document.getElementById("export_ext").value;
             IO3.write("state3", "step_" + PRJ.current_idx, ext);
         };
-        document.getElementById("import0").onclick = GUI_IO.import_cps;
+        document.getElementById("import0").onclick = () => {
+            const is_interp = document.getElementById("crease_interp").checked;
+            GUI_IO.import_cps(is_interp)
+        };
         document.getElementById("save_proj").onclick = (e) => {
             const pj = document.getElementById("proj_name").value;
             IO3.save(PRJ.steps, pj);
@@ -26,10 +32,16 @@ export const GUI_IO = {
         document.getElementById("remove").onclick = PRJ.remove;
         document.getElementById("duplicate").onclick = PRJ.duplicate;
 
+        document.getElementById("page_export").onclick = (e) => {
+            const ext = document.getElementById("page_export_ext").value;
+            const pj = document.getElementById("proj_name").value;
+            IO3.write("page", pj + "_page_" + PAGE.current_idx, ext);
+        };
+
 
     },
 
-    import_cps: (e) => {
+    import_cps: (is_interp = false) => {
         const button = document.createElement("input");
         button.setAttribute("type", "file");
         button.setAttribute("multiple", true);
@@ -47,7 +59,7 @@ export const GUI_IO = {
                 file_reader.readAsText(file);
                 file_reader.onload = (e) => {
                     const is_new = PRJ.steps.length == 0;
-                    const res = GUI_IO.import_cp(file.name, e.target.result, is_new);
+                    const res = GUI_IO.import_cp(file.name, e.target.result, is_new, is_interp);
                     if (res && i < l - 1) {
                         read(i + 1);
                     }
@@ -56,11 +68,11 @@ export const GUI_IO = {
             read(0);
         }
     },
-    import_cp: (path, doc, is_new = false) => {
+    import_cp: (path, doc, is_new = false, is_interp = false) => {
         if (!doc) {
             return false;
         }
-        const FOLD_infer = is_new ? undefined : PRJ.steps[PRJ.current_idx].fold_cp;
+        const FOLD_infer = !is_new && is_interp ? PRJ.steps[PRJ.current_idx].fold_cp : undefined;
         const [FOLD1, CELL1] = Y.CP_2_FOLD_CELL(doc, FOLD_infer);
         if (FOLD1 == undefined) {
             alert("unfoldable Crease Pattern: " + path)

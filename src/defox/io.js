@@ -2,6 +2,8 @@ import { IO } from "../flatfolder/io.js";
 import { M } from "../flatfolder/math.js";
 import { X } from "../flatfolder/conversion.js";
 import { N } from "./nath.js";
+import { Y } from "./y.js";
+import { PRJ } from "./project.js";
 
 
 export const IO3 = {    // INPUT-OUTPUT
@@ -12,7 +14,29 @@ export const IO3 = {    // INPUT-OUTPUT
         if (ext == "svg") {
             return IO3.write_svg(svg_id, name);
         }
+        if (ext == "cp") {
+            return IO3.write_cps(name);
+        }
     },
+
+    write_cps: (name) => {
+        const zip = new JSZip();
+
+        for (const [idx, step] of PRJ.steps.entries()) {
+            if (idx == 0) {
+                continue;
+            }
+            const FOLD = step.fold_cp;
+            const cp = Y.FOLD_2_CP(FOLD);
+            const num = ((idx * 10) + "").padStart(4, '0');
+            zip.file(num + ".cp", cp);
+        }
+        zip.generateAsync({ type: "blob" }).then(function (content) {
+            saveAs(content, name + ".zip");
+        });
+
+    },
+
     write_svg: (svg_id, name) => {
         const img = new Blob([document.getElementById(svg_id).outerHTML], {
             type: "image/svg+xml"
