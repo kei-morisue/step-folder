@@ -97,6 +97,7 @@ export const STEP = {
     },
 
     update_dist: () => {
+        STEP.CELL_D = undefined;
         const { Vf, FV, EV, EF, FE, Ff, EA, V, VV, Vc, FU, UV, UA, FO } = STEP.FOLD
         const VD = DIST.FOLD_2_VD(Vf, V)
         STEP.FOLD_D = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA, FO };
