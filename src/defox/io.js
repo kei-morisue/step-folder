@@ -45,7 +45,7 @@ export const IO3 = {    // INPUT-OUTPUT
             }
             const FOLD = step.fold_cp;
             const cp = Y.FOLD_2_CP(FOLD);
-            const num = IO3.format_num(idx - 1);
+            const num = IO3.format_num(idx);
             zip.file(num + ".cp", cp);
         }
         zip.generateAsync({ type: "blob" }).then(function (content) {
