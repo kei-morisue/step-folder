@@ -13,8 +13,8 @@ export const GUI = {
         GUI_IO.startup();
         GUI_STATE.startup();
         GUI_PAGE.startup();
-        PRJ.import_new("sample", SMPL.sq);
-        PRJ.import("sample", SMPL.hanikamu);
+        GUI_IO.import_new("sample", SMPL.sq);
+        GUI_IO.import("sample", SMPL.hanikamu);
         PRJ.redraw_page();
     },
 

@@ -21,8 +21,8 @@ export const GUI_PAGE = {
             STEP.update_dist()
         }
 
-        document.getElementById("page_next").onclick = PRJ.page_next;
-        document.getElementById("page_prev").onclick = PRJ.page_prev;
+        document.getElementById("page_next").onclick = GUI_PAGE.next;
+        document.getElementById("page_prev").onclick = GUI_PAGE.prev;
 
         document.getElementById("page_reload").onclick = (e) => {
             PRJ.record(PRJ.current_idx);
@@ -73,4 +73,21 @@ export const GUI_PAGE = {
         GUI.open_close("option_layout", "inline");
         GUI.open_close("option_dim", "inline");
     },
+
+    prev: () => {
+        if (PAGE.current_idx == 0) {
+            return;
+        }
+        PAGE.current_idx = PAGE.current_idx - 1;
+        PRJ.redraw_page();
+    },
+    next: () => {
+
+        if (PAGE.get_pages(PRJ.steps) - 1 < PAGE.current_idx + 1) {
+            return;
+        }
+        PAGE.current_idx = PAGE.current_idx + 1;
+        PRJ.redraw_page();
+    },
+
 }

@@ -80,9 +80,9 @@ export const GUI_STATE = {
             document.getElementById("assigns").innerHTML = "/" + GA[g].length
         }
 
-        document.getElementById("range_steps").oninput = PRJ.jump;
-        document.getElementById("next").onclick = PRJ.next;
-        document.getElementById("prev").onclick = PRJ.prev;
+        document.getElementById("range_steps").oninput = GUI_STATE.jump;
+        document.getElementById("next").onclick = GUI_STATE.next;
+        document.getElementById("prev").onclick = GUI_STATE.prev;
 
 
 
@@ -149,4 +149,35 @@ export const GUI_STATE = {
             }
         }
     },
+
+    prev: () => {
+        if (PRJ.current_idx == 0) {
+            return;
+        }
+        const i = PRJ.current_idx;
+        PRJ.record(i);
+        PRJ.restore(i - 1);
+        STEP.redraw();
+    },
+    next: () => {
+        if (PRJ.steps.length - 1 < PRJ.current_idx + 1) {
+            return;
+        }
+        else {
+            const i = PRJ.current_idx;
+            PRJ.record(i);
+            PRJ.restore(i + 1);
+            STEP.redraw();
+        }
+    },
+    jump: (e) => {
+        const j = e.target.value;
+        GUI_STATE.jump_to(j - 1);
+    },
+    jump_to: (idx) => {
+        PRJ.record(PRJ.current_idx);
+        PRJ.restore(idx);
+        STEP.redraw();
+    },
+
 }

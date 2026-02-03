@@ -1,5 +1,4 @@
 import { DIST } from "../distortionfolder/distortion.js";
-import { Y } from "./y.js";
 
 import { STEP } from "./step.js"
 import { SEG } from "./segment.js";
@@ -17,133 +16,6 @@ export const PRJ = {
 
     redraw_page: () => {
         PAGE.redraw(document.getElementById("page"), PRJ.steps);
-    },
-
-    prev: () => {
-        if (PRJ.current_idx == 0) {
-            return;
-        }
-        const i = PRJ.current_idx;
-        PRJ.record(i);
-        PRJ.restore(i - 1);
-        STEP.redraw();
-    },
-    next: () => {
-        if (PRJ.steps.length - 1 < PRJ.current_idx + 1) {
-            return;
-        }
-        else {
-            const i = PRJ.current_idx;
-            PRJ.record(i);
-            PRJ.restore(i + 1);
-            STEP.redraw();
-        }
-    },
-    jump: (e) => {
-        const j = e.target.value;
-        PRJ.jump_to(j - 1);
-    },
-    jump_to: (idx) => {
-        PRJ.record(PRJ.current_idx);
-        PRJ.restore(idx);
-        STEP.redraw();
-    },
-
-
-    read: (e) => {
-        const button = document.createElement("input");
-        button.setAttribute("type", "file");
-        button.setAttribute("multiple", true);
-        button.setAttribute("accept", ".cp");
-        button.dispatchEvent(new MouseEvent("click"));
-        button.onchange = (e) => {
-            if (e.target.files.length > 0) {
-                const l = e.target.files.length;
-                const el = e.target;
-                if (l > 0) {
-                    const file_reader = new FileReader();
-                    let i = 0;
-                    const fn = () => {
-                        file_reader.readAsText(el.files[i]);
-                        file_reader.onload = (e) => {
-                            let res = undefined;
-                            if (PRJ.steps.length == 0) {
-                                res = PRJ.import_new(el.files[i].name, e.target.result);
-                            }
-                            else {
-                                res = PRJ.import(el.files[i].name, e.target.result);
-                            }
-                            if (res && i < l - 1) {
-                                i++;
-                                fn();
-                            }
-                            else {
-                                return true;
-                            }
-                        }
-                    }
-                    fn();
-                }
-            }
-        }
-    },
-    import: (path, doc) => {
-        if (!doc) {
-            return false;
-        }
-        const [FOLD1, CELL1] = Y.CP_2_FOLD_CELL(doc);
-        if (FOLD1 == undefined) {
-            alert("unfoldable Crease Pattern: " + path)
-            return false;
-        }
-
-        const step = { fold_cp: FOLD1, cell_cp: CELL1 };
-        PRJ.steps.splice(PRJ.current_idx + 1, 0, step);
-        PRJ.restore(PRJ.current_idx);
-        [STEP.FOLD1, STEP.CELL1] = [FOLD1, CELL1];
-        STEP.new();
-        PRJ.record(PRJ.current_idx);
-        PRJ.restore(PRJ.current_idx + 1);
-
-        STEP.new();
-        PRJ.record(PRJ.current_idx);
-        PRJ.restore(PRJ.current_idx);
-
-        return true
-    },
-
-
-    import_new: (path, doc) => {
-        if (!doc) {
-            return false;
-        }
-
-        const [FOLD1, CELL1] = Y.CP_2_FOLD_CELL(doc);
-        if (FOLD1 == undefined) {
-            alert("unfoldable Crease Pattern: " + path)
-            return false;
-        }
-        const [FOLD0, CELL0] = Y.FOLD_2_PAPER(FOLD1);
-
-        [STEP.FOLD0, STEP.CELL0] = [FOLD0, CELL0];
-        [STEP.FOLD1, STEP.CELL1] = [FOLD1, CELL1];
-        STEP.new();
-
-
-        const step0 = { fold_cp: FOLD0, cell_cp: CELL0 };
-        const step1 = { fold_cp: FOLD1, cell_cp: CELL1 };
-        PRJ.steps.push(step0);
-        PRJ.steps.push(step1);
-        PRJ.record(0);
-
-        [STEP.FOLD0, STEP.CELL0] = [FOLD1, CELL1];
-        [STEP.FOLD1, STEP.CELL1] = [undefined, undefined];
-        STEP.new();
-
-        PRJ.record(1);
-        PRJ.restore(1);
-
-        return true
     },
 
     remove: () => {
@@ -241,24 +113,6 @@ export const PRJ = {
             STEP.cy,]
     },
 
-    page_prev: () => {
-        if (PAGE.current_idx == 0) {
-            return;
-        }
-        PAGE.current_idx = PAGE.current_idx - 1;
-        PRJ.redraw_page();
-    },
-    page_next: () => {
-
-        if (PAGE.get_pages(PRJ.steps) - 1 < PAGE.current_idx + 1) {
-            return;
-        }
-        PAGE.current_idx = PAGE.current_idx + 1;
-        PRJ.redraw_page();
-    },
-
-
-
     setup_number_options: (ids, edge_props, init, module) => {
         for (const [i, id] of ids.entries()) {
             const props = edge_props[i]
@@ -284,29 +138,4 @@ export const PRJ = {
         }
     },
 
-    read_project: (e) => {
-        const button = document.createElement("input");
-        button.setAttribute("type", "file");
-        button.setAttribute("accept", ".defox");
-        button.click();
-        button.onchange = (e) => {
-            if (e.target.files.length > 0) {
-                const file_reader = new FileReader();
-                file_reader.onload = (e) => {
-                    const doc = e.target.result;
-                    let pj = button.value.split("\\");
-                    pj = pj[pj.length - 1];
-                    pj = pj.split(".defox");
-                    pj = pj[0];
-                    document.getElementById("proj_name").value = pj;
-                    PRJ.steps = JSON.parse(doc);
-                    PRJ.restore(PRJ.steps.length - 1);
-                    STEP.redraw();
-                    PRJ.redraw_page();
-                };
-                file_reader.readAsText(e.target.files[0]);
-            }
-        }
-
-    },
 }

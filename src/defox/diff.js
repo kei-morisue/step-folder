@@ -1,4 +1,3 @@
-
 import { M } from "../flatfolder/math.js";
 import { X } from "../flatfolder/conversion.js";
 
