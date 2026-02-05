@@ -23,6 +23,13 @@ export const GUI = {
             PAINT.redraw();
             svg.onpointermove = PAINT.onmove;
             svg.onclick = PAINT.onclick;
+            document.getElementById("cpedit_mv").onclick = () => {
+                PAINT.set_mode("mv");
+            }
+            document.getElementById("cpedit_input_angle").onclick = () => {
+                PAINT.set_mode("input_angle");
+            }
+
         };
 
 

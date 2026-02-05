@@ -41,10 +41,14 @@
         <div class="cpeditor_body">
             <div class="tools">
                 <p class="tool_buttons">
-                    <button>MV</button>
-                    <button>INPUT</button>
-                    <button>INPUT</button>
-                    <button>B</button>
+                    <button id="cpedit_mv">MV</button>
+                    <button id="cpedit_input_angle">A</button>
+                    <span>360°/</span>
+                    <input type="number" id="cpedit_angle" min="4" max="24" value="8" step="1">
+                    <button id="cpedit_input_vv">B</button>
+                    <button id="cpedit_mirror">C</button>
+                    <button id="cpedit_kawasaki">D</button>
+                    <button id="cpedit_copy">E</button>
                     <input type="range" id="cpedit_zoom">
                     <span id="pt_loc"></span>
                 </p>

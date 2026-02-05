@@ -49,17 +49,10 @@ export const DRAW = {
                 return d;
         }
     },
-    draw_cp: (FOLD, svg_cp) => {
+    draw_cp: (lines, assigns, svg_cp) => {
 
-        const { V, FV, EV, EA, UA, UV } = FOLD;
-
-        let lines = EV.map(E => M.expand(E, V));
-        lines = lines.concat(UV.map(U => M.expand(U, V)));
-
-        let colors = EA.map(a => DRAW.color.segment[a]);
-        let widths = EA.map(a => DRAW.width.segment[a]);
-        colors = colors.concat(UA.map(a => DRAW.color.segment[a]));
-        widths = widths.concat(UA.map(a => DRAW.width.segment[a]));
+        let colors = assigns.map(a => DRAW.color.segment[a]);
+        let widths = assigns.map(a => DRAW.width.segment[a]);
         SVG.draw_segments(svg_cp, lines, {
             stroke_width: widths,
             stroke: colors,
