@@ -1,7 +1,7 @@
 import { SVG } from "../flatfolder/svg.js";
 import { PRJ } from "../defox/project.js";
-import { DRAW } from "./draw.js";
 import { PAINT } from "./paint.js";
+import { STEP } from "../defox/step.js";
 
 
 export const GUI = {
@@ -11,8 +11,16 @@ export const GUI = {
         const showButton = document.getElementById("opencpeditor");
         const closeButton = document.getElementById("closeDialog");
         closeButton.addEventListener("click", () => {
-            // alert("quit?");
-            dialog.close();
+            if (PAINT.VK) {
+                dialog.close();
+                const i = PRJ.current_idx;
+                const { FOLD, CELL, VK } = PAINT.get_FOLD_CELL_VK();
+                PRJ.steps[i].fold_cp = FOLD;
+                PRJ.steps[i].cell_cp = CELL;
+                PRJ.restore(i);
+                STEP.update_states();
+                STEP.redraw();
+            }
         });
         showButton.onclick = () => {
             dialog.showModal();

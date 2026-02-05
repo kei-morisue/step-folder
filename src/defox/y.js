@@ -159,14 +159,18 @@ export const Y = {     // CONVERSION
     FOLD_2_CP: (FOLD, size = 400) => {
         const L_ = FOLD.UV.map((P) => M.expand(P, FOLD.V));
         const L = FOLD.EV.map((P) => M.expand(P, FOLD.V));
+        return Y.segs_EA_2_CP(L.concat(L_), FOLD.EA, size);
+    },
+
+    segs_EA_2_CP: (L, EA, size) => {
         let doc = ""
         const a_map = { "B": 1, "F": 4, "M": 3, "V": 2, undefined: 4 };
-        for (const [i, [p, q]] of L.concat(L_).entries()) {
+        for (const [i, [p, q]] of L.entries()) {
             const x0 = p[0] * size - size * .5;
             const y0 = p[1] * size - size * .5;
             const x1 = q[0] * size - size * .5;
             const y1 = q[1] * size - size * .5;
-            const a = a_map[FOLD.EA[i]];
+            const a = a_map[EA[i]];
             doc = doc + a + " " + x0 + " " + y0 + " " + x1 + " " + y1 + "\r\n"
         }
         return doc;
@@ -201,6 +205,7 @@ export const Y = {     // CONVERSION
         }
         return Y.CP_2_FOLD_CELL(doc)
     },
+
 
     BF_GB_GA_GI_Ff_2_FO: (BF, GB, GA, GI, Ff) => {
 

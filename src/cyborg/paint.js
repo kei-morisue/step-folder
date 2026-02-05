@@ -22,11 +22,12 @@ export const PAINT = {
     validation: undefined,
     current_mode: "mv",
     seg: -1,
-    v: -1,
+    V: -1,
+    VK: [],
 
     initialize: (FOLD, svg) => {
         PAINT.seg = -1;
-        PAINT.v = -1;
+        PAINT.V = -1;
         const { V, EV, EA, UA, UV } = FOLD;
         PAINT.FOLD = FOLD;
         PAINT.segs = EV.map((vs) => {
@@ -38,6 +39,12 @@ export const PAINT = {
 
         PAINT.assigns = EA.concat(UA);
         PAINT.svg = svg;
+        PAINT.VK = [];
+    },
+
+    get_FOLD_CELL_VK: () => {
+        const [FOLD, CELL] = Z.segs_assings_2_FOLD_CELL(PAINT.segs, PAINT.assigns)
+        return { FOLD, CELL, VK: PAINT.VK };
     },
 
     set_mode: (mode) => {
@@ -48,12 +55,14 @@ export const PAINT = {
         DRAW.draw_cp(PAINT.segs, PAINT.assigns, SVG.clear(PAINT.svg.id));
         PAINT.selection = SVG.append("g", PAINT.svg, { id: "selection" });
         PAINT.validation = SVG.append("g", PAINT.svg, { id: "validation" });
+        PAINT.validate_kawasaki(10);
     },
 
     reset: () => {
         PAINT.selection = undefined;
         PAINT.seg = -1;
-        PAINT.v = -1;
+        PAINT.V = -1;
+        PAINT.VK = [];
     },
 
     onmove: (e) => {
@@ -79,7 +88,7 @@ export const PAINT = {
 
     hilight: ([idx, min_l], [idx_v, min_l_v]) => {
         PAINT.seg = undefined;
-        PAINT.v = undefined;
+        PAINT.V = undefined;
         if (PAINT.current_mode == "mv") {
 
             SVG.clear("selection");
@@ -97,7 +106,7 @@ export const PAINT = {
             if (min_l_v < 0.1) {
                 const [cx, cy] = M.mul(PAINT.FOLD.V[idx_v], SVG.SCALE);
                 const c = SVG.append("circle", PAINT.selection, { cx, cy, r: 5, "fill": "magenta" });
-                PAINT.v = idx_v;
+                PAINT.V = idx_v;
             }
             return;
         }
@@ -151,6 +160,7 @@ export const PAINT = {
 
     validate_kawasaki: (r) => {
         SVG.clear(PAINT.validation.id);
+        PAINT.VK = [];
         const { EV, EA, V } = PAINT.FOLD
         const VK = Z.get_VK(EV, EA, V);
         for (const [i, vk] of VK.entries()) {
@@ -160,6 +170,6 @@ export const PAINT = {
 
             }
         }
-
+        PAINT.VK = VK;
     },
 }
