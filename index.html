@@ -5,8 +5,9 @@
     <meta charset="UTF-8">
     <title>DEFOX</title>
     <link rel="icon" href="./icon-512x512.png">
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/style_1200.css">
+    <link rel="stylesheet" href="./css/style.css?1.0.0">
+    <link rel="stylesheet" href="./css/style_editor.css?v=1.0.0">
+    <link rel="stylesheet" href="./css/style_1200.css?v=1.0.0">
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 </head>
@@ -32,8 +33,26 @@
             <input type="checkbox" id="crease_interp" checked>
             <label for="crease_interp">Crease Interpolation</label>
 
+            <button id="opencpeditor">Edit Step</button>
         </span>
     </div>
+    <dialog id="cpeditor" class="cpeditor">
+        <span id="closeDialog">✖︎</span>
+        <div class="cpeditor_body">
+            <div class="tools">
+                <p class="tool_buttons">
+                    <button>MV</button>
+                    <button>INPUT</button>
+                    <button>INPUT</button>
+                    <button>B</button>
+                    <input type="range" id="cpedit_zoom">
+                    <span id="pt_loc"></span>
+                </p>
+            </div>
+            <svg id="cpedit" class="paint_edit"></svg>
+        </div>
+    </dialog>
+
     <span class="step_preview">
         <div>
             <b>Steps</b>
@@ -226,7 +245,6 @@
         </div>
     </div>
 
-
     <b>© Kei Morisue 2024, 2026</b>
     <p>
         <a href="https://github.com/kei-morisue/step-folder">Repository</a>
@@ -236,7 +254,7 @@
             href="https://github.com/kei-morisue/step-folder/blob/082abe77fdcd4178888780c07f0a26a9bc11df9c/Affine_Distortions.pdf">Distortion
             Logic Paper</a>
     </p>
-    <script type="module" src="./src/main.js"></script>
+    <script type="module" src="./src/main.js?v1.0.0"></script>
 </body>
 
 </html>

@@ -160,7 +160,7 @@ export const Y = {     // CONVERSION
         const L_ = FOLD.UV.map((P) => M.expand(P, FOLD.V));
         const L = FOLD.EV.map((P) => M.expand(P, FOLD.V));
         let doc = ""
-        const a_map = { "B": 1, "F": 4, "M": 2, "V": 3, undefined: 4 };
+        const a_map = { "B": 1, "F": 4, "M": 3, "V": 2, undefined: 4 };
         for (const [i, [p, q]] of L.concat(L_).entries()) {
             const x0 = p[0] * size - size * .5;
             const y0 = p[1] * size - size * .5;
