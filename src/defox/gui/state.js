@@ -36,13 +36,12 @@ export const GUI_STATE = {
             pt.y = e.clientY;
             // The cursor point, translated into svg coordinates
             var cursorpt = pt.matrixTransform(svg.getScreenCTM().inverse());
-            const w = SVG.SCALE + 2 * SVG.MARGIN;
-            const b = SVG.MARGIN / SVG.SCALE;
+            const w = SVG.SCALE;
             const z = STEP.get_zoom(STEP.scale);
             const th = (2 * STEP.rotate - 1) * Math.PI * (2 * STEP.flip0 - 1);
             const Ainv = N.mat(STEP.flip0, 1 / z, th);
-            const x0 = (cursorpt.x / w - .5 + b);
-            const y0 = (cursorpt.y / w - .5 + b);
+            const x0 = cursorpt.x / w - 0.5;
+            const y0 = cursorpt.y / w - 0.5;
             [STEP.cx, STEP.cy] = M.add([STEP.cx, STEP.cy], N.apply(Ainv, [x0, y0]));
             STEP.redraw();
         }

@@ -18,10 +18,11 @@ export const GUI = {
             dialog.showModal();
             GUI.set_svg("cpedit");
             const FOLD = PRJ.steps[PRJ.current_idx].fold_cp;
-            PAINT.initialize(FOLD, document.getElementById("cpedit"));
-            PAINT.draw(SVG.clear("cpedit"));
-            document.getElementById("cpedit").onpointermove = PAINT.onmove;
-            document.getElementById("cpedit").onclick = PAINT.onclick;
+            const svg = document.getElementById("cpedit")
+            PAINT.initialize(FOLD, svg);
+            PAINT.redraw();
+            svg.onpointermove = PAINT.onmove;
+            svg.onclick = PAINT.onclick;
         };
 
 

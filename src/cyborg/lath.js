@@ -13,10 +13,6 @@ export const L = {
         const pp1_n = M.dot(M.sub(p, p1), d);
         const d_d = M.dot(d, d);
         const a = pp1_n / d_d;
-
-
-
-
         if (a > 1 || a < 0) {
             return { foot: undefined, len: a, dir: n };
         }
