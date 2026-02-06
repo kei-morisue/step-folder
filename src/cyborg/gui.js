@@ -19,6 +19,7 @@ export const GUI = {
                 PRJ.steps[i].cell_cp = CELL;
                 PRJ.restore(i);
                 STEP.update_states();
+                STEP.update_dist();
                 STEP.redraw();
             }
         });

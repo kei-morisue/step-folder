@@ -22,12 +22,14 @@ export const PAINT = {
     validation: undefined,
     current_mode: "mv",
     seg: -1,
-    V: -1,
+    v: -1,
     VK: [],
+    v0: -1,
 
     initialize: (FOLD, svg) => {
         PAINT.seg = -1;
-        PAINT.V = -1;
+        PAINT.v = -1;
+        PAINT.v0 = -1;
         const { V, EV, EA, UA, UV } = FOLD;
         PAINT.FOLD = FOLD;
         PAINT.segs = EV.map((vs) => {
@@ -60,38 +62,40 @@ export const PAINT = {
 
     reset: () => {
         PAINT.selection = undefined;
+        PAINT.v0 = -1;
         PAINT.seg = -1;
-        PAINT.V = -1;
+        PAINT.v = -1;
         PAINT.VK = [];
     },
 
-    onmove: (e) => {
+    get_pointer_loc: (e) => {
         const svg = document.getElementById("cpedit");
         var pt = svg.createSVGPoint();
         pt.x = e.clientX;
         pt.y = e.clientY;
         const p = pt.matrixTransform(svg.getScreenCTM().inverse());
-        const b = SVG.MARGIN;
         const w = SVG.SCALE;
         const x0 = ((p.x) / w);
         const y0 = ((p.y) / w);
-
-        const p0 = [x0, y0];
         const label = document.getElementById("pt_loc");
         label.innerHTML = "[" + (x0.toFixed(8)) + ", " + (y0.toFixed(8)) + "]";
 
+        return [x0, y0];
+    },
+
+    onmove: (e) => {
+        const p0 = PAINT.get_pointer_loc(e);
         PAINT.hilight(PAINT.find_seg(p0), PAINT.find_v(p0));
 
-
-        return [p.x, p.y];
+        return;
     },
 
     hilight: ([idx, min_l], [idx_v, min_l_v]) => {
         PAINT.seg = undefined;
-        PAINT.V = undefined;
+        PAINT.v = undefined;
+        SVG.clear(PAINT.selection.id);
         if (PAINT.current_mode == "mv") {
 
-            SVG.clear("selection");
             if (min_l < 0.1) {
                 const [[x1, y1], [x2, y2]] = N.matmul(PAINT.segs[idx], SVG.SCALE);
                 const seg_svg = SVG.append("line", PAINT.selection, { x1, x2, y1, y2 });
@@ -106,7 +110,33 @@ export const PAINT = {
             if (min_l_v < 0.1) {
                 const [cx, cy] = M.mul(PAINT.FOLD.V[idx_v], SVG.SCALE);
                 const c = SVG.append("circle", PAINT.selection, { cx, cy, r: 5, "fill": "magenta" });
-                PAINT.V = idx_v;
+                PAINT.v = idx_v;
+            }
+            return;
+        }
+        if (PAINT.current_mode == "input_angle_2") {
+            if (min_l_v < 0.1) {
+
+                const s = SVG.SCALE;
+                const v = PAINT.FOLD.V[idx_v];
+                const [cx, cy] = M.mul(v, s);
+                SVG.append("circle", PAINT.selection, { cx, cy, r: 5, "fill": "magenta" });
+                PAINT.v = idx_v;
+                const v0 = PAINT.FOLD.V[PAINT.v0];
+                const [c0x, c0y] = M.mul(v0, s);
+                SVG.append("circle", PAINT.selection, { cx: c0x, cy: c0y, r: 5, "fill": "magenta" });
+
+                const seg_svg = SVG.append(
+                    "line",
+                    PAINT.selection,
+                    {
+                        x1: v0[0] * s,
+                        x2: v[0] * s,
+                        y1: v0[1] * s,
+                        y2: v[1] * s
+                    });
+                seg_svg.setAttribute("stroke", "magenta");
+                seg_svg.setAttribute("stroke-width", 3);
             }
             return;
         }
@@ -155,7 +185,18 @@ export const PAINT = {
             PAINT.validate_kawasaki(10);
             return;
         }
-
+        if (PAINT.current_mode == "input_angle") {
+            if (PAINT.v < 0) {
+                return;
+            }
+            PAINT.v0 = PAINT.v;
+            PAINT.current_mode = "input_angle_2";
+            return;
+        }
+        if (PAINT.current_mode == "input_angle_2") {
+            PAINT.current_mode = "input_angle";
+            return;
+        }
     },
 
     validate_kawasaki: (r) => {
