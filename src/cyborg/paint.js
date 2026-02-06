@@ -27,6 +27,8 @@ export const PAINT = {
     v0: undefined,
     bind_angle: Math.PI / 8,
 
+    bind_radius: 0.05,
+
     initialize: (FOLD, svg) => {
         PAINT.segment = -1;
         PAINT.vertex = -1;
@@ -111,16 +113,16 @@ export const PAINT = {
     },
 
     hilight_input_angle_2: (b_v) => {
-        if (!b_v) {
-            return;
-        }
         const s = SVG.SCALE;
-        const [cx, cy] = M.mul(b_v, s);
-        SVG.append("circle", PAINT.svg_selection, { cx, cy, r: 5, "fill": "magenta" });
-        PAINT.vertex = b_v;
         const v0 = PAINT.v0;
         const [c0x, c0y] = M.mul(v0, s);
         SVG.append("circle", PAINT.svg_selection, { cx: c0x, cy: c0y, r: 5, "fill": "magenta" });
+        if (!b_v) {
+            return;
+        }
+        const [cx, cy] = M.mul(b_v, s);
+        SVG.append("circle", PAINT.svg_selection, { cx, cy, r: 5, "fill": "magenta" });
+        PAINT.vertex = b_v;
 
         const seg_svg = SVG.append(
             "line",
@@ -143,13 +145,13 @@ export const PAINT = {
             PAINT.hilight_mv(L.find_seg(p_cursor, PAINT.segs));
         }
         if (PAINT.current_mode == "input_angle") {
-            PAINT.hilight_input_angle(L.find_v(p_cursor, PAINT.FOLD.V));
+            PAINT.hilight_input_angle(L.find_v(p_cursor, PAINT.FOLD.V, PAINT.bind_radius));
         }
         if (PAINT.current_mode == "input_angle_2") {
             const v0 = PAINT.v0;
             const theta = L.binded_angle(v0, p_cursor, PAINT.bind_angle);
-            const r = M.mag(M.sub(v0, p_cursor));
-            const b_v = L.find_binded_v(v0, r, theta, PAINT.FOLD.V, 0.05);
+            const r = M.dist(v0, p_cursor);
+            const b_v = L.find_binded_v(v0, r, theta, PAINT.FOLD.V, PAINT.segs, PAINT.bind_radius);
             PAINT.hilight_input_angle_2(b_v);
         }
 
