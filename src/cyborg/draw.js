@@ -1,5 +1,6 @@
 import { M } from "../flatfolder/math.js";
 import { SVG } from "../flatfolder/svg.js";
+import { Z } from "./z.js";
 
 export const DRAW = {
     color: {
@@ -31,6 +32,9 @@ export const DRAW = {
             FF: 6,
         },
     },
+    radius: {
+        invalid: 10,
+    },
     pair: (d) => {
         switch (d) {
             case "V":
@@ -50,7 +54,6 @@ export const DRAW = {
         }
     },
     draw_cp: (lines, assigns, svg_cp) => {
-
         let colors = assigns.map(a => DRAW.color.segment[a]);
         let widths = assigns.map(a => DRAW.width.segment[a]);
         SVG.draw_segments(svg_cp, lines, {
@@ -69,5 +72,18 @@ export const DRAW = {
         SVG.draw_polygons(svg, F, { opacity: 0.05 });
     },
 
+    draw_local_isses: (V, EA, EV, svg) => {
+        const VK = Z.get_VK(EV, EA, V);
+        let is_invalid = false;
+        for (const [i, vk] of VK.entries()) {
+            if (Math.abs(vk) > 1e-6) {
+                const [cx, cy] = M.mul(V[i], SVG.SCALE);
+                const r = DRAW.radius.invalid;
+                const c = SVG.append("circle", svg, { cx, cy, r, "fill": "green" });
+                is_invalid = true;
+            }
+        }
+        return [VK, is_invalid];
+    },
 
 }

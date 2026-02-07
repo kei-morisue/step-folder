@@ -7,45 +7,52 @@ import { STEP } from "../defox/step.js";
 export const GUI = {
 
     startup: () => {
-        const dialog = document.getElementById("cpeditor");
         const showButton = document.getElementById("opencpeditor");
         const closeButton = document.getElementById("closeDialog");
-        closeButton.addEventListener("click", () => {
-            if (PAINT.VK) {
-                dialog.close();
-                const i = PRJ.current_idx;
-                const { FOLD, CELL, VK } = PAINT.get_FOLD_CELL_VK();
-                PRJ.steps[i].fold_cp = FOLD;
-                PRJ.steps[i].cell_cp = CELL;
-                PRJ.restore(i);
-                STEP.update_states();
-                STEP.update_dist();
-                STEP.redraw();
-            }
-        });
-        showButton.onclick = () => {
-            dialog.showModal();
-            GUI.set_svg("cpedit");
-            const FOLD = PRJ.steps[PRJ.current_idx].fold_cp;
-            const svg = document.getElementById("cpedit")
-            PAINT.initialize(FOLD, svg);
-            PAINT.redraw();
-            svg.onpointermove = PAINT.onmove;
-            svg.onclick = PAINT.onclick;
-            document.getElementById("cpedit_mv").onclick = () => {
-                PAINT.set_mode("mv");
-            }
-            document.getElementById("cpedit_input_angle").onclick = () => {
-                PAINT.set_mode("input_angle");
-            }
-            document.getElementById("cpedit_angle_num").onchange = () => {
-                PAINT.bind_angle = 2 * Math.PI / document.getElementById("cpedit_angle_num").value;
-            }
-            svg.onmouseleave = PAINT.onmouseout;
-
-        };
+        const svg = document.getElementById("cpedit");
+        const input_angle_num = document.getElementById("cpedit_angle_num");
+        closeButton.onclick = GUI.close;
+        showButton.onclick = GUI.open;
+        svg.onpointermove = PAINT.onmove;
+        svg.onclick = PAINT.onclick;
+        svg.onmouseleave = PAINT.onmouseout;
+        document.getElementById("cpedit_mv").onclick = () => {
+            PAINT.set_mode("mv");
+        }
+        document.getElementById("cpedit_input_angle").onclick = () => {
+            PAINT.set_mode("input_angle");
+        }
+        input_angle_num.onchange = () => {
+            PAINT.bind_angle = 2 * Math.PI / input_angle_num.value;
+        }
 
 
+    },
+
+    open: () => {
+        const dialog = document.getElementById("cpeditor");
+        const svg = document.getElementById("cpedit")
+        dialog.showModal();
+        GUI.set_svg("cpedit");
+        const FOLD = PRJ.steps[PRJ.current_idx].fold_cp;
+        PAINT.initialize(FOLD, svg);
+        PAINT.redraw();
+    },
+    close: () => {
+        const dialog = document.getElementById("cpeditor");
+        if (PAINT.is_invalid) {
+            alert("The Crease Pattern is not Flat Foldable.");
+            return;
+        }
+        dialog.close();
+        const i = PRJ.current_idx;
+        const { FOLD, CELL } = PAINT.get_FOLD_CELL_VK();
+        PRJ.steps[i].fold_cp = FOLD;
+        PRJ.steps[i].cell_cp = CELL;
+        PRJ.restore(i);
+        STEP.update_states();
+        STEP.update_dist();
+        STEP.redraw();
     },
     set_svg: (id) => {
         const [b, s] = [SVG.MARGIN, SVG.SCALE];

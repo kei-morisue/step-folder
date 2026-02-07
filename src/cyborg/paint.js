@@ -14,9 +14,10 @@ import { Z } from "./z.js";
 
 
 export const PAINT = {
-    FOLD: undefined,
+    V: [],
+    EV: [],
     segs: [],
-    assigns: [],
+    EA: [],
     svg: undefined,
     svg_selection: undefined,
     svg_validation: undefined,
@@ -26,7 +27,7 @@ export const PAINT = {
     VK: [],
     v0: undefined,
     bind_angle: Math.PI / 8,
-
+    is_invalid: false,
     bind_radius: 0.05,
 
     initialize: (FOLD, svg) => {
@@ -34,7 +35,8 @@ export const PAINT = {
         PAINT.vertex = -1;
         PAINT.v0 = undefined;
         const { V, EV, EA, UA, UV } = FOLD;
-        PAINT.FOLD = FOLD;
+        PAINT.V = V;
+        PAINT.EV = EV;
         PAINT.segs = EV.map((vs) => {
             return M.expand(vs, V);
         });
@@ -42,14 +44,15 @@ export const PAINT = {
             return M.expand(vs, V);
         }));
 
-        PAINT.assigns = EA.concat(UA);
+        PAINT.EA = EA.concat(UA);
         PAINT.svg = svg;
         PAINT.VK = [];
+        PAINT.is_invalid = false;
     },
 
     get_FOLD_CELL_VK: () => {
-        const [FOLD, CELL] = Z.segs_assings_2_FOLD_CELL(PAINT.segs, PAINT.assigns)
-        return { FOLD, CELL, VK: PAINT.VK };
+        const [FOLD, CELL] = Z.segs_assings_2_FOLD_CELL(PAINT.segs, PAINT.EA)
+        return { FOLD, CELL };
     },
 
     set_mode: (mode) => {
@@ -57,18 +60,30 @@ export const PAINT = {
     },
 
     redraw: () => {
-        DRAW.draw_cp(PAINT.segs, PAINT.assigns, SVG.clear(PAINT.svg.id));
+        DRAW.draw_cp(PAINT.segs, PAINT.EA, SVG.clear(PAINT.svg.id));
         PAINT.svg_selection = SVG.append("g", PAINT.svg, { id: "selection" });
         PAINT.svg_validation = SVG.append("g", PAINT.svg, { id: "validation" });
-        PAINT.validate_kawasaki(10);
+        PAINT.validate();
     },
 
+    validate: () => {
+        PAINT.VK = [];
+        PAINT.is_invalid = false;
+        const V = PAINT.V;
+        const EA = PAINT.EA;
+        const EV = PAINT.EV;
+        const [VK, is_invalid] = DRAW.draw_local_isses(V, EA, EV, SVG.clear(PAINT.svg_validation.id));
+        PAINT.VK = VK;
+        PAINT.is_invalid = is_invalid;
+
+    },
     reset: () => {
         PAINT.svg_selection = undefined;
         PAINT.v0 = undefined;
         PAINT.segment = -1;
         PAINT.vertex = undefined;
         PAINT.VK = [];
+        PAINT.is_invalid = false;
     },
 
     get_pointer_loc: (e) => {
@@ -145,13 +160,13 @@ export const PAINT = {
             PAINT.hilight_mv(L.find_seg(p_cursor, PAINT.segs));
         }
         if (PAINT.current_mode == "input_angle") {
-            PAINT.hilight_input_angle(L.find_v(p_cursor, PAINT.FOLD.V, PAINT.bind_radius));
+            PAINT.hilight_input_angle(L.find_v(p_cursor, PAINT.V, PAINT.bind_radius));
         }
         if (PAINT.current_mode == "input_angle_2") {
             const v0 = PAINT.v0;
             const theta = L.binded_angle(v0, p_cursor, PAINT.bind_angle);
             const r = M.dist(v0, p_cursor);
-            const b_v = L.find_binded_v(v0, r, theta, PAINT.FOLD.V, PAINT.segs, PAINT.bind_radius);
+            const b_v = L.find_binded_v(v0, r, theta, PAINT.V, PAINT.segs, PAINT.bind_radius);
             PAINT.hilight_input_angle_2(b_v);
         }
 
@@ -163,14 +178,10 @@ export const PAINT = {
             if (i < 0) {
                 return;
             }
-            const a_ = PAINT.assigns[i];
+            const a_ = PAINT.EA[i];
             const a = DRAW.pair(a_);
-            if (i < PAINT.FOLD.EA.length) {
-                PAINT.assigns[i] = a;
-                PAINT.FOLD.EA[i] = a
-            }
+            PAINT.EA[i] = a;
             PAINT.redraw();
-            PAINT.validate_kawasaki(10);
             PAINT.onmove(e);
             return;
         }
@@ -183,6 +194,11 @@ export const PAINT = {
             return;
         }
         if (PAINT.current_mode == "input_angle_2") {
+            const v = PAINT.vertex;
+            if (!v) {
+                return;
+            }
+            const seg = [PAINT.v0, v];
             PAINT.current_mode = "input_angle";
             PAINT.onmove(e);
             return;
@@ -192,19 +208,5 @@ export const PAINT = {
         PAINT.vertex = undefined;
         PAINT.segment = undefined;
         PAINT.redraw();
-    },
-    validate_kawasaki: (r) => {
-        SVG.clear(PAINT.svg_validation.id);
-        PAINT.VK = [];
-        const { EV, EA, V } = PAINT.FOLD
-        const VK = Z.get_VK(EV, EA, V);
-        for (const [i, vk] of VK.entries()) {
-            if (Math.abs(vk) > 1e-6) {
-                const [cx, cy] = M.mul(V[i], SVG.SCALE);
-                const c = SVG.append("circle", PAINT.svg_validation, { cx, cy, r, "fill": "green" });
-
-            }
-        }
-        PAINT.VK = VK;
     },
 }
