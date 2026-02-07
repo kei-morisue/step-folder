@@ -33,11 +33,12 @@
             <input type="checkbox" id="crease_interp" checked>
             <label for="crease_interp">Crease Interpolation</label>
 
-            <button id="opencpeditor">Edit Step</button>
+            <button id="opencpeditor" class="opendialog">&#xe029;</button>
         </span>
     </div>
     <dialog id="cpeditor" class="cpeditor">
-        <span id="closeDialog">✖︎</span>
+        <button id="discardDialog" class="discardclose">&#xe040</button>
+        <button id="closeDialog">✖︎</button>
         <div class="cpeditor_body">
             <div class="tools">
                 <p class="tool_buttons">
@@ -48,7 +49,7 @@
                     <button id="cpedit_input_angle">&#xe04C;</button>
                     <span>360°/</span>
                     <input type="number" id="cpedit_angle_num" min="4" max="24" value="16" step="1">
-                    <button id="cpedit_input_vv">&#xe000;</button>
+                    <button id="cpedit_input_free">&#xe000;</button>
                     <button id="cpedit_mirror">&#xe009;</button>
                     <button id="cpedit_copy">&#xe012;</button>
                     <button id="cpedit_to_m" style="color:red">&#xe017;</button>

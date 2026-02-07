@@ -119,7 +119,7 @@ export const PAINT = {
     },
 
 
-    hilight_input_angle: (v) => {
+    hilight_input: (v) => {
         if (!v) {
             return
         }
@@ -128,7 +128,7 @@ export const PAINT = {
         PAINT.vertex = v;
     },
 
-    hilight_input_angle_2: (b_v) => {
+    hilight_input_2: (b_v) => {
         const s = SVG.SCALE;
         const v0 = PAINT.v0;
         const [c0x, c0y] = M.mul(v0, s);
@@ -159,16 +159,30 @@ export const PAINT = {
         SVG.clear(PAINT.svg_selection.id);
         if (PAINT.current_mode == "mv") {
             PAINT.hilight_mv(L.find_seg(p_cursor, PAINT.segs));
+            return;
         }
         if (PAINT.current_mode == "input_angle") {
-            PAINT.hilight_input_angle(L.find_v(p_cursor, PAINT.V, PAINT.bind_radius));
+            PAINT.hilight_input(L.find_v(p_cursor, PAINT.V, PAINT.bind_radius));
+            return;
+
         }
         if (PAINT.current_mode == "input_angle_2") {
             const v0 = PAINT.v0;
             const theta = L.binded_angle(v0, p_cursor, PAINT.bind_angle);
             const r = M.dist(v0, p_cursor);
             const b_v = L.find_binded_v(v0, r, theta, PAINT.V, PAINT.segs, PAINT.bind_radius);
-            PAINT.hilight_input_angle_2(b_v);
+            PAINT.hilight_input_2(b_v);
+            return;
+        }
+        if (PAINT.current_mode == "input_free") {
+            const v = L.find_v(p_cursor, PAINT.V, PAINT.bind_radius);
+            PAINT.hilight_input(v);
+            return;
+        }
+        if (PAINT.current_mode == "input_free_2") {
+            const v = L.find_v(p_cursor, PAINT.V, PAINT.bind_radius);
+            PAINT.hilight_input_2(v);
+            return;
         }
 
     },
@@ -205,6 +219,27 @@ export const PAINT = {
             PAINT.update_cp(CP);
             PAINT.onmove(e);
             PAINT.current_mode = "input_angle";
+            return;
+        }
+        if (PAINT.current_mode == "input_free") {
+            if (!PAINT.vertex) {
+                return;
+            }
+            PAINT.v0 = PAINT.vertex;
+            PAINT.current_mode = "input_free_2";
+            return;
+        }
+        if (PAINT.current_mode == "input_free_2") {
+            const v = PAINT.vertex;
+            if (!v) {
+                return;
+            }
+            const seg = [PAINT.v0, v];
+            const a = PAINT.input_a;
+            const CP = Z.add_segment(PAINT.segs, PAINT.EA, seg, a);
+            PAINT.update_cp(CP);
+            PAINT.onmove(e);
+            PAINT.current_mode = "input_free";
             return;
         }
     },

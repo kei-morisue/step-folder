@@ -10,13 +10,17 @@ export const GUI = {
         const dialog = document.getElementById("cpeditor");
         const showButton = document.getElementById("opencpeditor");
         const closeButton = document.getElementById("closeDialog");
+        const discardButton = document.getElementById("discardDialog");
         const svg = document.getElementById("cpedit");
         const input_angle_num = document.getElementById("cpedit_angle_num");
         const input_a = document.getElementById("cpedit_input_a");
         const mv = document.getElementById("cpedit_mv");
         const input_angle = document.getElementById("cpedit_input_angle");
+        const input_free = document.getElementById("cpedit_input_free");
 
         closeButton.onclick = GUI.close;
+        discardButton.onclick = GUI.discard;
+
         showButton.onclick = GUI.open;
         svg.onpointermove = PAINT.onmove;
         svg.onclick = PAINT.onclick;
@@ -29,21 +33,21 @@ export const GUI = {
         input_angle.onclick = () => {
             PAINT.set_mode("input_angle");
         }
+        input_free.onclick = () => {
+            PAINT.set_mode("input_free");
+        }
         input_angle_num.onchange = () => {
             PAINT.bind_angle = 2 * Math.PI / input_angle_num.value;
         }
 
-        dialog.onkeydown = GUI.toggle_input_a;
-        dialog.onkeyup = GUI.toggle_input_a;
-        dialog.onkeydown = GUI.bind;
-        dialog.onkeydown = GUI.bind;
 
+        dialog.onkeydown = GUI.bind;
 
     },
     bind: (e) => {
         const mv = document.getElementById("cpedit_mv");
         const input_angle = document.getElementById("cpedit_input_angle");
-        if (e.type != "keydown") {
+        if (e.type != "keydown" && e.type != "keyup") {
             return;
         }
         if (e.key == " ") {
@@ -52,8 +56,9 @@ export const GUI = {
         }
         if (e.key == "w") {
             mv.onclick();
+            return;
         }
-
+        GUI.toggle_input_a(e);
     },
 
     toggle_input_a: (e) => {
@@ -61,11 +66,10 @@ export const GUI = {
         const a_ = button.innerHTML;
         let a = a_;
         if (e.type == "keydown" && e.key == "Control") {
-            a = a_ == "F" ? "F" : "V";
+
+            a = a_ == "M" ? "F" : a_ == "V" ? "M" : "V";
         }
-        if (e.type == "keyup" && e.key == "Control") {
-            a = a_ == "F" ? "F" : "M";
-        }
+
         if (e.type == "click") {
             a = a_ == "M" ? "F" : a_ == "V" ? "M" : "V";
         }
@@ -95,10 +99,22 @@ export const GUI = {
         const { FOLD, CELL } = PAINT.get_FOLD_CELL_VK();
         PRJ.steps[i].fold_cp = FOLD;
         PRJ.steps[i].cell_cp = CELL;
+
+        PRJ.restore(i - 1);
+        STEP.update_states();
+        STEP.update_dist();
+        PRJ.record(i - 1);
         PRJ.restore(i);
         STEP.update_states();
         STEP.update_dist();
+        PRJ.record(i);
         STEP.redraw();
+        PRJ.redraw_page();
+    },
+
+    discard: () => {
+        const dialog = document.getElementById("cpeditor");
+        dialog.close();
     },
     set_svg: (id) => {
         const [b, s] = [SVG.MARGIN, SVG.SCALE];

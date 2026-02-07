@@ -16,6 +16,16 @@
     font-size: large;
 }
 
+.opendialog {
+    font-family: 'Icons';
+    font-size: large;
+}
+
+.discardclose {
+    font-family: 'Icons';
+    font-size: large;
+}
+
 .tool_buttons span {
     font-family: 'Icons';
     font-size: large;
