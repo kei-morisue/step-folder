@@ -27,6 +27,7 @@ export const PAINT = {
     VK: [],
     v0: undefined,
     bind_angle: Math.PI / 8,
+    input_a: "V",
     is_invalid: false,
     bind_radius: 0.05,
 
@@ -199,11 +200,36 @@ export const PAINT = {
                 return;
             }
             const seg = [PAINT.v0, v];
-            PAINT.current_mode = "input_angle";
+            const a = PAINT.input_a;
+            const CP = Z.add_segment(PAINT.segs, PAINT.EA, seg, a);
+            PAINT.update_cp(CP);
             PAINT.onmove(e);
+            PAINT.current_mode = "input_angle";
             return;
         }
     },
+
+    update_cp(CP) {
+        const { V, EV, EA, segs } = CP;
+        PAINT.V = V;
+        PAINT.EA = EA;
+        PAINT.EV = EV;
+        PAINT.segs = segs;
+        PAINT.redraw();
+    },
+
+    oncontextmenu: (e) => {
+        const pt = PAINT.get_pointer_loc(e);
+        e.preventDefault();
+        const s_i = L.find_seg(pt, PAINT.segs)[0];
+        if (s_i < 0) {
+            return;
+        }
+        const CP = Z.remove_segment(PAINT.segs, PAINT.EA, s_i);
+        PAINT.update_cp(CP);
+        PAINT.onmove(e);
+    },
+
     onmouseout: (e) => {
         PAINT.vertex = undefined;
         PAINT.segment = undefined;

@@ -7,15 +7,20 @@ import { STEP } from "../defox/step.js";
 export const GUI = {
 
     startup: () => {
+        const dialog = document.getElementById("cpeditor");
         const showButton = document.getElementById("opencpeditor");
         const closeButton = document.getElementById("closeDialog");
         const svg = document.getElementById("cpedit");
         const input_angle_num = document.getElementById("cpedit_angle_num");
+        const input_a = document.getElementById("cpedit_input_a");
+
         closeButton.onclick = GUI.close;
         showButton.onclick = GUI.open;
         svg.onpointermove = PAINT.onmove;
         svg.onclick = PAINT.onclick;
         svg.onmouseleave = PAINT.onmouseout;
+        svg.oncontextmenu = PAINT.oncontextmenu;
+        input_a.onclick = GUI.toggle_input_a;
         document.getElementById("cpedit_mv").onclick = () => {
             PAINT.set_mode("mv");
         }
@@ -25,10 +30,28 @@ export const GUI = {
         input_angle_num.onchange = () => {
             PAINT.bind_angle = 2 * Math.PI / input_angle_num.value;
         }
-
-
+        dialog.onkeydown = GUI.toggle_input_a;
+        dialog.onkeyup = GUI.toggle_input_a;
     },
-
+    toggle_input_a: (e) => {
+        const button = document.getElementById("cpedit_input_a")
+        const a_ = button.innerHTML;
+        let a;
+        if (e.type == "keydown") {
+            a = a_ == "F" ? "F" : "V";
+        }
+        if (e.type == "keyup") {
+            a = a_ == "F" ? "F" : "M";
+        }
+        if (e.type == "click") {
+            a = a_ == "M" ? "V" : a_ == "V" ? "F" : "M";
+        }
+        const color = a == "M" ? "red" : a == "V" ? "blue" : "gray";
+        button.setAttribute("style", `background: ${color}; color: white`);
+        button.innerHTML = a;
+        a = a == "M" ? "V" : a == "V" ? "M" : "F";
+        PAINT.input_a = a;
+    },
     open: () => {
         const dialog = document.getElementById("cpeditor");
         const svg = document.getElementById("cpedit")

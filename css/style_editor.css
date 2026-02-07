@@ -22,6 +22,13 @@
     color: white;
 }
 
+.tool_buttons .cpedit_input_a {
+    height: 30px;
+    width: 30px;
+    color: white;
+    background-color: red;
+}
+
 .tool_buttons {
     display: inline;
     align-content: center;
