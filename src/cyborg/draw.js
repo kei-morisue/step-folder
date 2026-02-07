@@ -1,4 +1,7 @@
 import { M } from "../flatfolder/math.js";
+
+import { N } from "../defox/nath.js";
+
 import { SVG } from "../flatfolder/svg.js";
 import { Z } from "./z.js";
 
@@ -53,10 +56,14 @@ export const DRAW = {
                 return d;
         }
     },
-    draw_cp: (lines, assigns, svg_cp) => {
+    draw_cp: (lines, assigns, svg_cp, T) => {
+
+        const segs = lines.map(([p, q]) => {
+            return [N.transform(T, p), N.transform(T, q)];
+        });
         let colors = assigns.map(a => DRAW.color.segment[a]);
         let widths = assigns.map(a => DRAW.width.segment[a]);
-        SVG.draw_segments(svg_cp, lines, {
+        SVG.draw_segments(svg_cp, segs, {
             stroke_width: widths,
             stroke: colors,
             id: true,

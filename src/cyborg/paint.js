@@ -30,7 +30,9 @@ export const PAINT = {
     input_a: "V",
     is_invalid: false,
     bind_radius: 0.05,
-
+    cx: .5,
+    cy: .5,
+    scale: 1,
     initialize: (FOLD, svg) => {
         PAINT.segment = -1;
         PAINT.vertex = -1;
@@ -49,6 +51,9 @@ export const PAINT = {
         PAINT.svg = svg;
         PAINT.VK = [];
         PAINT.is_invalid = false;
+        PAINT.cx = .5;
+        PAINT.cy = .5;
+        PAINT.scale = 1;
     },
 
     get_FOLD_CELL_VK: () => {
@@ -61,7 +66,9 @@ export const PAINT = {
     },
 
     redraw: () => {
-        DRAW.draw_cp(PAINT.segs, PAINT.EA, SVG.clear(PAINT.svg.id));
+        const zoom = STEP.get_zoom(PAINT.scale);
+        const T = STEP.get_T(false, 0.5, zoom, PAINT.cx, PAINT.cy);
+        DRAW.draw_cp(PAINT.segs, PAINT.EA, SVG.clear(PAINT.svg.id), T);
         PAINT.svg_selection = SVG.append("g", PAINT.svg, { id: "selection" });
         PAINT.svg_validation = SVG.append("g", PAINT.svg, { id: "validation" });
         PAINT.validate();
@@ -85,6 +92,9 @@ export const PAINT = {
         PAINT.vertex = undefined;
         PAINT.VK = [];
         PAINT.is_invalid = false;
+        PAINT.cx = .5;
+        PAINT.cy = .5;
+        PAINT.scale = 1;
     },
 
     get_pointer_loc: (e) => {
@@ -158,7 +168,8 @@ export const PAINT = {
         PAINT.vertex = undefined;
         SVG.clear(PAINT.svg_selection.id);
         if (PAINT.current_mode == "mv") {
-            PAINT.hilight_mv(L.find_seg(p_cursor, PAINT.segs));
+            const seg = L.find_seg(p_cursor, PAINT.segs, PAINT.EA);
+            PAINT.hilight_mv(seg);
             return;
         }
         if (PAINT.current_mode == "input_angle") {
@@ -256,7 +267,7 @@ export const PAINT = {
     oncontextmenu: (e) => {
         const pt = PAINT.get_pointer_loc(e);
         e.preventDefault();
-        const s_i = L.find_seg(pt, PAINT.segs)[0];
+        const s_i = L.find_seg(pt, PAINT.segs, PAINT.EA)[0];
         if (s_i < 0) {
             return;
         }

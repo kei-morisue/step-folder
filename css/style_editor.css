@@ -8,7 +8,7 @@
     height: 10%;
     background-color: gray;
     border: 1px solid #000;
-
+    margin: 0 auto;
 }
 
 .tool_buttons button {
@@ -39,10 +39,12 @@
     background-color: red;
 }
 
-.tool_buttons {
-    display: inline;
-    align-content: center;
+.tools div {
+    display: flex;
+    align-items: center;
+    justify-content: center
 }
+
 
 .paint_edit {
     height: 80%;

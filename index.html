@@ -41,7 +41,7 @@
         <button id="closeDialog">✖︎</button>
         <div class="cpeditor_body">
             <div class="tools">
-                <p class="tool_buttons">
+                <div class="tool_buttons">
                     <button id="cpedit_zoomout">&#xe048;</button>
                     <button id="cpedit_move">&#xe045;</button>
                     <button id="cpedit_zoomin">&#xe049;</button>
@@ -50,18 +50,16 @@
                     <span>360°/</span>
                     <input type="number" id="cpedit_angle_num" min="4" max="24" value="16" step="1">
                     <button id="cpedit_input_free">&#xe000;</button>
-                    <button id="cpedit_mirror">&#xe009;</button>
-                    <button id="cpedit_copy">&#xe012;</button>
+                    <button id="cpedit_input_mirror">&#xe009;</button>
+                    <button id="cpedit_input_bisection">&#xe006;</button><button id="cpedit_copy">&#xe012;</button>
                     <button id="cpedit_to_m" style="color:red">&#xe017;</button>
                     <button id="cpedit_to_m" style="color:blue">&#xe018;</button>
                     <button id="cpedit_to_aux" style="color:gray">&#xe01A;</button>
                     <button id="cpedit_trim">&#xe022;</button>
                     <button id="cpedit_input_a" class="cpedit_input_a">M</button>
 
-
-
                     <span id="pt_loc" style="display: none;"></span>
-                </p>
+                </div>
             </div>
             <svg id="cpedit" class="paint_edit"></svg>
         </div>

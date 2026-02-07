@@ -7,6 +7,7 @@ import { STEP } from "../defox/step.js";
 export const GUI = {
 
     startup: () => {
+
         const dialog = document.getElementById("cpeditor");
         const showButton = document.getElementById("opencpeditor");
         const closeButton = document.getElementById("closeDialog");
@@ -17,6 +18,8 @@ export const GUI = {
         const mv = document.getElementById("cpedit_mv");
         const input_angle = document.getElementById("cpedit_input_angle");
         const input_free = document.getElementById("cpedit_input_free");
+        const zoom_out = document.getElementById("cpedit_zoomout");
+        const zoom_in = document.getElementById("cpedit_zoomin");
 
         closeButton.onclick = GUI.close;
         discardButton.onclick = GUI.discard;
@@ -39,9 +42,17 @@ export const GUI = {
         input_angle_num.onchange = () => {
             PAINT.bind_angle = 2 * Math.PI / input_angle_num.value;
         }
-
+        zoom_in.onclick = () => {
+            PAINT.scale = Math.min(10, PAINT.scale + 1);
+            PAINT.redraw();
+        }
+        zoom_out.onclick = () => {
+            PAINT.scale = Math.max(1, PAINT.scale - 1);
+            PAINT.redraw();
+        }
 
         dialog.onkeydown = GUI.bind;
+        GUI.set_svg("cpedit");
 
     },
     bind: (e) => {
@@ -82,8 +93,8 @@ export const GUI = {
     open: () => {
         const dialog = document.getElementById("cpeditor");
         const svg = document.getElementById("cpedit")
+
         dialog.showModal();
-        GUI.set_svg("cpedit");
         const FOLD = PRJ.steps[PRJ.current_idx].fold_cp;
         PAINT.initialize(FOLD, svg);
         PAINT.redraw();
