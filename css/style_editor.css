@@ -3,12 +3,16 @@
     scrollbar-gutter: stable;
 }
 
-
 .cpeditor_body .tools {
     width: 100%;
     height: 10%;
     background-color: gray;
     border: 1px solid #000;
+
+}
+
+.tool_buttons button {
+    font-family: 'Icons';
 }
 
 .tool_buttons {
