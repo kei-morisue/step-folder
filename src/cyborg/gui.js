@@ -41,6 +41,7 @@ export const GUI = {
             document.getElementById("cpedit_angle_num").onchange = () => {
                 PAINT.bind_angle = 2 * Math.PI / document.getElementById("cpedit_angle_num").value;
             }
+            svg.onmouseleave = PAINT.onmouseout;
 
         };
 

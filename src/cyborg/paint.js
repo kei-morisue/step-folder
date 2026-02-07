@@ -188,7 +188,11 @@ export const PAINT = {
             return;
         }
     },
-
+    onmouseout: (e) => {
+        PAINT.vertex = undefined;
+        PAINT.segment = undefined;
+        PAINT.redraw();
+    },
     validate_kawasaki: (r) => {
         SVG.clear(PAINT.svg_validation.id);
         PAINT.VK = [];

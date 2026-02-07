@@ -41,17 +41,22 @@
         <div class="cpeditor_body">
             <div class="tools">
                 <p class="tool_buttons">
-                    <button id="cpedit_mv">&#xe030</button>
-                    <b>&#xe030</b>
-                    <button id="cpedit_input_angle">&#xe31</button>
+                    <span>&#xe048;</span>
+                    <input type="range" id="cpedit_zoom" min="1" max="10" value="1" step="1">
+                    <span>&#xe049;</span>
+                    <button id="cpedit_mv">&#xe01B;</button>
+                    <button id="cpedit_input_angle">&#xe04C;</button>
                     <span>360°/</span>
                     <input type="number" id="cpedit_angle_num" min="4" max="24" value="8" step="1">
-                    <button id="cpedit_input_vv">A</button>
-                    <button id="cpedit_mirror">C</button>
-                    <button id="cpedit_kawasaki">D</button>
-                    <button id="cpedit_copy">E</button>
-                    <input type="range" id="cpedit_zoom">
-                    <span id="pt_loc"></span>
+                    <button id="cpedit_input_vv">&#xe000;</button>
+                    <button id="cpedit_mirror">&#xe009;</button>
+                    <button id="cpedit_copy">&#xe012;</button>
+                    <button id="cpedit_to_m" style="color:red">&#xe017;</button>
+                    <button id="cpedit_to_aux" style="color:gray">&#xe01A;</button>
+                    <button id="cpedit_trim">&#xe022;</button>
+
+
+                    <span id="pt_loc" style="display: none;"></span>
                 </p>
             </div>
             <svg id="cpedit" class="paint_edit"></svg>

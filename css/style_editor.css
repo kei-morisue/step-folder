@@ -13,6 +13,12 @@
 
 .tool_buttons button {
     font-family: 'Icons';
+    font-size: large;
+}
+
+.tool_buttons span {
+    font-family: 'Icons';
+    font-size: large;
 }
 
 .tool_buttons {
