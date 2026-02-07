@@ -13,6 +13,8 @@ export const GUI = {
         const svg = document.getElementById("cpedit");
         const input_angle_num = document.getElementById("cpedit_angle_num");
         const input_a = document.getElementById("cpedit_input_a");
+        const mv = document.getElementById("cpedit_mv");
+        const input_angle = document.getElementById("cpedit_input_angle");
 
         closeButton.onclick = GUI.close;
         showButton.onclick = GUI.open;
@@ -21,30 +23,51 @@ export const GUI = {
         svg.onmouseleave = PAINT.onmouseout;
         svg.oncontextmenu = PAINT.oncontextmenu;
         input_a.onclick = GUI.toggle_input_a;
-        document.getElementById("cpedit_mv").onclick = () => {
+        mv.onclick = () => {
             PAINT.set_mode("mv");
         }
-        document.getElementById("cpedit_input_angle").onclick = () => {
+        input_angle.onclick = () => {
             PAINT.set_mode("input_angle");
         }
         input_angle_num.onchange = () => {
             PAINT.bind_angle = 2 * Math.PI / input_angle_num.value;
         }
+
         dialog.onkeydown = GUI.toggle_input_a;
         dialog.onkeyup = GUI.toggle_input_a;
+        dialog.onkeydown = GUI.bind;
+        dialog.onkeydown = GUI.bind;
+
+
     },
+    bind: (e) => {
+        const mv = document.getElementById("cpedit_mv");
+        const input_angle = document.getElementById("cpedit_input_angle");
+        if (e.type != "keydown") {
+            return;
+        }
+        if (e.key == " ") {
+            input_angle.onclick();
+            return;
+        }
+        if (e.key == "w") {
+            mv.onclick();
+        }
+
+    },
+
     toggle_input_a: (e) => {
         const button = document.getElementById("cpedit_input_a")
         const a_ = button.innerHTML;
-        let a;
-        if (e.type == "keydown") {
+        let a = a_;
+        if (e.type == "keydown" && e.key == "Control") {
             a = a_ == "F" ? "F" : "V";
         }
-        if (e.type == "keyup") {
+        if (e.type == "keyup" && e.key == "Control") {
             a = a_ == "F" ? "F" : "M";
         }
         if (e.type == "click") {
-            a = a_ == "M" ? "V" : a_ == "V" ? "F" : "M";
+            a = a_ == "M" ? "F" : a_ == "V" ? "M" : "V";
         }
         const color = a == "M" ? "red" : a == "V" ? "blue" : "gray";
         button.setAttribute("style", `background: ${color}; color: white`);
