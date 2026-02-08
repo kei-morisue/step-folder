@@ -18,6 +18,7 @@ export const GUI = {
         const mv = document.getElementById("cpedit_mv");
         const input_angle = document.getElementById("cpedit_input_angle");
         const input_free = document.getElementById("cpedit_input_free");
+        const input_bisector = document.getElementById("cpedit_input_bisector");
         const zoom_out = document.getElementById("cpedit_zoomout");
         const zoom_in = document.getElementById("cpedit_zoomin");
         const move = document.getElementById("cpedit_move");
@@ -42,6 +43,9 @@ export const GUI = {
         }
         input_free.onclick = () => {
             PAINT.set_mode("input_free");
+        }
+        input_bisector.onclick = () => {
+            PAINT.set_mode("input_bisector");
         }
         move.onclick = () => {
             PAINT.set_mode("move");

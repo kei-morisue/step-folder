@@ -26,6 +26,9 @@ export const PAINT = {
     segment: -1,
     vertex: undefined,
     v0: undefined,
+    v1: undefined,
+    v2: undefined,
+
     is_invalid: false,
     bind_radius: 0.05,
     cx: .5,
@@ -52,6 +55,8 @@ export const PAINT = {
         PAINT.segment = -1;
         PAINT.vertex = -1;
         PAINT.v0 = undefined;
+        PAINT.v1 = undefined;
+        PAINT.v2 = undefined;
         const { V, EV, EA, UA, UV } = FOLD;
         PAINT.V = V;
         PAINT.EV = EV.concat(UV);
@@ -114,6 +119,8 @@ export const PAINT = {
     reset: () => {
         PAINT.svg_selection = undefined;
         PAINT.v0 = undefined;
+        PAINT.v1 = undefined;
+        PAINT.v2 = undefined;
         PAINT.segment = -1;
         PAINT.vertex = undefined;
         PAINT.VK = [];
@@ -180,10 +187,9 @@ export const PAINT = {
         PAINT.vertex = v;
     },
 
-    hilight_input_2: (b_v) => {
+    hilight_input_2: (v0_, b_v) => {
         const s = SVG.SCALE;
         const T = PAINT.get_T();
-        const v0_ = PAINT.v0;
         const v0 = N.transform(T, v0_);
         const [c0x, c0y] = M.mul(v0, s);
         SVG.append("circle", PAINT.svg_selection, { cx: c0x, cy: c0y, r: 5, "fill": "magenta" });
@@ -235,7 +241,7 @@ export const PAINT = {
             const theta = L.binded_angle(v0, p_cursor, PAINT.bind_angle);
             const r = M.dist(v0, p_cursor);
             const b_v = L.find_binded_v(v0, r, theta, PAINT.V, PAINT.segs, PAINT.radius.bind);
-            PAINT.hilight_input_2(b_v);
+            PAINT.hilight_input_2(v0, b_v);
             return;
         }
         if (PAINT.current_mode == "input_free") {
@@ -246,6 +252,41 @@ export const PAINT = {
         if (PAINT.current_mode == "input_free_2") {
             const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
             PAINT.hilight_input_2(v);
+            return;
+        }
+        if (PAINT.current_mode == "input_bisector") {
+            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
+            PAINT.hilight_input(v);
+            return;
+        }
+        if (PAINT.current_mode == "input_bisector_2") {
+            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
+            PAINT.hilight_input(PAINT.v0);
+            PAINT.hilight_input(v);
+            return;
+        }
+        if (PAINT.current_mode == "input_bisector_3") {
+            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
+            PAINT.hilight_input(PAINT.v0);
+            PAINT.hilight_input(PAINT.v1);
+            PAINT.hilight_input(v);
+            return;
+        }
+        if (PAINT.current_mode == "input_bisector_4") {
+            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
+            const v1 = PAINT.v1;
+            const v0 = PAINT.v0;
+            const v2 = PAINT.v2;
+
+            const theta = M.angle(M.sub(v0, v1)) * .5
+                + M.angle(M.sub(v2, v1)) * .5;
+            const r = M.dist(v1, p_cursor);
+            const b_v = L.find_binded_v(v1, r, theta, PAINT.V, PAINT.segs, PAINT.radius.bind);
+
+            PAINT.hilight_input(v0);
+            PAINT.hilight_input(v1);
+            PAINT.hilight_input(v2);
+            PAINT.hilight_input_2(v1, b_v);
             return;
         }
     },
@@ -316,6 +357,46 @@ export const PAINT = {
             PAINT.current_mode = "input_free";
             return;
         }
+        if (PAINT.current_mode == "input_bisector") {
+            if (!PAINT.vertex) {
+                return;
+            }
+            PAINT.v0 = PAINT.vertex;
+            PAINT.current_mode = "input_bisector_2";
+            return;
+        }
+        if (PAINT.current_mode == "input_bisector_2") {
+            if (!PAINT.vertex) {
+                return;
+            }
+            PAINT.v1 = PAINT.vertex;
+            PAINT.current_mode = "input_bisector_3";
+            return;
+        }
+        if (PAINT.current_mode == "input_bisector_3") {
+            const v = PAINT.vertex;
+            if (!v) {
+                return;
+            }
+            PAINT.v2 = v;
+            PAINT.current_mode = "input_bisector_4";
+            return;
+        }
+        if (PAINT.current_mode == "input_bisector_4") {
+            const v = PAINT.vertex;
+            if (!v) {
+                return;
+            }
+            const seg = [PAINT.v1, v];
+            const a = PAINT.input_a;
+            const CP = Z.add_segment(PAINT.segs, PAINT.EA, seg, a);
+            PAINT.record;
+            PAINT.update_cp(CP);
+            PAINT.onmove(e);
+            PAINT.current_mode = "input_bisector";
+            return;
+        }
+
     },
 
     update_cp(CP) {
@@ -339,6 +420,24 @@ export const PAINT = {
         if (m == "input_angle_2") {
             PAINT.v0 = undefined;
             PAINT.current_mode = "input_angle";
+            PAINT.onmove(e);
+            return;
+        }
+        if (m == "input_bisector_2") {
+            PAINT.v0 = undefined;
+            PAINT.current_mode = "input_bisector";
+            PAINT.onmove(e);
+            return;
+        }
+        if (m == "input_bisector_3") {
+            PAINT.v1 = undefined;
+            PAINT.current_mode = "input_bisector_2";
+            PAINT.onmove(e);
+            return;
+        }
+        if (m == "input_bisector_4") {
+            PAINT.v2 = undefined;
+            PAINT.current_mode = "input_bisector_3";
             PAINT.onmove(e);
             return;
         }
