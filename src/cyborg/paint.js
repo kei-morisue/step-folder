@@ -33,6 +33,18 @@ export const PAINT = {
     cx: .5,
     cy: .5,
     scale: 1,
+
+    color: {
+        "M": "red",
+        "V": "blue",
+        "F": "gray",
+        "B": "black"
+    },
+
+    pair: (a) => {
+        return a == "M" ? "V" : a == "V" ? "M" : a;
+    },
+
     initialize: (FOLD, svg) => {
         PAINT.segment = -1;
         PAINT.vertex = -1;
@@ -65,9 +77,12 @@ export const PAINT = {
         PAINT.current_mode = mode;
     },
 
-    redraw: () => {
+    get_T: () => {
         const zoom = STEP.get_zoom(PAINT.scale);
-        const T = STEP.get_T(false, 0.5, zoom, PAINT.cx, PAINT.cy);
+        return STEP.get_T(false, 0.5, zoom, PAINT.cx, PAINT.cy);
+    },
+    redraw: () => {
+        const T = PAINT.get_T();
         DRAW.draw_cp(PAINT.segs, PAINT.EA, SVG.clear(PAINT.svg.id), T);
         PAINT.svg_selection = SVG.append("g", PAINT.svg, { id: "selection" });
         PAINT.svg_validation = SVG.append("g", PAINT.svg, { id: "validation" });
@@ -80,7 +95,12 @@ export const PAINT = {
         const V = PAINT.V;
         const EA = PAINT.EA;
         const EV = PAINT.EV;
-        const [VK, is_invalid] = DRAW.draw_local_isses(V, EA, EV, SVG.clear(PAINT.svg_validation.id));
+        const [VK, is_invalid] = DRAW.draw_local_isses(
+            V,
+            EA,
+            EV,
+            SVG.clear(PAINT.svg_validation.id),
+            PAINT.get_T());
         PAINT.VK = VK;
         PAINT.is_invalid = is_invalid;
 
@@ -106,10 +126,10 @@ export const PAINT = {
         const w = SVG.SCALE;
         const x0 = ((p.x) / w);
         const y0 = ((p.y) / w);
-        const label = document.getElementById("pt_loc");
-        label.innerHTML = "[" + (x0.toFixed(8)) + ", " + (y0.toFixed(8)) + "]";
-
-        return [x0, y0];
+        const T = PAINT.get_T();
+        const A_inv = N.inv(T[0]);
+        const b = M.mul(N.apply(A_inv, T[1]), -1);
+        return N.transform([A_inv, b], [x0, y0]);
     },
 
     onmove: (e) => {
@@ -120,10 +140,17 @@ export const PAINT = {
 
     hilight_mv: ([idx, min_l]) => {
         if (min_l < 0.1) {
-            const [[x1, y1], [x2, y2]] = N.matmul(PAINT.segs[idx], SVG.SCALE);
+            const [p_, q_] = PAINT.segs[idx];
+            const T = PAINT.get_T();
+            const [p, q] = [
+                N.transform(T, p_), N.transform(T, q_)];
+            const l = N.matmul([p, q], SVG.SCALE);
+            const [[x1, y1], [x2, y2]] = l;
             const seg_svg = SVG.append("line", PAINT.svg_selection, { x1, x2, y1, y2 });
-            seg_svg.setAttribute("stroke", "magenta");
-            seg_svg.setAttribute("stroke-width", 3);
+            const a = PAINT.pair(PAINT.EA[idx]);
+            const color = PAINT.color[a];
+            seg_svg.setAttribute("stroke", color);
+            seg_svg.setAttribute("stroke-width", 6);
             PAINT.segment = idx;
         }
     },
@@ -133,20 +160,25 @@ export const PAINT = {
         if (!v) {
             return
         }
-        const [cx, cy] = M.mul(v, SVG.SCALE);
+        const T = PAINT.get_T();
+        const v_ = N.transform(T, v)
+        const [cx, cy] = M.mul(v_, SVG.SCALE);
         const c = SVG.append("circle", PAINT.svg_selection, { cx, cy, r: 5, "fill": "magenta" });
         PAINT.vertex = v;
     },
 
     hilight_input_2: (b_v) => {
         const s = SVG.SCALE;
-        const v0 = PAINT.v0;
+        const T = PAINT.get_T();
+        const v0_ = PAINT.v0;
+        const v0 = N.transform(T, v0_);
         const [c0x, c0y] = M.mul(v0, s);
         SVG.append("circle", PAINT.svg_selection, { cx: c0x, cy: c0y, r: 5, "fill": "magenta" });
         if (!b_v) {
             return;
         }
-        const [cx, cy] = M.mul(b_v, s);
+        const bv = N.transform(T, b_v);
+        const [cx, cy] = M.mul(bv, s);
         SVG.append("circle", PAINT.svg_selection, { cx, cy, r: 5, "fill": "magenta" });
         PAINT.vertex = b_v;
 
@@ -155,12 +187,14 @@ export const PAINT = {
             PAINT.svg_selection,
             {
                 x1: v0[0] * s,
-                x2: b_v[0] * s,
+                x2: bv[0] * s,
                 y1: v0[1] * s,
-                y2: b_v[1] * s
+                y2: bv[1] * s
             });
-        seg_svg.setAttribute("stroke", "magenta");
-        seg_svg.setAttribute("stroke-width", 3);
+        const a = PAINT.pair(PAINT.input_a);
+        const color = PAINT.color[a];
+        seg_svg.setAttribute("stroke", color);
+        seg_svg.setAttribute("stroke-width", 1);
     },
 
     hilight: (p_cursor) => {
@@ -265,8 +299,21 @@ export const PAINT = {
     },
 
     oncontextmenu: (e) => {
-        const pt = PAINT.get_pointer_loc(e);
         e.preventDefault();
+        const m = PAINT.current_mode;
+        if (m == "input_free_2") {
+            PAINT.v0 = undefined;
+            PAINT.current_mode = "input_free";
+            PAINT.onmove(e);
+            return;
+        }
+        if (m == "input_angle_2") {
+            PAINT.v0 = undefined;
+            PAINT.current_mode = "input_angle";
+            PAINT.onmove(e);
+            return;
+        }
+        const pt = PAINT.get_pointer_loc(e);
         const s_i = L.find_seg(pt, PAINT.segs, PAINT.EA)[0];
         if (s_i < 0) {
             return;

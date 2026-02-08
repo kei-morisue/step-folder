@@ -79,12 +79,13 @@ export const DRAW = {
         SVG.draw_polygons(svg, F, { opacity: 0.05 });
     },
 
-    draw_local_isses: (V, EA, EV, svg) => {
+    draw_local_isses: (V, EA, EV, svg, T) => {
         const VK = Z.get_VK(EV, EA, V);
         let is_invalid = false;
         for (const [i, vk] of VK.entries()) {
             if (Math.abs(vk) > 1e-6) {
-                const [cx, cy] = M.mul(V[i], SVG.SCALE);
+                const v_ = N.transform(T, V[i]);
+                const [cx, cy] = M.mul(v_, SVG.SCALE);
                 const r = DRAW.radius.invalid;
                 const c = SVG.append("circle", svg, { cx, cy, r, "fill": "green" });
                 is_invalid = true;

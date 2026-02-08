@@ -62,6 +62,7 @@ export const GUI = {
             return;
         }
         if (e.key == " ") {
+            e.preventDefault();
             input_angle.onclick();
             return;
         }
@@ -84,7 +85,7 @@ export const GUI = {
         if (e.type == "click") {
             a = a_ == "M" ? "F" : a_ == "V" ? "M" : "V";
         }
-        const color = a == "M" ? "red" : a == "V" ? "blue" : "gray";
+        const color = PAINT.color[a];
         button.setAttribute("style", `background: ${color}; color: white`);
         button.innerHTML = a;
         a = a == "M" ? "V" : a == "V" ? "M" : "F";
