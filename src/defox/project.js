@@ -87,16 +87,7 @@ export const PRJ = {
         STEP.LIN = PRJ.steps[i].lin;
 
         const p = PRJ.steps[i].params;
-        if (p) {
-            [STEP.flip0, STEP.rotate, STEP.scale, SEG.clip, DIST.p0, DIST.p1, DIST.p2, STEP.cx, STEP.cy] = p;
-            document.getElementById("clip").value = SEG.clip;
-            document.getElementById("rotate").value = STEP.rotate;
-            document.getElementById("p0").value = DIST.p0;
-            document.getElementById("p1").value = DIST.p1;
-            document.getElementById("p2").value = DIST.p2;
-        } else {
-            STEP.refresh();
-        }
+        PRJ.restore_params(p);
 
         PRJ.current_idx = i
         document.getElementById("steps").innerHTML = PRJ.steps.length;
@@ -105,6 +96,28 @@ export const PRJ = {
         document.getElementById("range_steps").value = i + 1;
 
     },
+
+    restore_params: (p) => {
+        if (p) {
+            for (const key of ["flip0", "rotate", "scale", "cx", "cy"]) {
+                STEP[key] = p[key];
+            }
+            for (const key of ["clip"]) {
+                SEG[key] = p[key];
+            }
+            for (const key of ["p0", "p1", "p2"]) {
+                DIST[key] = p[key];
+            }
+            document.getElementById("clip").value = SEG.clip;
+            document.getElementById("rotate").value = STEP.rotate;
+            document.getElementById("p0").value = DIST.p0;
+            document.getElementById("p1").value = DIST.p1;
+            document.getElementById("p2").value = DIST.p2;
+        } else {
+            STEP.refresh();
+        }
+    },
+
     record: (i) => {
         if (PRJ.steps.length - 1 < i) {
             return;
@@ -120,16 +133,17 @@ export const PRJ = {
     },
 
     parameters: () => {
-        return [
-            STEP.flip0,
-            STEP.rotate,
-            STEP.scale,
-            SEG.clip,
-            DIST.p0,
-            DIST.p1,
-            DIST.p2,
-            STEP.cx,
-            STEP.cy,]
+        return {
+            flip0: STEP.flip0,
+            rotate: STEP.rotate,
+            scale: STEP.scale,
+            clip: SEG.clip,
+            p0: DIST.p0,
+            p1: DIST.p1,
+            p2: DIST.p2,
+            cx: STEP.cx,
+            cy: STEP.cy,
+        }
     },
 
     setup_number_options: (ids, edge_props, init, module) => {

@@ -63,14 +63,6 @@ export const GUI = {
         }
 
         dialog.onkeydown = GUI.bind;
-        dialog.onwheel = (e) => {
-            e.preventDefault();
-            if (e.deltaY > 0) {
-                zoom_in.click();
-            } else {
-                zoom_out.click();
-            }
-        }
         GUI.set_svg("cpedit");
 
     },

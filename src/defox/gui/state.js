@@ -29,22 +29,9 @@ export const GUI_STATE = {
                 return;
             }
             const params = PRJ.steps[i - 1].params;
-            STEP.scale = params[0];
-            STEP.rotate = params[1];
-            STEP.scale = params[2];
-            DIST.p0 = params[4];
-            DIST.p1 = params[5];
-            DIST.p2 = params[6];
-            DIST.cx = params[7];
-            DIST.cy = params[8];
-            STEP.update_states();
-            STEP.update_dist();
+            PRJ.restore_params(params);
             PRJ.record(i);
             STEP.redraw();
-            document.getElementById("rotate").value = STEP.rotate;
-            document.getElementById("p0").value = DIST.p0;
-            document.getElementById("p1").value = DIST.p1;
-            document.getElementById("p2").value = DIST.p2;
         }
 
         document.getElementById("infer_next").onclick = (e) => {
@@ -53,22 +40,9 @@ export const GUI_STATE = {
                 return;
             }
             const params = PRJ.steps[i + 1].params;
-            STEP.scale = params[0];
-            STEP.rotate = params[1];
-            STEP.scale = params[2];
-            DIST.p0 = params[4];
-            DIST.p1 = params[5];
-            DIST.p2 = params[6];
-            DIST.cx = params[7];
-            DIST.cy = params[8];
-            STEP.update_states();
-            STEP.update_dist();
+            PRJ.restore_params(params);
             PRJ.record(i);
             STEP.redraw();
-            document.getElementById("rotate").value = STEP.rotate;
-            document.getElementById("p0").value = DIST.p0;
-            document.getElementById("p1").value = DIST.p1;
-            document.getElementById("p2").value = DIST.p2;
         }
 
         document.getElementById("state3").onwheel = (e) => {
