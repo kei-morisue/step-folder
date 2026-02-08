@@ -104,7 +104,8 @@ export const ACT = {
         }
         if (PAINT.current_mode == "input_free_2") {
             const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind / PAINT.scale);
-            PAINT.hilight_inputs(v);
+            const v0 = PAINT.v0;
+            PAINT.hilight_inputs(v0, v);
             return true;
         }
         return false;

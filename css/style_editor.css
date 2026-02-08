@@ -56,6 +56,12 @@
     justify-content: center
 }
 
+.cpeditor {
+    background-color: white
+        /* background-color: rgb(37, 37, 37); */
+}
+
 .cpeditor_body svg {
     margin: 0 auto;
+
 }

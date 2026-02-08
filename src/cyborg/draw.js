@@ -12,13 +12,12 @@ export const DRAW = {
             B: "black",
             V: "red",
             M: "blue",
-            VV: "red",
-            MM: "blue",
-            RV: "red",
-            RM: "blue",
-            UF: "green",
-            FF: "magenta",
+            // F: "rgb(6, 200, 200)",
+            // B: "rgb(210, 210, 210)",
+            // V: "rgb(229, 115, 115)",
+            // M: "rgb(33, 150, 243)",
         },
+        kawasaki: "rgb(6,200,200)",
     },
 
     width: {
@@ -27,12 +26,6 @@ export const DRAW = {
             B: 1,
             V: 1,
             M: 1,
-            VV: 6,
-            MM: 6,
-            RV: 6,
-            RM: 6,
-            UF: 6,
-            FF: 6,
         },
     },
     radius: {
@@ -87,7 +80,16 @@ export const DRAW = {
                 const v_ = N.transform(T, V[i]);
                 const [cx, cy] = M.mul(v_, SVG.SCALE);
                 const r = DRAW.radius.invalid;
-                const c = SVG.append("circle", svg, { cx, cy, r, "fill": "green" });
+                const c = SVG.append(
+                    "circle",
+                    svg,
+                    {
+                        cx,
+                        cy,
+                        r,
+                        "fill": DRAW.color.kawasaki,
+                        "fill-opacity": 0.5,
+                    });
                 is_invalid = true;
             }
         }
