@@ -21,6 +21,9 @@ export const GUI = {
         const zoom_out = document.getElementById("cpedit_zoomout");
         const zoom_in = document.getElementById("cpedit_zoomin");
         const move = document.getElementById("cpedit_move");
+        const reset = document.getElementById("cpedit_reset");
+        const undo = document.getElementById("cpedit_undo");
+        const redo = document.getElementById("cpedit_redo");
 
         closeButton.onclick = GUI.close;
         discardButton.onclick = GUI.discard;
@@ -43,6 +46,9 @@ export const GUI = {
         move.onclick = () => {
             PAINT.set_mode("move");
         }
+        reset.onclick = PAINT.reset_view;
+        undo.onclick = PAINT.undo;
+        redo.onclick = PAINT.redo;
 
         input_angle_num.onchange = () => {
             PAINT.bind_angle = 2 * Math.PI / input_angle_num.value;
@@ -68,6 +74,7 @@ export const GUI = {
         GUI.set_svg("cpedit");
 
     },
+
     bind: (e) => {
         const mv = document.getElementById("cpedit_mv");
         const input_angle = document.getElementById("cpedit_input_angle");
@@ -135,6 +142,7 @@ export const GUI = {
         PRJ.record(i);
         STEP.redraw();
         PRJ.redraw_page();
+        PAINT.reset();
     },
 
     discard: () => {

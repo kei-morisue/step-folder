@@ -10,26 +10,33 @@ import { Z } from "./z.js";
 
 
 export const PAINT = {
+    current_mode: "mv",
+    bind_angle: Math.PI / 8,
+    input_a: "V",
+
     V: [],
     EV: [],
     segs: [],
     EA: [],
+
     VK: [],
     svg: undefined,
     svg_selection: undefined,
     svg_validation: undefined,
-    current_mode: "mv",
     segment: -1,
     vertex: undefined,
     v0: undefined,
-    bind_angle: Math.PI / 8,
-    input_a: "V",
     is_invalid: false,
     bind_radius: 0.05,
     cx: .5,
     cy: .5,
     scale: 1,
+    saves: [],
+    save_idx: 0,
 
+    radius: {
+        bind: 0.05,
+    },
     color: {
         "M": "red",
         "V": "blue",
@@ -47,7 +54,7 @@ export const PAINT = {
         PAINT.v0 = undefined;
         const { V, EV, EA, UA, UV } = FOLD;
         PAINT.V = V;
-        PAINT.EV = EV;
+        PAINT.EV = EV.concat(UV);
         PAINT.segs = EV.map((vs) => {
             return M.expand(vs, V);
         });
@@ -62,6 +69,9 @@ export const PAINT = {
         PAINT.cx = .5;
         PAINT.cy = .5;
         PAINT.scale = 1;
+        PAINT.saves = [];
+        PAINT.save_idx = 0;
+        PAINT.record();
     },
 
     get_FOLD_CELL_VK: () => {
@@ -108,9 +118,16 @@ export const PAINT = {
         PAINT.vertex = undefined;
         PAINT.VK = [];
         PAINT.is_invalid = false;
+        PAINT.saves = [];
+        PAINT.save_idx = 0;
+        PAINT.reset_view();
+    },
+
+    reset_view: () => {
+        PAINT.scale = 1;
         PAINT.cx = .5;
         PAINT.cy = .5;
-        PAINT.scale = 1;
+        PAINT.redraw();
     },
 
     get_pointer_loc: (e) => {
@@ -208,7 +225,7 @@ export const PAINT = {
             return;
         }
         if (PAINT.current_mode == "input_angle") {
-            const v = L.find_v(p_cursor, PAINT.V, PAINT.bind_radius);
+            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
             PAINT.hilight_input(v);
             return;
 
@@ -217,21 +234,20 @@ export const PAINT = {
             const v0 = PAINT.v0;
             const theta = L.binded_angle(v0, p_cursor, PAINT.bind_angle);
             const r = M.dist(v0, p_cursor);
-            const b_v = L.find_binded_v(v0, r, theta, PAINT.V, PAINT.segs, PAINT.bind_radius);
+            const b_v = L.find_binded_v(v0, r, theta, PAINT.V, PAINT.segs, PAINT.radius.bind);
             PAINT.hilight_input_2(b_v);
             return;
         }
         if (PAINT.current_mode == "input_free") {
-            const v = L.find_v(p_cursor, PAINT.V, PAINT.bind_radius);
+            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
             PAINT.hilight_input(v);
             return;
         }
         if (PAINT.current_mode == "input_free_2") {
-            const v = L.find_v(p_cursor, PAINT.V, PAINT.bind_radius);
+            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
             PAINT.hilight_input_2(v);
             return;
         }
-
     },
 
     onclick: (e) => {
@@ -247,7 +263,10 @@ export const PAINT = {
             }
             const a_ = PAINT.EA[i];
             const a = DRAW.pair(a_);
-            PAINT.EA[i] = a;
+            const EA = PAINT.EA.map(a => a);
+            EA[i] = a;
+            PAINT.EA = EA;
+            PAINT.record()
             PAINT.redraw();
             PAINT.onmove(e);
             return;
@@ -269,6 +288,7 @@ export const PAINT = {
             const a = PAINT.input_a;
             const CP = Z.add_segment(PAINT.segs, PAINT.EA, seg, a);
             PAINT.update_cp(CP);
+            PAINT.record();
             PAINT.onmove(e);
             PAINT.current_mode = "input_angle";
             return;
@@ -289,6 +309,7 @@ export const PAINT = {
             const seg = [PAINT.v0, v];
             const a = PAINT.input_a;
             const CP = Z.add_segment(PAINT.segs, PAINT.EA, seg, a);
+            PAINT.record;
             PAINT.update_cp(CP);
             PAINT.onmove(e);
             PAINT.current_mode = "input_free";
@@ -327,6 +348,7 @@ export const PAINT = {
         }
         const CP = Z.remove_segment(PAINT.segs, PAINT.EA, s_i);
         PAINT.update_cp(CP);
+        PAINT.record();
         PAINT.onmove(e);
     },
 
@@ -335,4 +357,51 @@ export const PAINT = {
         PAINT.segment = undefined;
         PAINT.redraw();
     },
+
+    record: () => {
+        const V = PAINT.V;
+        const EA = PAINT.EA;
+        const segs = PAINT.segs;
+        const EV = PAINT.EV;
+        const data = { V, segs, EA, EV };
+        if (PAINT.save_idx < PAINT.saves.length) {
+            PAINT.saves.length = PAINT.save_idx;
+        }
+        const push = () => {
+            const blob = new Blob(PAINT.saves);
+            const size_mb = blob.size * 10 ** -6;
+            if (size_mb < 20) {
+                PAINT.saves.push(data);
+                PAINT.save_idx = PAINT.saves.length;
+            }
+            else {
+                PAINT.saves.shift();
+                PAINT.save_idx = PAINT.saves.length;
+                push();
+            }
+        }
+        push();
+    },
+
+    recall: (i) => {
+        const { V, segs, EA, EV } = PAINT.saves[i];
+        PAINT.save_idx = i + 1;
+        PAINT.V = V;
+        PAINT.EA = EA;
+        PAINT.segs = segs;
+        PAINT.EV = EV;
+    },
+
+    undo: () => {
+        const i = Math.max(0, PAINT.save_idx - 2);
+        PAINT.recall(i);
+        PAINT.redraw();
+    },
+
+    redo: () => {
+        const i = Math.min(PAINT.saves.length - 1, PAINT.save_idx);
+        PAINT.recall(i);
+        PAINT.redraw();
+    },
+
 }

@@ -39,9 +39,9 @@ export const Z = {
         return Z.segs_2_CP(segs, EA);
     },
     remove_segment: (segs, EA, seg_idx) => {
-        segs.splice(seg_idx, 1);
-        EA.splice(seg_idx, 1);
-        return Z.segs_2_CP(segs, EA);
+        const segs_ = segs.toSpliced(seg_idx, 1);
+        const EA_ = EA.toSpliced(seg_idx, 1);
+        return Z.segs_2_CP(segs_, EA_);
     },
     get_VK: (EV, EA, V) => {
         const [VV, FV] = X.V_EV_2_VV_FV(V, EV);
