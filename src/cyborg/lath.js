@@ -142,4 +142,10 @@ export const L = {
         }
         return [idx, min_l];
     },
+
+    get_bisector_angle: (d1, d2) => {
+        const d1_ = M.unit(d1);
+        const d2_ = M.unit(d2);
+        return M.angle(M.add(d1_, d2_));
+    },
 }

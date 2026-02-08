@@ -2,7 +2,7 @@ import { SVG } from "../flatfolder/svg.js";
 import { PRJ } from "../defox/project.js";
 import { PAINT } from "./paint.js";
 import { STEP } from "../defox/step.js";
-
+import { ACT } from "./action.js";
 
 export const GUI = {
 
@@ -30,10 +30,10 @@ export const GUI = {
         discardButton.onclick = GUI.discard;
 
         showButton.onclick = GUI.open;
-        svg.onpointermove = PAINT.onmove;
-        svg.onclick = PAINT.onclick;
+        svg.onpointermove = ACT.hilight;
+        svg.onclick = ACT.onclick;
         svg.onmouseleave = PAINT.onmouseout;
-        svg.oncontextmenu = PAINT.oncontextmenu;
+        svg.oncontextmenu = ACT.oncontextmenu;
         input_a.onclick = GUI.toggle_input_a;
         mv.onclick = () => {
             PAINT.set_mode("mv");

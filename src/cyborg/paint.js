@@ -9,6 +9,7 @@ import { STEP } from "../defox/step.js";
 import { Z } from "./z.js";
 
 
+
 export const PAINT = {
     current_mode: "mv",
     bind_angle: Math.PI / 8,
@@ -30,7 +31,6 @@ export const PAINT = {
     v2: undefined,
 
     is_invalid: false,
-    bind_radius: 0.05,
     cx: .5,
     cy: .5,
     scale: 1,
@@ -152,11 +152,6 @@ export const PAINT = {
         return N.transform([A_inv, b], [x0, y0]);
     },
 
-    onmove: (e) => {
-        const p0 = PAINT.get_pointer_loc(e);
-        PAINT.hilight(p0);
-        return;
-    },
 
     hilight_mv: ([idx, min_l]) => {
         if (min_l < 0.1) {
@@ -187,7 +182,7 @@ export const PAINT = {
         PAINT.vertex = v;
     },
 
-    hilight_input_2: (v0_, b_v) => {
+    hilight_inputs: (v0_, b_v) => {
         const s = SVG.SCALE;
         const T = PAINT.get_T();
         const v0 = N.transform(T, v0_);
@@ -216,188 +211,7 @@ export const PAINT = {
         seg_svg.setAttribute("stroke-width", 1);
     },
 
-    hilight: (p_cursor) => {
-        PAINT.segment = undefined;
-        PAINT.vertex = undefined;
-        SVG.clear(PAINT.svg_selection.id);
 
-        if (PAINT.current_mode == "move") {
-            PAINT.vertex = p_cursor;
-            return;
-        }
-        if (PAINT.current_mode == "mv") {
-            const seg = L.find_seg(p_cursor, PAINT.segs, PAINT.EA);
-            PAINT.hilight_mv(seg);
-            return;
-        }
-        if (PAINT.current_mode == "input_angle") {
-            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
-            PAINT.hilight_input(v);
-            return;
-
-        }
-        if (PAINT.current_mode == "input_angle_2") {
-            const v0 = PAINT.v0;
-            const theta = L.binded_angle(v0, p_cursor, PAINT.bind_angle);
-            const r = M.dist(v0, p_cursor);
-            const b_v = L.find_binded_v(v0, r, theta, PAINT.V, PAINT.segs, PAINT.radius.bind);
-            PAINT.hilight_input_2(v0, b_v);
-            return;
-        }
-        if (PAINT.current_mode == "input_free") {
-            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
-            PAINT.hilight_input(v);
-            return;
-        }
-        if (PAINT.current_mode == "input_free_2") {
-            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
-            PAINT.hilight_input_2(v);
-            return;
-        }
-        if (PAINT.current_mode == "input_bisector") {
-            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
-            PAINT.hilight_input(v);
-            return;
-        }
-        if (PAINT.current_mode == "input_bisector_2") {
-            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
-            PAINT.hilight_input(PAINT.v0);
-            PAINT.hilight_input(v);
-            return;
-        }
-        if (PAINT.current_mode == "input_bisector_3") {
-            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
-            PAINT.hilight_input(PAINT.v0);
-            PAINT.hilight_input(PAINT.v1);
-            PAINT.hilight_input(v);
-            return;
-        }
-        if (PAINT.current_mode == "input_bisector_4") {
-            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind);
-            const v1 = PAINT.v1;
-            const v0 = PAINT.v0;
-            const v2 = PAINT.v2;
-
-            const theta = M.angle(M.sub(v0, v1)) * .5
-                + M.angle(M.sub(v2, v1)) * .5;
-            const r = M.dist(v1, p_cursor);
-            const b_v = L.find_binded_v(v1, r, theta, PAINT.V, PAINT.segs, PAINT.radius.bind);
-
-            PAINT.hilight_input(v0);
-            PAINT.hilight_input(v1);
-            PAINT.hilight_input(v2);
-            PAINT.hilight_input_2(v1, b_v);
-            return;
-        }
-    },
-
-    onclick: (e) => {
-        if (PAINT.current_mode == "move") {
-            [PAINT.cx, PAINT.cy] = PAINT.vertex;
-            PAINT.redraw();
-            return;
-        }
-        if (PAINT.current_mode == "mv") {
-            const i = PAINT.segment;
-            if (i < 0) {
-                return;
-            }
-            const a_ = PAINT.EA[i];
-            const a = DRAW.pair(a_);
-            if (a == "F" || a == "B") { return; }
-            const EA = PAINT.EA.map(a => a);
-            EA[i] = a;
-            PAINT.EA = EA;
-            PAINT.record()
-            PAINT.redraw();
-            PAINT.onmove(e);
-            return;
-        }
-        if (PAINT.current_mode == "input_angle") {
-            if (PAINT.vertex == undefined) {
-                return;
-            }
-            PAINT.v0 = PAINT.vertex;
-            PAINT.current_mode = "input_angle_2";
-            return;
-        }
-        if (PAINT.current_mode == "input_angle_2") {
-            const v = PAINT.vertex;
-            if (!v) {
-                return;
-            }
-            const seg = [PAINT.v0, v];
-            const a = PAINT.input_a;
-            const CP = Z.add_segment(PAINT.segs, PAINT.EA, seg, a);
-            PAINT.update_cp(CP);
-            PAINT.record();
-            PAINT.onmove(e);
-            PAINT.current_mode = "input_angle";
-            return;
-        }
-        if (PAINT.current_mode == "input_free") {
-            if (!PAINT.vertex) {
-                return;
-            }
-            PAINT.v0 = PAINT.vertex;
-            PAINT.current_mode = "input_free_2";
-            return;
-        }
-        if (PAINT.current_mode == "input_free_2") {
-            const v = PAINT.vertex;
-            if (!v) {
-                return;
-            }
-            const seg = [PAINT.v0, v];
-            const a = PAINT.input_a;
-            const CP = Z.add_segment(PAINT.segs, PAINT.EA, seg, a);
-            PAINT.record;
-            PAINT.update_cp(CP);
-            PAINT.onmove(e);
-            PAINT.current_mode = "input_free";
-            return;
-        }
-        if (PAINT.current_mode == "input_bisector") {
-            if (!PAINT.vertex) {
-                return;
-            }
-            PAINT.v0 = PAINT.vertex;
-            PAINT.current_mode = "input_bisector_2";
-            return;
-        }
-        if (PAINT.current_mode == "input_bisector_2") {
-            if (!PAINT.vertex) {
-                return;
-            }
-            PAINT.v1 = PAINT.vertex;
-            PAINT.current_mode = "input_bisector_3";
-            return;
-        }
-        if (PAINT.current_mode == "input_bisector_3") {
-            const v = PAINT.vertex;
-            if (!v) {
-                return;
-            }
-            PAINT.v2 = v;
-            PAINT.current_mode = "input_bisector_4";
-            return;
-        }
-        if (PAINT.current_mode == "input_bisector_4") {
-            const v = PAINT.vertex;
-            if (!v) {
-                return;
-            }
-            const seg = [PAINT.v1, v];
-            const a = PAINT.input_a;
-            const CP = Z.add_segment(PAINT.segs, PAINT.EA, seg, a);
-            PAINT.record;
-            PAINT.update_cp(CP);
-            PAINT.onmove(e);
-            PAINT.current_mode = "input_bisector";
-            return;
-        }
-
-    },
 
     update_cp(CP) {
         const { V, EV, EA, segs } = CP;
@@ -407,51 +221,6 @@ export const PAINT = {
         PAINT.segs = segs;
         PAINT.redraw();
     },
-
-    oncontextmenu: (e) => {
-        e.preventDefault();
-        const m = PAINT.current_mode;
-        if (m == "input_free_2") {
-            PAINT.v0 = undefined;
-            PAINT.current_mode = "input_free";
-            PAINT.onmove(e);
-            return;
-        }
-        if (m == "input_angle_2") {
-            PAINT.v0 = undefined;
-            PAINT.current_mode = "input_angle";
-            PAINT.onmove(e);
-            return;
-        }
-        if (m == "input_bisector_2") {
-            PAINT.v0 = undefined;
-            PAINT.current_mode = "input_bisector";
-            PAINT.onmove(e);
-            return;
-        }
-        if (m == "input_bisector_3") {
-            PAINT.v1 = undefined;
-            PAINT.current_mode = "input_bisector_2";
-            PAINT.onmove(e);
-            return;
-        }
-        if (m == "input_bisector_4") {
-            PAINT.v2 = undefined;
-            PAINT.current_mode = "input_bisector_3";
-            PAINT.onmove(e);
-            return;
-        }
-        const pt = PAINT.get_pointer_loc(e);
-        const s_i = L.find_seg(pt, PAINT.segs, PAINT.EA)[0];
-        if (s_i < 0) {
-            return;
-        }
-        const CP = Z.remove_segment(PAINT.segs, PAINT.EA, s_i);
-        PAINT.update_cp(CP);
-        PAINT.record();
-        PAINT.onmove(e);
-    },
-
     onmouseout: (e) => {
         PAINT.vertex = undefined;
         PAINT.segment = undefined;
