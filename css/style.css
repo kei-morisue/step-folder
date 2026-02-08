@@ -17,7 +17,7 @@ input[type="range"] {
 }
 
 svg text {
-    pointer-events: none;
+    user-select: none;
 }
 
 .mainpanel {
@@ -84,4 +84,5 @@ svg text {
     display: block;
     background-color: gray;
     border: 1px solid #000;
+    user-select: none;
 }
