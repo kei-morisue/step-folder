@@ -20,6 +20,7 @@ export const GUI = {
         const input_free = document.getElementById("cpedit_input_free");
         const zoom_out = document.getElementById("cpedit_zoomout");
         const zoom_in = document.getElementById("cpedit_zoomin");
+        const move = document.getElementById("cpedit_move");
 
         closeButton.onclick = GUI.close;
         discardButton.onclick = GUI.discard;
@@ -39,6 +40,10 @@ export const GUI = {
         input_free.onclick = () => {
             PAINT.set_mode("input_free");
         }
+        move.onclick = () => {
+            PAINT.set_mode("move");
+        }
+
         input_angle_num.onchange = () => {
             PAINT.bind_angle = 2 * Math.PI / input_angle_num.value;
         }
@@ -52,6 +57,14 @@ export const GUI = {
         }
 
         dialog.onkeydown = GUI.bind;
+        dialog.onwheel = (e) => {
+            e.preventDefault();
+            if (e.deltaY > 0) {
+                zoom_in.click();
+            } else {
+                zoom_out.click();
+            }
+        }
         GUI.set_svg("cpedit");
 
     },

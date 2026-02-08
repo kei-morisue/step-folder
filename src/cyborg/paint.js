@@ -3,10 +3,6 @@ import { M } from "../flatfolder/math.js";
 import { N } from "../defox/nath.js";
 
 
-import { PRJ } from "../defox/project.js";
-import { DRAW as DD } from "../defox/draw.js";
-
-
 import { L } from "./lath.js";
 import { DRAW } from "./draw.js";
 import { STEP } from "../defox/step.js";
@@ -18,13 +14,13 @@ export const PAINT = {
     EV: [],
     segs: [],
     EA: [],
+    VK: [],
     svg: undefined,
     svg_selection: undefined,
     svg_validation: undefined,
     current_mode: "mv",
     segment: -1,
     vertex: undefined,
-    VK: [],
     v0: undefined,
     bind_angle: Math.PI / 8,
     input_a: "V",
@@ -201,13 +197,19 @@ export const PAINT = {
         PAINT.segment = undefined;
         PAINT.vertex = undefined;
         SVG.clear(PAINT.svg_selection.id);
+
+        if (PAINT.current_mode == "move") {
+            PAINT.vertex = p_cursor;
+            return;
+        }
         if (PAINT.current_mode == "mv") {
             const seg = L.find_seg(p_cursor, PAINT.segs, PAINT.EA);
             PAINT.hilight_mv(seg);
             return;
         }
         if (PAINT.current_mode == "input_angle") {
-            PAINT.hilight_input(L.find_v(p_cursor, PAINT.V, PAINT.bind_radius));
+            const v = L.find_v(p_cursor, PAINT.V, PAINT.bind_radius);
+            PAINT.hilight_input(v);
             return;
 
         }
@@ -233,6 +235,11 @@ export const PAINT = {
     },
 
     onclick: (e) => {
+        if (PAINT.current_mode == "move") {
+            [PAINT.cx, PAINT.cy] = PAINT.vertex;
+            PAINT.redraw();
+            return;
+        }
         if (PAINT.current_mode == "mv") {
             const i = PAINT.segment;
             if (i < 0) {
