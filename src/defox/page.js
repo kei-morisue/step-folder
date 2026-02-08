@@ -1,13 +1,9 @@
 import { SVG } from "../flatfolder/svg.js";
-import { DIST } from "../distortionfolder/distortion.js";
 import { Y } from "./y.js";
-import { N } from "./nath.js";
-import { M } from "../flatfolder/math.js";
 import { DRAW_LIN } from "./draw_lin.js";
 import { DRAW } from "./draw.js";
 import { SVG3 } from "./svg.js";
 import { STEP } from "./step.js";
-import { SEG } from "./segment.js";
 
 export const PAGE = {
     dim: {
