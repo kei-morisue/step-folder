@@ -78,6 +78,9 @@ export const GUI = {
     bind: (e) => {
         const mv = document.getElementById("cpedit_mv");
         const input_angle = document.getElementById("cpedit_input_angle");
+        const undo = document.getElementById("cpedit_undo");
+        const redo = document.getElementById("cpedit_redo");
+
         if (e.type != "keydown" && e.type != "keyup") {
             return;
         }
@@ -90,6 +93,15 @@ export const GUI = {
             mv.onclick();
             return;
         }
+        if (e.key == "z" && e.ctrlKey) {
+            undo.click();
+            return;
+        }
+        if (e.key == "y" && e.ctrlKey) {
+            redo.click();
+            return;
+        }
+
         GUI.toggle_input_a(e);
     },
 
@@ -97,7 +109,7 @@ export const GUI = {
         const button = document.getElementById("cpedit_input_a")
         const a_ = button.innerHTML;
         let a = a_;
-        if (e.type == "keydown" && e.key == "Control") {
+        if (e.type == "keydown" && e.key == "Shift") {
 
             a = a_ == "M" ? "F" : a_ == "V" ? "M" : "V";
         }

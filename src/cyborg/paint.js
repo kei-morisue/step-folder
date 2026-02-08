@@ -263,6 +263,7 @@ export const PAINT = {
             }
             const a_ = PAINT.EA[i];
             const a = DRAW.pair(a_);
+            if (a == "F" || a == "B") { return; }
             const EA = PAINT.EA.map(a => a);
             EA[i] = a;
             PAINT.EA = EA;
