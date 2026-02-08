@@ -138,6 +138,12 @@ export const GUI = {
             alert("The Crease Pattern is not Flat Foldable.");
             return;
         }
+        if (PAINT.saves.length > 1) {
+            const res = confirm("Are you sure to apply changes to the step?");
+            if (!res) {
+                return;
+            }
+        }
         dialog.close();
         const i = PRJ.current_idx;
         const { FOLD, CELL } = PAINT.get_FOLD_CELL_VK();
@@ -159,6 +165,12 @@ export const GUI = {
 
     discard: () => {
         const dialog = document.getElementById("cpeditor");
+        if (PAINT.saves.length > 1) {
+            const res = confirm("Are you sure to discard changes to the crese pattern?");
+            if (!res) {
+                return;
+            }
+        }
         dialog.close();
     },
     set_svg: (id) => {

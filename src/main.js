@@ -5,6 +5,6 @@ import { GUI as G } from "./cyborg/gui.js";
 window.onload = () => {
     GUI.startup();
     G.startup();
-    document.getElementById("opencpeditor").click();
+    // document.getElementById("opencpeditor").click();
 };
 
