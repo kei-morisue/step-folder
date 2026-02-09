@@ -120,7 +120,7 @@ export const GUI_IO = {
                 pj = pj.split(".defox");
                 pj = pj[0];
                 document.getElementById("proj_name").value = pj;
-                PRJ.steps = JSON.parse(doc);
+                PRJ.steps = IO3.load(JSON.parse(doc));
                 PRJ.restore(PRJ.steps.length - 1);
                 STEP.redraw();
                 PRJ.redraw_page();

@@ -60,7 +60,6 @@ export const PRJ = {
             STEP.update_dist();
             PRJ.record(i + 1);
         }
-        PRJ.restore(i);
         STEP.redraw();
         PRJ.redraw_page();
     },

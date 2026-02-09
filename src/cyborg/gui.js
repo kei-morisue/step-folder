@@ -16,6 +16,10 @@ export const GUI = {
         const input_angle_num = document.getElementById("cpedit_angle_num");
         const input_a = document.getElementById("cpedit_input_a");
         const mv = document.getElementById("cpedit_mv");
+        const to_m = document.getElementById("cpedit_to_m");
+        const to_v = document.getElementById("cpedit_to_v");
+        const to_aux = document.getElementById("cpedit_to_aux");
+
         const input_angle = document.getElementById("cpedit_input_angle");
         const input_free = document.getElementById("cpedit_input_free");
         const input_bisector = document.getElementById("cpedit_input_bisector");
@@ -28,7 +32,7 @@ export const GUI = {
 
         const trim = document.getElementById("cpedit_trim");
 
-        const bg = [mv, input_angle, input_free, input_bisector, move];
+        const bg = [mv, input_angle, input_free, input_bisector, move, to_m, to_aux, to_v];
         closeButton.onclick = GUI.close;
         discardButton.onclick = GUI.discard;
 
@@ -41,6 +45,18 @@ export const GUI = {
         mv.onclick = () => {
             PAINT.set_mode("mv");
             GUI.reset_bg(bg, mv);
+        }
+        to_m.onclick = () => {
+            PAINT.set_mode("to_m");
+            GUI.reset_bg(bg, to_m);
+        }
+        to_v.onclick = () => {
+            PAINT.set_mode("to_v");
+            GUI.reset_bg(bg, to_v);
+        }
+        to_aux.onclick = () => {
+            PAINT.set_mode("to_aux");
+            GUI.reset_bg(bg, to_aux);
         }
         input_angle.onclick = () => {
             PAINT.set_mode("input_angle");

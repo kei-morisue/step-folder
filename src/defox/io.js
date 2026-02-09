@@ -5,6 +5,7 @@ import { N } from "./nath.js";
 import { Y } from "./y.js";
 import { PRJ } from "./project.js";
 import { PAGE } from "./page.js";
+import { DIST } from "../distortionfolder/distortion.js";
 
 
 export const IO3 = {    // INPUT-OUTPUT
@@ -109,7 +110,16 @@ export const IO3 = {    // INPUT-OUTPUT
     },
 
     save: (data, name) => {
-        const json = new Blob([JSON.stringify(data, undefined, 2)], {
+        const data_ = [];
+        let W = data[data.length - 1].fold_cp.V;
+        for (const d of data) {
+            const d_ = {};
+            for (const key of ["fold_cp", "cell_cp", "fold", "cell_d", "params", "lin"]) {
+                d_[key] = d[key];
+            }
+            data_.push(d_);
+        }
+        const json = new Blob([JSON.stringify(data_, undefined, 2)], {
             type: "application/json"
         })
         const ext = "defox";
@@ -120,6 +130,17 @@ export const IO3 = {    // INPUT-OUTPUT
         link.setAttribute("href", window.URL.createObjectURL(json));
         button.setAttribute("type", "button");
         button.click();
+    },
+    load: (data) => {
+        const data_ = data;
+        for (const d of data_) {
+            d.state_cp = Y.FOLD_CELL_2_STATE(d.fold_cp, d.cell_cp);
+            const { Vf, FV, EV, EF, FE, Ff, EA, V, VV, Vc, FU, UV, UA, FO } = d.fold
+            PRJ.restore_params(d.params);
+            const VD = DIST.FOLD_2_VD(Vf, V);
+            d.fold_d = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA, FO };
+        }
+        return data;
     },
     normalize_L: (L) => {
         const P = [];

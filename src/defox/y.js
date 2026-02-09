@@ -143,6 +143,23 @@ export const Y = {     // CONVERSION
         const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI, GB, GA, GI };
         return [FOLD, CELL];
     },
+    V_2_W: (V, W) => {
+        const V_ = V.map((_) => undefined);
+        for (const [v_i, v] of V.entries()) {
+            for (const [w_i, w] of W.entries()) {
+                const [dx, dy] = M.sub(v, w);
+                if (Math.abs(dx) < 1e-4 && Math.abs(dy) < 1e-4) {
+                    V_[v_i] = w_i;
+                    break;
+                }
+            }
+            if (V_[v_i] == undefined) {
+                W.push(v);
+                V_[v_i] = W.length - 1;
+            }
+        }
+        return V_;
+    },
     FOLD_2_CELL: (FOLD) => {
         const { Vf, EV, EF, FV } = FOLD
         const L = EV.map((P) => M.expand(P, Vf));

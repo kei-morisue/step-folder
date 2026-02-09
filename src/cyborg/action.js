@@ -41,7 +41,7 @@ export const ACT = {
             PAINT.redraw();
             return;
         }
-        if (ACT.click_input_mv(e)) {
+        if (ACT.click_input_seg(e)) {
             return;
         }
         if (ACT.click_input_angle(e)) {
@@ -71,7 +71,11 @@ export const ACT = {
         ACT.remove(e);
     },
     hilight_input_mv: (p_cursor) => {
-        if (PAINT.current_mode == "mv") {
+        if (PAINT.current_mode == "mv"
+            || PAINT.current_mode == "to_m"
+            || PAINT.current_mode == "to_v"
+            || PAINT.current_mode == "to_aux"
+        ) {
             const seg = L.find_seg(p_cursor, PAINT.segs, PAINT.EA);
             PAINT.hilight_mv(seg);
             return true;
@@ -149,15 +153,20 @@ export const ACT = {
         return false;
     },
 
-    click_input_mv: (e) => {
-        if (PAINT.current_mode == "mv") {
+    click_input_seg: (e) => {
+        const m = PAINT.current_mode
+        if (m == "mv" || m == "to_m"
+            || m == "to_v" || m == "to_aux"
+        ) {
             const i = PAINT.segment;
             if (i < 0) {
                 return true;
             }
             const a_ = PAINT.EA[i];
-            const a = DRAW.pair(a_);
-            if (a == "F" || a == "B") { return; }
+            const a = m == "mv" ? DRAW.pair(a_)
+                : m == "to_m" ? "V"
+                    : m == "to_v" ? "M"
+                        : "F";
             const EA = PAINT.EA.map(a => a);
             EA[i] = a;
             PAINT.EA = EA;
