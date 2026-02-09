@@ -4,6 +4,7 @@ import { X } from "../flatfolder/conversion.js";
 
 
 import { N } from "../defox/nath.js";
+import { PRJ } from "../defox/project.js";
 
 
 import { L } from "./lath.js";
@@ -82,8 +83,11 @@ export const PAINT = {
         PAINT.record();
     },
 
-    get_FOLD_CELL_VK: () => {
-        const [FOLD, CELL] = Z.segs_assings_2_FOLD_CELL(PAINT.segs, PAINT.EA)
+    get_FOLD_CELL_VK: (idx, is_interp) => {
+
+        const FOLD_infer = is_interp ? PRJ.steps[idx - 1].fold_cp : undefined;
+
+        const [FOLD, CELL] = Z.segs_assings_2_FOLD_CELL(PAINT.segs, PAINT.EA, FOLD_infer);
         return { FOLD, CELL };
     },
 
