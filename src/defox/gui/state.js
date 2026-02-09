@@ -31,6 +31,7 @@ export const GUI_STATE = {
             const params = PRJ.steps[i - 1].params;
             PRJ.restore_params(params);
             PRJ.record(i);
+            STEP.update_dist();
             STEP.redraw();
         }
 
@@ -42,6 +43,7 @@ export const GUI_STATE = {
             const params = PRJ.steps[i + 1].params;
             PRJ.restore_params(params);
             PRJ.record(i);
+            STEP.update_dist();
             STEP.redraw();
         }
 

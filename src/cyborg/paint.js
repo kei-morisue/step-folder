@@ -1,5 +1,8 @@
 import { SVG } from "../flatfolder/svg.js";
 import { M } from "../flatfolder/math.js";
+import { X } from "../flatfolder/conversion.js";
+
+
 import { N } from "../defox/nath.js";
 
 
@@ -116,6 +119,58 @@ export const PAINT = {
         PAINT.is_invalid = is_invalid;
 
     },
+    trim: () => {
+        const fn = () => {
+            const V = PAINT.V;
+            const EA = PAINT.EA;
+            const EV = PAINT.EV;
+
+            const VE = V.map((_) => []);
+            for (const [e_i, [p_i, q_i]] of EV.entries()) {
+                VE[p_i].push(e_i);
+                VE[q_i].push(e_i);
+            }
+
+            for (const [v_i, e_is] of VE.entries()) {
+                if (e_is.length != 2) {
+                    continue;
+                }
+                const [e1, e2] = [e_is[0], e_is[1]];
+                const a1 = EA[e1];
+                const a2 = EA[e2];
+                if (a1 != a2) {
+                    continue;
+                }
+                const [p1, q1] = EV[e1];
+                const [p2, q2] = EV[e2];
+                const d1 = M.sub(V[p1], V[q1]);
+                const d2 = M.sub(V[p2], V[q2]);
+
+                if (!M.near_zero(N.cross(d1, d2))) {
+                    continue;
+                }
+                PAINT.EA = EA.toSpliced(e2, 1);
+                EV[e1] = p1 == p2 ? [q2, q1]
+                    : p1 == q2 ? [p2, q1]
+                        : p2 == q1 ? [p1, q2]
+                            : [p1, q1];
+                PAINT.EV = EV.toSpliced(e2, 1);
+                PAINT.V = V.toSpliced(v_i, 1);
+                for (const [e_i, [p_, q_]] of PAINT.EV.entries()) {
+                    const p = p_ > v_i ? p_ - 1 : p_;
+                    const q = q_ > v_i ? q_ - 1 : q_;
+                    PAINT.EV[e_i] = [p, q];
+                }
+                PAINT.segs = PAINT.EV.map((vs) => M.expand(vs, PAINT.V));
+                PAINT.redraw();
+                PAINT.hilight_input(V[v_i]);
+                fn();
+                break;
+            }
+        }
+        fn();
+    },
+
     reset: () => {
         PAINT.svg_selection = undefined;
         PAINT.v0 = undefined;

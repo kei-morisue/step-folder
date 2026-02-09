@@ -26,6 +26,7 @@ export const GUI = {
         const undo = document.getElementById("cpedit_undo");
         const redo = document.getElementById("cpedit_redo");
 
+        const trim = document.getElementById("cpedit_trim");
 
         const bg = [mv, input_angle, input_free, input_bisector, move];
         closeButton.onclick = GUI.close;
@@ -58,6 +59,7 @@ export const GUI = {
             PAINT.set_mode("move");
             GUI.reset_bg(bg, move);
         }
+        trim.onclick = PAINT.trim;
         reset.onclick = PAINT.reset_view;
         undo.onclick = PAINT.undo;
         redo.onclick = PAINT.redo;
