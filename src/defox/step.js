@@ -54,18 +54,18 @@ export const STEP = {
             const FOLD = STEP.FOLD_D;
             const CELL = STEP.CELL_D;
             STEP.update_state(FOLD, CELL, "state3", T);
-            document.getElementById("apply_tt").setAttribute("style", "background: default");
+            document.getElementById("apply_tt").style.background = "";
         } else {
             STEP.update_serial_state(STEP.FOLD_D, STEP.LIN.S, "state3", T, STEP.CELL_D);
             if (STEP.LIN.cycle.length != 0) {
                 NOTE.annotate(STEP.LIN.S, "serials");
                 NOTE.annotate(STEP.LIN.cycle, "cycles");
-                document.getElementById("apply_tt").setAttribute("style", "background: red");
+                document.getElementById("apply_tt").style.background = "red";
             } else {
-                document.getElementById("apply_tt").setAttribute("style", "background: default");
+                document.getElementById("apply_tt").style.background = "";
             }
         }
-        document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
+        document.getElementById("state3").style.background = DRAW.color.background;
         const select = document.getElementById("selectG");
         const assign = document.getElementById("assign");
         STEP.update_component(STEP.CELL0, select, assign);
@@ -93,7 +93,7 @@ export const STEP = {
         if (STATE) {
             STEP.LIN = STATE.L;
         }
-        document.getElementById("apply_tt").setAttribute("style", "background: default")
+        document.getElementById("apply_tt").style.background = "";
     },
 
     update_dist: () => {

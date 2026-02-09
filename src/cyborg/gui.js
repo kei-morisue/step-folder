@@ -26,6 +26,8 @@ export const GUI = {
         const undo = document.getElementById("cpedit_undo");
         const redo = document.getElementById("cpedit_redo");
 
+
+        const bg = [mv, input_angle, input_free, input_bisector, move];
         closeButton.onclick = GUI.close;
         discardButton.onclick = GUI.discard;
 
@@ -37,18 +39,24 @@ export const GUI = {
         input_a.onclick = GUI.toggle_input_a;
         mv.onclick = () => {
             PAINT.set_mode("mv");
+            GUI.reset_bg(bg, mv);
         }
         input_angle.onclick = () => {
             PAINT.set_mode("input_angle");
+            GUI.reset_bg(bg, input_angle);
+
         }
         input_free.onclick = () => {
             PAINT.set_mode("input_free");
+            GUI.reset_bg(bg, input_free);
         }
         input_bisector.onclick = () => {
             PAINT.set_mode("input_bisector");
+            GUI.reset_bg(bg, input_bisector);
         }
         move.onclick = () => {
             PAINT.set_mode("move");
+            GUI.reset_bg(bg, move);
         }
         reset.onclick = PAINT.reset_view;
         undo.onclick = PAINT.undo;
@@ -68,14 +76,20 @@ export const GUI = {
 
         dialog.onkeydown = GUI.bind;
         GUI.set_svg("cpedit");
-
+        mv.click();
     },
-
+    reset_bg: (bg, b_0) => {
+        for (const b of bg) {
+            b.style["background-color"] = "";
+        }
+        b_0.style["background-color"] = "darkgray";
+    },
     bind: (e) => {
         const mv = document.getElementById("cpedit_mv");
         const input_angle = document.getElementById("cpedit_input_angle");
         const undo = document.getElementById("cpedit_undo");
         const redo = document.getElementById("cpedit_redo");
+        const move = document.getElementById("cpedit_move");
 
         if (e.type != "keydown" && e.type != "keyup") {
             return;
@@ -87,6 +101,10 @@ export const GUI = {
         }
         if (e.key == "w") {
             mv.onclick();
+            return;
+        }
+        if (e.key == "z" && e.ctrlKey && e.altKey) {
+            move.onclick();
             return;
         }
         if (e.key == "z" && e.ctrlKey) {
