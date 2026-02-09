@@ -92,6 +92,7 @@ export const GUI = {
         const undo = document.getElementById("cpedit_undo");
         const redo = document.getElementById("cpedit_redo");
         const move = document.getElementById("cpedit_move");
+        const trim = document.getElementById("cpedit_trim");
 
         if (e.type != "keydown" && e.type != "keyup") {
             return;
@@ -101,10 +102,15 @@ export const GUI = {
             input_angle.onclick();
             return;
         }
+        if (e.key == "w" && e.altKey) {
+            trim.onclick();
+            return;
+        }
         if (e.key == "w") {
             mv.onclick();
             return;
         }
+
         if (e.key == "z" && e.ctrlKey && e.altKey) {
             move.onclick();
             return;
