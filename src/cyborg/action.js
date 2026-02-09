@@ -33,6 +33,9 @@ export const ACT = {
         if (ACT.hilight_input_bisector(p_cursor)) {
             return;
         };
+        if (ACT.hilight_input_mirror(p_cursor)) {
+            return;
+        };
     },
 
     onclick: (e) => {
@@ -51,6 +54,9 @@ export const ACT = {
             return;
         };
         if (ACT.click_input_bisector(e)) {
+            return;
+        };
+        if (ACT.click_input_mirror(e)) {
             return;
         };
     },
@@ -152,7 +158,43 @@ export const ACT = {
         }
         return false;
     },
+    hilight_input_mirror: (p_cursor) => {
 
+        if (PAINT.current_mode == "input_mirror") {
+            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind / PAINT.scale);
+            PAINT.hilight_input(v);
+            return true;
+        }
+        if (PAINT.current_mode == "input_mirror_2") {
+            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind / PAINT.scale);
+            PAINT.hilight_input(PAINT.v0);
+            PAINT.hilight_input(v);
+            return true;
+        }
+        if (PAINT.current_mode == "input_mirror_3") {
+            const v = L.find_v(p_cursor, PAINT.V, PAINT.radius.bind / PAINT.scale);
+            PAINT.hilight_input(PAINT.v0);
+            PAINT.hilight_input(PAINT.v1);
+            PAINT.hilight_input(v);
+            return true;
+        }
+        if (PAINT.current_mode == "input_mirror_4") {
+            const v1 = PAINT.v1;
+            const v0 = PAINT.v0;
+            const v2 = PAINT.v2;
+
+            const theta = L.get_mirror_angle(v0, v1, v2);
+            const r = M.dist(v1, p_cursor);
+            const b_v = L.find_binded_v(v1, r, theta, PAINT.V, PAINT.segs, PAINT.radius.bind / PAINT.scale);
+
+            PAINT.hilight_input(v0);
+            PAINT.hilight_input(v1);
+            PAINT.hilight_input(v2);
+            PAINT.hilight_inputs(v1, b_v);
+            return true;
+        }
+        return false;
+    },
     click_input_seg: (e) => {
         const m = PAINT.current_mode
         if (m == "mv" || m == "to_m"
@@ -272,7 +314,48 @@ export const ACT = {
         }
         return false;
     },
-
+    click_input_mirror: (e) => {
+        if (PAINT.current_mode == "input_mirror") {
+            if (!PAINT.vertex) {
+                return true;
+            }
+            PAINT.v0 = PAINT.vertex;
+            PAINT.current_mode = "input_mirror_2";
+            return true;
+        }
+        if (PAINT.current_mode == "input_mirror_2") {
+            if (!PAINT.vertex) {
+                return true;
+            }
+            PAINT.v1 = PAINT.vertex;
+            PAINT.current_mode = "input_mirror_3";
+            return true;
+        }
+        if (PAINT.current_mode == "input_mirror_3") {
+            const v = PAINT.vertex;
+            if (!v) {
+                return true;
+            }
+            PAINT.v2 = v;
+            PAINT.current_mode = "input_mirror_4";
+            return true;
+        }
+        if (PAINT.current_mode == "input_mirror_4") {
+            const v = PAINT.vertex;
+            if (!v) {
+                return true;
+            }
+            const seg = [PAINT.v1, v];
+            const a = PAINT.input_a;
+            const CP = Z.add_segment(PAINT.segs, PAINT.EA, seg, a);
+            PAINT.record;
+            PAINT.update_cp(CP);
+            ACT.hilight(e);
+            PAINT.current_mode = "input_mirror";
+            return true;
+        }
+        return false;
+    },
     context_input_free: (e, m) => {
         if (m == "input_free_2") {
             PAINT.v0 = undefined;

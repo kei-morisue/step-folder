@@ -4,7 +4,7 @@ import { N } from "../defox/nath.js"
 
 export const L = {
 
-    foot: (p, seg) => {
+    foot: (p, seg, is_line = false) => {
         const [p1, p2] = seg;
         const d = M.sub(p2, p1);
         const [dx, dy] = d;
@@ -13,8 +13,10 @@ export const L = {
         const pp1_n = M.dot(M.sub(p, p1), d);
         const d_d = M.dot(d, d);
         const a = pp1_n / d_d;
-        if (a > 1 || a < 0) {
-            return { foot: undefined, len: a, dir: n };
+        if (!is_line) {
+            if (a > 1 || a < 0) {
+                return { foot: undefined, len: a, dir: n };
+            }
         }
 
         const p1p_d = M.dot(M.sub(p1, p), n);
@@ -147,5 +149,12 @@ export const L = {
         const d1_ = M.unit(d1);
         const d2_ = M.unit(d2);
         return M.angle(M.add(d1_, d2_));
+    },
+
+    get_mirror_angle: (p0, p1, p2) => {
+        const { foot, len } = L.foot(p0, [p1, p2], true);
+        const d = M.sub(foot, p0);
+        const p = M.add(p0, M.mul(d, 2));
+        return M.angle(M.sub(p, p1));
     },
 }

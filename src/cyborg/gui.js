@@ -23,6 +23,7 @@ export const GUI = {
         const input_angle = document.getElementById("cpedit_input_angle");
         const input_free = document.getElementById("cpedit_input_free");
         const input_bisector = document.getElementById("cpedit_input_bisector");
+        const input_mirror = document.getElementById("cpedit_input_mirror");
         const zoom_out = document.getElementById("cpedit_zoomout");
         const zoom_in = document.getElementById("cpedit_zoomin");
         const move = document.getElementById("cpedit_move");
@@ -32,7 +33,7 @@ export const GUI = {
 
         const trim = document.getElementById("cpedit_trim");
 
-        const bg = [mv, input_angle, input_free, input_bisector, move, to_m, to_aux, to_v];
+        const bg = [mv, input_angle, input_free, input_bisector, move, to_m, to_aux, to_v, input_mirror];
         closeButton.onclick = GUI.close;
         discardButton.onclick = GUI.discard;
 
@@ -70,6 +71,10 @@ export const GUI = {
         input_bisector.onclick = () => {
             PAINT.set_mode("input_bisector");
             GUI.reset_bg(bg, input_bisector);
+        }
+        input_mirror.onclick = () => {
+            PAINT.set_mode("input_mirror");
+            GUI.reset_bg(bg, input_mirror);
         }
         move.onclick = () => {
             PAINT.set_mode("move");
