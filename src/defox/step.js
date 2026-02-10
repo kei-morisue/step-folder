@@ -19,6 +19,7 @@ export const STEP = {
     cx: .5,
     cy: .5,
     scale: 1,
+    depth: 0,
 
     get_transform: () => {
         return STEP.get_T(STEP.flip0, STEP.rotate, STEP.scale, STEP.cx, STEP.cy);
@@ -42,8 +43,10 @@ export const STEP = {
         STEP.cy = .5;
         STEP.scale = 1;
         SEG.clip = .0;
+        STEP.depth = 0;
         document.getElementById("clip").value = SEG.clip;
         document.getElementById("rotate").value = STEP.rotate;
+        document.getElementById("depth").value = STEP.depth;
     },
     redraw: () => {
         const T = STEP.get_transform();
@@ -63,6 +66,7 @@ export const STEP = {
                 document.getElementById("apply_tt").style.background = "red";
             } else {
                 document.getElementById("apply_tt").style.background = "";
+                document.getElementById("depth").max = STEP.LIN.S.length;
             }
         }
         document.getElementById("state3").style.background = DRAW.color.background;
@@ -107,7 +111,8 @@ export const STEP = {
             NOTE.annotate(STEP.LIN.cycle, "cycles");
             document.getElementById("apply_tt").setAttribute("style", "background: red")
         } else {
-            document.getElementById("apply_tt").setAttribute("style", "background: default")
+            document.getElementById("apply_tt").setAttribute("style", "background: default");
+            document.getElementById("depth").max = STEP.LIN.S.length;
         }
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
         return STEP.update_serial_state(STEP.FOLD_D, STEP.LIN.S, "state3", STEP.get_transform());
@@ -135,6 +140,7 @@ export const STEP = {
         } else {
             [STEP.FOLD, STEP.LIN] = [STEP.FOLD0, STEP.STATE0.L];
         }
+        document.getElementById("depth").max = STEP.LIN.S.length;
         DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"));
     },
 
@@ -150,7 +156,7 @@ export const STEP = {
         if (!FOLD) {
             return;
         }
-        DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, S, T, SEG.clip, STEP.id);
+        DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, S, T, SEG.clip, STEP.depth, STEP.id);
         return undefined;
     },
 };

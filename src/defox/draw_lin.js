@@ -13,7 +13,7 @@ import { SVG } from "../flatfolder/svg.js";
 export const DRAW_LIN = {
 
 
-    draw_state: (svg, FOLD, S, T, clip_c, id = 0) => {
+    draw_state: (svg, FOLD, S, T, clip_c, depth, id = 0) => {
         const det = N.det(T[0]);
         const is_flip = det < 0;
         if (!S) {
@@ -37,6 +37,13 @@ export const DRAW_LIN = {
             const g = SVG.append("g", gg, { id: "face_" + face_idx })
             const face = faces[face_idx];
             const is_Ff = Ff[face_idx];
+            if (i + depth > S_.length) {
+                SVG.draw_polygons(g, [face], {
+                    id: true,
+                    fill: `rgba(0, 0, 0, ${Math.min(depth / 2, 10) / depth})`,
+                });
+                continue;
+            }
             SVG.draw_polygons(g, [face], {
                 id: true,
                 fill: is_Ff ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom,

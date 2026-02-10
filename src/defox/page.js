@@ -58,7 +58,7 @@ export const PAGE = {
             SVG.SCALE = d;
             const panel_d = PAGE.draw_panel(panel, s, s, (s - d) / 2, (s - d) / 2, "diagram_" + i);
 
-            const { flip0, rotate, scale, clip, cx, cy } = steps[i].params;
+            const { flip0, rotate, scale, clip, cx, cy, depth } = steps[i].params;
 
             const T = STEP.get_T(flip0, rotate, scale, cx, cy);
             const FOLD = steps[i].fold_d;
@@ -68,7 +68,7 @@ export const PAGE = {
                 const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
                 DRAW.draw_state(panel_d, FOLD, CELL, STATE, T, clip, i);
             } else {
-                DRAW_LIN.draw_state(panel_d, FOLD, steps[i].lin.S, T, clip, i);
+                DRAW_LIN.draw_state(panel_d, FOLD, steps[i].lin.S, T, clip, depth, i);
             }
             const t = PAGE.text.size;
             let num = i + 1;

@@ -133,18 +133,18 @@ export const GUI_STATE = {
             PRJ.record(PRJ.current_idx);
         }
         GUI_STATE.setup_range_options(
-            ["p0", "p1", "p2", "clip", "rotate"],
-            ["p0", "p1", "p2", "clip", "rotate"],
-            [0, 0.5, 0, 0, 0.5],
-            [DIST, DIST, DIST, SEG, STEP],
-            [STEP.update_dist, STEP.update_dist, STEP.update_dist, STEP.redraw, STEP.redraw]
+            ["p0", "p1", "p2", "clip", "rotate", "depth"],
+            ["p0", "p1", "p2", "clip", "rotate", "depth"],
+            [0, 0.5, 0, 0, 0.5, 0],
+            [DIST, DIST, DIST, SEG, STEP, STEP],
+            [STEP.update_dist, STEP.update_dist, STEP.update_dist, STEP.redraw, STEP.redraw, STEP.redraw]
         );
     },
     setup_range_options: (ids, props, init, modules, dispatches) => {
         for (const [i, id] of ids.entries()) {
             document.getElementById(id).oninput = (e) => {
                 const val = e.target.value
-                modules[i][props[i]] = val
+                modules[i][props[i]] = parseFloat(val);
 
                 dispatches[i]();
             }

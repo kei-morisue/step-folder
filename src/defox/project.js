@@ -98,7 +98,7 @@ export const PRJ = {
 
     restore_params: (p) => {
         if (p) {
-            for (const key of ["flip0", "rotate", "scale", "cx", "cy"]) {
+            for (const key of ["flip0", "rotate", "scale", "cx", "cy", "depth"]) {
                 STEP[key] = p[key];
             }
             for (const key of ["clip"]) {
@@ -107,11 +107,12 @@ export const PRJ = {
             for (const key of ["p0", "p1", "p2"]) {
                 DIST[key] = p[key];
             }
-            document.getElementById("clip").value = SEG.clip;
-            document.getElementById("rotate").value = STEP.rotate;
-            document.getElementById("p0").value = DIST.p0;
-            document.getElementById("p1").value = DIST.p1;
-            document.getElementById("p2").value = DIST.p2;
+            document.getElementById("clip").value = SEG.clip ?? 0;
+            document.getElementById("rotate").value = STEP.rotate ?? .5;
+            document.getElementById("depth").value = STEP.depth ?? 0;
+            document.getElementById("p0").value = DIST.p0 ?? 0;
+            document.getElementById("p1").value = DIST.p1 ?? 0;
+            document.getElementById("p2").value = DIST.p2 ?? 0;
         } else {
             STEP.refresh();
         }
@@ -142,6 +143,7 @@ export const PRJ = {
             p2: DIST.p2,
             cx: STEP.cx,
             cy: STEP.cy,
+            depth: STEP.depth,
         }
     },
 

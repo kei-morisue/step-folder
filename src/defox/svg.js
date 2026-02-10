@@ -10,7 +10,7 @@ export const SVG3 = {   // DRAWING
     },
 
     draw_clip_path: (svg, gg, id) => {
-        const cp = SVG.append("clipPath", svg);
+        const cp = SVG.append("clipPath", gg);
         cp.setAttribute("id", "cpath_" + svg.id + "_" + id);
         const r = .5 * SVG.SCALE;
         const b = 1;
