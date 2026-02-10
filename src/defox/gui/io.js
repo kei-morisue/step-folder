@@ -20,6 +20,7 @@ export const GUI_IO = {
             GUI_IO.import_cps(is_interp)
         };
         document.getElementById("save_proj").onclick = (e) => {
+            PRJ.record(PRJ.current_idx);
             const pj = document.getElementById("proj_name").value;
             IO3.save(PRJ.steps, pj);
         };

@@ -33,6 +33,7 @@ export const DRAW_LIN = {
         }
 
         const S_ = is_flip ? S.toReversed() : S
+        const opa = 3 / (depth + 1);
         for (const [i, face_idx] of S_.entries()) {
             const g = SVG.append("g", gg, { id: "face_" + face_idx })
             const face = faces[face_idx];
@@ -40,7 +41,7 @@ export const DRAW_LIN = {
             if (i + depth > S_.length) {
                 SVG.draw_polygons(g, [face], {
                     id: true,
-                    fill: `rgba(0, 0, 0, ${Math.min(depth / 2, 10) / depth})`,
+                    fill: `rgba(0, 0, 0, ${opa})`,
                 });
                 continue;
             }

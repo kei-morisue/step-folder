@@ -111,7 +111,6 @@ export const IO3 = {    // INPUT-OUTPUT
 
     save: (data, name) => {
         const data_ = [];
-        let W = data[data.length - 1].fold_cp.V;
         for (const d of data) {
             const d_ = {};
             for (const key of ["fold_cp", "cell_cp", "fold", "cell_d", "params", "lin"]) {
