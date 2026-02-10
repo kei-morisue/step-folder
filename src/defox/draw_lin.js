@@ -25,26 +25,25 @@ export const DRAW_LIN = {
 
         const faces = FV.map(v => M.expand(v, V_));
 
-        const gg = SVG.append("g", svg)
+        const g_step = SVG.append("g", svg);
 
-        if (Math.abs(det) > 1) {
-            SVG3.draw_clip_path(svg, gg, id);
-
-        }
 
         const S_ = is_flip ? S.toReversed() : S
-        const opa = 3 / (depth + 1);
-        for (const [i, face_idx] of S_.entries()) {
-            const g = SVG.append("g", gg, { id: "face_" + face_idx })
+        const g_clip = SVG.append("g", g_step);
+        if (Math.abs(det) > 1) {
+            SVG3.draw_clip_path(g_step, g_clip, .5 * SVG.SCALE, id);
+
+        }
+        const g_mask = SVG.append("g", g_step)
+        if (depth > 0) {
+            SVG3.draw_mask(g_step, g_mask, .2 * SVG.SCALE, Math.abs(det) > 1, id);
+        }
+
+        for (let i = 0; i < S_.length; i++) {
+            const face_idx = S_[i];
+            const g = SVG.append("g", i > S_.length - depth - 1 ? g_mask : g_clip, { id: "face_" + face_idx })
             const face = faces[face_idx];
             const is_Ff = Ff[face_idx];
-            if (i + depth > S_.length) {
-                SVG.draw_polygons(g, [face], {
-                    id: true,
-                    fill: `rgba(0, 0, 0, ${opa})`,
-                });
-                continue;
-            }
             SVG.draw_polygons(g, [face], {
                 id: true,
                 fill: is_Ff ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom,
@@ -72,6 +71,7 @@ export const DRAW_LIN = {
             const lines_clipped = SEG.clip_edges(FU[face_idx], UV, V_, Vc, clip_c);
             DRAW_LIN.draw_creases(g, lines_clipped, a, is_pair);
         }
+
     },
 
 

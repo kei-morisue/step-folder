@@ -139,7 +139,7 @@ export const IO3 = {    // INPUT-OUTPUT
             const VD = DIST.FOLD_2_VD(Vf, V);
             d.fold_d = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA, FO };
         }
-        return data;
+        return data_;
     },
     normalize_L: (L) => {
         const P = [];

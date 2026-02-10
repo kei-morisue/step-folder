@@ -128,7 +128,7 @@ export const DRAW = {
         const gg = SVG.append("g", svg)
 
         if (Math.abs(det) > 1) {
-            SVG3.draw_clip_path(svg, gg, id);
+            SVG3.draw_clip_path(svg, gg, .5 * SVG.SCALE, id);
         }
         const fold_c = SVG.append("g", gg, { id: svg.id + "_fold_c_" + id });
         const fold_s_crease = SVG.append("g", gg, { id: svg.id + "_fold_s_crease_" + id });
