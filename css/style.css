@@ -1,8 +1,8 @@
 @font-face {
     font-family: 'Icons';
-    src: url('/fonts/icons2.ttf') format('truetype'),
-        url("/fonts/icons2-webfont.woff2") format("woff2"),
-        url("/fonts/icons2-webfont.woff") format("woff");
+    src: url('https: //github.com/kei-morisue/step-folder/raw/refs/heads/main/fonts/Icons2.ttf') format('truetype'),
+        url("https: //github.com/kei-morisue/step-folder/raw/refs/heads/main/fonts/icons2-webfont.woff2") format("woff2"),
+        url("https: //github.com/kei-morisue/step-folder/raw/refs/heads/main/fonts/icons2-webfont.woff") format("woff");
     ;
     font-weight: normal;
     font-style: normal;
