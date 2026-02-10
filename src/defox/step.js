@@ -59,7 +59,7 @@ export const STEP = {
             STEP.update_state(FOLD, CELL, "state3", T);
             document.getElementById("apply_tt").style.background = "";
         } else {
-            STEP.update_serial_state(STEP.FOLD_D, STEP.LIN.S, "state3", T, STEP.CELL_D);
+            STEP.update_serial_state(STEP.FOLD_D, STEP.LIN.S, "state3", T);
             if (STEP.LIN.cycle.length != 0) {
                 NOTE.annotate(STEP.LIN.S, "serials");
                 NOTE.annotate(STEP.LIN.cycle, "cycles");
@@ -152,7 +152,7 @@ export const STEP = {
         DRAW.draw_state(SVG.clear(svg_state), FOLD, CELL, STATE, T, SEG.clip, STEP.id);
         return STATE
     },
-    update_serial_state: (FOLD, S, svg_state, T, CELL = undefined) => {
+    update_serial_state: (FOLD, S, svg_state, T) => {
         if (!FOLD) {
             return;
         }
