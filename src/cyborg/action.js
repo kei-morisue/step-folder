@@ -21,7 +21,7 @@ export const ACT = {
             PAINT.vertex = p_cursor;
             return;
         }
-        if (ACT.hilight_input_mv(p_cursor)) {
+        if (ACT.hilight_input_segs(p_cursor)) {
             return;
         };
         if (ACT.hilight_input_angle(p_cursor)) {
@@ -74,18 +74,51 @@ export const ACT = {
         if (ACT.context_input_bisector(e, m)) {
             return;
         };
+        if (ACT.context_input_mirror(e, m)) {
+            return;
+        };
+
         ACT.remove(e);
     },
-    hilight_input_mv: (p_cursor) => {
+    hilight_input_segs: (p_cursor) => {
         if (PAINT.current_mode == "mv"
-            || PAINT.current_mode == "to_m"
-            || PAINT.current_mode == "to_v"
             || PAINT.current_mode == "to_aux"
         ) {
-            const seg = L.find_seg(p_cursor, PAINT.segs, PAINT.EA);
+            const seg = L.find_seg(
+                p_cursor,
+                PAINT.segs,
+                PAINT.EA,
+                (idx) => {
+                    return PAINT.EA[idx] == "M" || PAINT.EA[idx] == "V"
+                });
             PAINT.hilight_mv(seg);
             return true;
         }
+        if (PAINT.current_mode == "to_m"
+        ) {
+            const seg = L.find_seg(
+                p_cursor,
+                PAINT.segs,
+                PAINT.EA,
+                (idx) => {
+                    return PAINT.EA[idx] != "M"
+                });
+            PAINT.hilight_mv(seg);
+            return true;
+        }
+        if (PAINT.current_mode == "to_v"
+        ) {
+            const seg = L.find_seg(
+                p_cursor,
+                PAINT.segs,
+                PAINT.EA,
+                (idx) => {
+                    return PAINT.EA[idx] != "V"
+                });
+            PAINT.hilight_mv(seg);
+            return true;
+        }
+
         return false;
     },
     hilight_input_angle: (p_cursor) => {
@@ -99,7 +132,8 @@ export const ACT = {
             const v0 = PAINT.v0;
             const theta = L.binded_angle(v0, p_cursor, PAINT.bind_angle);
             const r = M.dist(v0, p_cursor);
-            const b_v = L.find_binded_v(v0, r, theta, PAINT.V, PAINT.segs, PAINT.radius.bind / PAINT.scale);
+            const segs = PAINT.segs
+            const b_v = L.find_binded_v(v0, r, theta, PAINT.V, segs, PAINT.radius.bind / PAINT.scale);
             PAINT.hilight_inputs(v0, b_v);
             return true;
         }
@@ -391,6 +425,27 @@ export const ACT = {
         if (m == "input_bisector_4") {
             PAINT.v2 = undefined;
             PAINT.current_mode = "input_bisector_3";
+            ACT.hilight(e);
+            return true;
+        }
+        return false;
+    },
+    context_input_mirror: (e, m) => {
+        if (m == "input_mirror_2") {
+            PAINT.v0 = undefined;
+            PAINT.current_mode = "input_mirror";
+            ACT.hilight(e);
+            return true;
+        }
+        if (m == "input_mirror_3") {
+            PAINT.v1 = undefined;
+            PAINT.current_mode = "input_mirror_2";
+            ACT.hilight(e);
+            return true;
+        }
+        if (m == "input_mirror_4") {
+            PAINT.v2 = undefined;
+            PAINT.current_mode = "input_mirror_3";
             ACT.hilight(e);
             return true;
         }

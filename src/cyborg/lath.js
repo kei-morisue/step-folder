@@ -129,10 +129,13 @@ export const L = {
         }
         return undefined;
     },
-    find_seg: (p0, candidates, EA) => {
+    find_seg: (p0, candidates, EA, cond = (idx) => true) => {
         let min_l = Infinity;
         let idx = -1;
         for (const [i, seg] of candidates.entries()) {
+            if (!cond(i)) {
+                continue;
+            }
             if (EA[i] == "B") {
                 continue;
             }

@@ -190,7 +190,7 @@ export const GUI = {
         dialog.close();
         const is_interp = document.getElementById("cpedit_crease_interp").checked;
         const i = PRJ.current_idx;
-        const { FOLD, CELL } = PAINT.get_FOLD_CELL_VK(i, is_interp);
+        const { FOLD, CELL } = PAINT.get_FOLD_CELL(i, is_interp);
         PRJ.steps[i].fold_cp = FOLD;
         PRJ.steps[i].cell_cp = CELL;
 

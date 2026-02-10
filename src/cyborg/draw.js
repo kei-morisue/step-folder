@@ -72,10 +72,23 @@ export const DRAW = {
         SVG.draw_polygons(svg, F, { opacity: 0.05 });
     },
 
-    draw_local_isses: (V, EA, EV, svg, T) => {
+    get_VK: (V, EA, EV) => {
         const VK = Z.get_VK(EV, EA, V);
         let is_invalid = false;
         for (const [i, vk] of VK.entries()) {
+            if (Math.abs(vk) > 1e-6) {
+                is_invalid = true;
+                break;
+            }
+        }
+        return [VK, is_invalid];
+    },
+
+    draw_VK: (V, VK, svg, T) => {
+        for (const [i, vk] of VK.entries()) {
+            if (vk == undefined) {
+                continue;
+            }
             if (Math.abs(vk) > 1e-6) {
                 const v_ = N.transform(T, V[i]);
                 const [cx, cy] = M.mul(v_, SVG.SCALE);
@@ -90,10 +103,8 @@ export const DRAW = {
                         "fill": DRAW.color.kawasaki,
                         "fill-opacity": 0.5,
                     });
-                is_invalid = true;
             }
         }
-        return [VK, is_invalid];
     },
 
 }

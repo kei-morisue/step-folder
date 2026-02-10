@@ -21,8 +21,11 @@ export const PAINT = {
 
     V: [],
     EV: [],
-    segs: [],
     EA: [],
+    segs: [],
+
+
+
 
     VK: [],
     svg: undefined,
@@ -64,14 +67,14 @@ export const PAINT = {
         const { V, EV, EA, UA, UV } = FOLD;
         PAINT.V = V;
         PAINT.EV = EV.concat(UV);
+
         PAINT.segs = EV.map((vs) => {
             return M.expand(vs, V);
-        });
-        PAINT.segs = PAINT.segs.concat(UV.map((vs) => {
+        }).concat(UV.map((vs) => {
             return M.expand(vs, V);
         }));
-
         PAINT.EA = EA.concat(UA);
+
         PAINT.svg = svg;
         PAINT.VK = [];
         PAINT.is_invalid = false;
@@ -80,14 +83,15 @@ export const PAINT = {
         PAINT.scale = 1;
         PAINT.saves = [];
         PAINT.save_idx = 0;
+        PAINT.trim();
         PAINT.record();
     },
 
-    get_FOLD_CELL_VK: (idx, is_interp) => {
-
+    get_FOLD_CELL: (idx, is_interp) => {
         const FOLD_infer = is_interp ? PRJ.steps[idx - 1].fold_cp : undefined;
-
-        const [FOLD, CELL] = Z.segs_assings_2_FOLD_CELL(PAINT.segs, PAINT.EA, FOLD_infer);
+        const segs = PAINT.segs;
+        const assigns = PAINT.EA;
+        const [FOLD, CELL] = Z.segs_assings_2_FOLD_CELL(segs, assigns, FOLD_infer);
         return { FOLD, CELL };
     },
 
@@ -101,10 +105,12 @@ export const PAINT = {
     },
     redraw: () => {
         const T = PAINT.get_T();
-        DRAW.draw_cp(PAINT.segs, PAINT.EA, SVG.clear(PAINT.svg.id), T);
+        const segs = PAINT.segs;
+        const assigns = PAINT.EA;
+        DRAW.draw_cp(segs, assigns, SVG.clear(PAINT.svg.id), T);
         PAINT.svg_selection = SVG.append("g", PAINT.svg, { id: "selection" });
         PAINT.svg_validation = SVG.append("g", PAINT.svg, { id: "validation" });
-        PAINT.validate();
+        DRAW.draw_VK(PAINT.V, PAINT.VK, PAINT.svg, T);
     },
 
     validate: () => {
@@ -113,66 +119,52 @@ export const PAINT = {
         const V = PAINT.V;
         const EA = PAINT.EA;
         const EV = PAINT.EV;
-        const [VK, is_invalid] = DRAW.draw_local_isses(
+        const [VK, is_invalid] = DRAW.get_VK(
             V,
             EA,
-            EV,
-            SVG.clear(PAINT.svg_validation.id),
-            PAINT.get_T());
+            EV);
         PAINT.VK = VK;
         PAINT.is_invalid = is_invalid;
-
     },
     trim: () => {
-        const fn = () => {
-            const V = PAINT.V;
-            const EA = PAINT.EA;
-            const EV = PAINT.EV;
-
+        const fn = (V, EA, EV) => {
             const VE = V.map((_) => []);
             for (const [e_i, [p_i, q_i]] of EV.entries()) {
                 VE[p_i].push(e_i);
                 VE[q_i].push(e_i);
             }
-
-            for (const [v_i, e_is] of VE.entries()) {
-                if (e_is.length != 2) {
-                    continue;
-                }
-                const [e1, e2] = [e_is[0], e_is[1]];
-                const a1 = EA[e1];
-                const a2 = EA[e2];
-                if (a1 != a2) {
-                    continue;
-                }
-                const [p1, q1] = EV[e1];
-                const [p2, q2] = EV[e2];
-                const d1 = M.sub(V[p1], V[q1]);
-                const d2 = M.sub(V[p2], V[q2]);
-
-                if (!M.near_zero(N.cross(d1, d2))) {
-                    continue;
-                }
-                PAINT.EA = EA.toSpliced(e2, 1);
-                EV[e1] = p1 == p2 ? [q2, q1]
-                    : p1 == q2 ? [p2, q1]
-                        : p2 == q1 ? [p1, q2]
-                            : [p1, q1];
-                PAINT.EV = EV.toSpliced(e2, 1);
-                PAINT.V = V.toSpliced(v_i, 1);
-                for (const [e_i, [p_, q_]] of PAINT.EV.entries()) {
-                    const p = p_ > v_i ? p_ - 1 : p_;
-                    const q = q_ > v_i ? q_ - 1 : q_;
-                    PAINT.EV[e_i] = [p, q];
-                }
-                PAINT.segs = PAINT.EV.map((vs) => M.expand(vs, PAINT.V));
-                PAINT.redraw();
-                PAINT.hilight_input(V[v_i]);
-                fn();
-                break;
+            const res = Z.trim_a_vertex(VE, EA, EV, V);
+            if (res) {
+                const { EA_, EV_ } = res;
+                return fn(V, EA_, EV_);
+            } else {
+                return [EA, EV];
             }
         }
-        fn();
+        const UEA_ = PAINT.EA;
+        const UEV_ = PAINT.EV;
+        const [UEA, UEV] = fn(PAINT.V, UEA_, UEV_);
+        const EA_ = [];
+        const EV_ = [];
+        const UV = [];
+        for (const [idx, a] of UEA.entries()) {
+            const vs = UEV[idx];
+            if (a == "F") {
+                UV.push(vs);
+            }
+            else {
+                EA_.push(a);
+                EV_.push(vs);
+            }
+        }
+        const V_ = PAINT.V;
+        const [EA, EV] = fn(V_, EA_, EV_);
+
+        const { V, V_map } = Z.sweep_vertices(V_, EV.concat(UV));
+        PAINT.V = V;
+        PAINT.EA = EA.concat(UV.map(() => "F"));
+        PAINT.EV = EV.map(([p, q]) => [V_map[p], V_map[q]]).concat(UV.map(([p, q]) => [V_map[p], V_map[q]]));
+        PAINT.segs = PAINT.EV.map((vs) => M.expand(vs, V));
     },
 
     reset: () => {
@@ -278,6 +270,8 @@ export const PAINT = {
         PAINT.EA = EA;
         PAINT.EV = EV;
         PAINT.segs = segs;
+        PAINT.trim();
+        PAINT.validate();
         PAINT.redraw();
     },
     onmouseout: (e) => {
