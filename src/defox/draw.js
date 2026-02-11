@@ -26,7 +26,7 @@ export const DRAW = {
             MM: "blue",
             RV: "red",
             RM: "blue",
-            UF: "magenta",
+            UF: "rgb(100, 200, 200)",
             FF: "magenta",
         },
 
@@ -39,7 +39,7 @@ export const DRAW = {
             MM: "blue",
             RV: "red",
             RM: "blue",
-            UF: "green",
+            UF: "rgb(100, 200, 200)",
             FF: "magenta",
         },
     },
@@ -124,15 +124,16 @@ export const DRAW = {
         const Q_ = M.normalize_points(Q).map((v) => N.transform(T, v));
         const cells = CP.map(V => M.expand(V, Q_));
 
-        const defs = SVG.append("defs", svg);
-        const gg = SVG.append("g", svg)
+        const g_step = SVG.append("g", svg)
+
+        const g_clip = SVG.append("g", g_step)
 
         if (Math.abs(det) > 1) {
-            SVG3.draw_clip_path(svg, gg, .5 * SVG.SCALE, id);
+            SVG3.draw_clip_path(g_step, g_clip, .5 * SVG.SCALE, id);
         }
-        const fold_c = SVG.append("g", gg, { id: svg.id + "_fold_c_" + id });
-        const fold_s_crease = SVG.append("g", gg, { id: svg.id + "_fold_s_crease_" + id });
-        const fold_s_edge = SVG.append("g", gg, { id: svg.id + "_fold_s_edge_" + id });
+        const fold_c = SVG.append("g", g_clip, { id: svg.id + "_fold_c_" + id });
+        const fold_s_crease = SVG.append("g", g_clip, { id: svg.id + "_fold_s_crease_" + id });
+        const fold_s_edge = SVG.append("g", g_clip, { id: svg.id + "_fold_s_edge_" + id });
 
         SVG.draw_polygons(fold_c, cells, {
             id: true,
@@ -180,7 +181,7 @@ export const DRAW = {
         for (const [fi, cis] of FC_map.entries()) {
             if (FU[fi].length > 0) {
                 const gg = SVG.append("g", fold_s_crease);
-                const cp = SVG.append("clipPath", defs);
+                const cp = SVG.append("clipPath", g_step);
                 SVG.draw_polygons(cp, cells, { filter: (ci) => cis.indexOf(ci) != -1 });
                 cp.setAttribute("id", svg.id + "_cpath_" + id + "_" + fi);
                 gg.setAttribute("clip-path", "url(#" + svg.id + "_cpath_" + id + "_" + fi + ")");
