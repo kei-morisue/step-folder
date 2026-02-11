@@ -98,7 +98,7 @@ export const GUI = {
         }
 
         dialog.onkeydown = GUI.bind;
-        GUI.set_svg("cpedit");
+        GUI.set_svg(svg.id);
         mv.click();
     },
     reset_bg: (bg, b_0) => {

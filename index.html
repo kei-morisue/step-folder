@@ -5,9 +5,11 @@
     <meta charset="UTF-8">
     <title>DEFOX</title>
     <link rel="icon" href="./icon-512x512.png">
-    <link rel="stylesheet" href="./css/style.css?1.1.0">
-    <link rel="stylesheet" href="./css/style_editor.css?v=1.1.0">
-    <link rel="stylesheet" href="./css/style_1200.css?v=1.1.0">
+    <link rel="stylesheet" href="./css/fonts.css?1.2.0">
+    <link rel="stylesheet" href="./css/style.css?1.2.0">
+    <link rel="stylesheet" href="./css/style_editor.css?v=1.2.0">
+    <link rel="stylesheet" href="./css/style_axanael.css?v=1.2.0">
+    <link rel="stylesheet" href="./css/style_1200.css?v=1.2.0">
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 </head>
@@ -32,8 +34,6 @@
             </select>
             <input type="checkbox" id="crease_interp" checked>
             <label for="crease_interp">Crease Interpolation</label>
-
-            <button id="opencpeditor" class="opendialog">&#xe029;</button>
         </span>
     </div>
     <dialog id="cpeditor" class="cpeditor">
@@ -71,7 +71,33 @@
             <svg id="cpedit" class="paint_edit"></svg>
         </div>
     </dialog>
-
+    <dialog id="axanael" class="axanael">
+        <button id="axanael_discard" class="discardclose">&#xe040</button>
+        <button id="axanael_close" class="discardclose">✖︎</button>
+        <div id="axanael_body" class="axanael_body">
+            <svg id="axanael_paint" class="axanael_paint">
+            </svg>
+            <div id="axanael_tools" class="axanael_tools">
+                <span id="axanael_control" class="openclose"><b>Control</b></span>
+                <span id="axanael_control_b">
+                    <label for="axanael_depth">Depth </label>
+                    <input id="axanael_depth" type="range" value="0" min="0" max="0" step="1">
+                </span>
+                <span id="axanael_symbols" class="openclose"><b>Symbols</b></span>
+                <span id="axanael_symbols_b">
+                    <p>
+                        Symbols
+                    </p>
+                </span>
+                <span id="axanael_lib" class="openclose"><b>Libs</b></span>
+                <span id="axanael_lib_b">
+                    <p>
+                        LIB
+                    </p>
+                </span>
+            </div>
+        </div>
+    </dialog>
     <span class="step_preview">
         <div>
             <b>Steps</b>
@@ -102,6 +128,7 @@
                         <button id="render_reset">Reset</button>
                         <button id="infer_prev">Infer(Prev)</button>
                         <button id="infer_next">Infer(Next)</button>
+                        <button id="opencpeditor" class="opendialog">&#xe029;</button>
                     </p>
                     <p>
                         <label for="rotate">Angle</label>
@@ -137,12 +164,6 @@
                         <button id="p1_reset">Reset</button>
                     </p>
                 </span>
-                <span id="edit_symbol_b" class="openclose"><b>Add Symbols</b></span>
-                <span id="edit_symbol" style="display: none;">
-                    <p>
-                        <button id="add">Add</button>
-                    </p>
-                </span>
                 <span id="option_layers_b" class="openclose"><b>Manual Layer Control</b></span>
                 <span id="option_layers">
                     <label for="selectG">Group</label>
@@ -163,6 +184,12 @@
                         <input type="checkbox" id="cb_T3" checked="true">
                         <button id="apply_tt">Apply</button>
                         <button id="reset_tt">Reset</button>
+                    </p>
+                </span>
+                <span id="edit_symbol_b" class="openclose"><b>Add Symbols</b></span>
+                <span id="edit_symbol">
+                    <p class="tool_buttons">
+                        <button id="axanael_open">&#xe029;</button>
                     </p>
                 </span>
             </div>

@@ -1,13 +1,3 @@
-@font-face {
-    font-family: 'Icons';
-    src: url('https: //github.com/kei-morisue/step-folder/raw/refs/heads/main/fonts/Icons2.ttf') format('truetype'),
-        url("https: //github.com/kei-morisue/step-folder/raw/refs/heads/main/fonts/icons2-webfont.woff2") format("woff2"),
-        url("https: //github.com/kei-morisue/step-folder/raw/refs/heads/main/fonts/icons2-webfont.woff") format("woff");
-    ;
-    font-weight: normal;
-    font-style: normal;
-}
-
 body {
     font-family: sans-serif;
 }

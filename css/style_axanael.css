@@ -1,0 +1,26 @@
+.axanael {
+    width: 80%;
+
+    background-color: darkgray;
+}
+
+.axanael_tools {
+    width: 50%;
+    background-color: lightgray;
+    border: 1px solid #000;
+}
+
+.axanael_body {
+    display: flex;
+}
+
+.open_axanael {
+    font-family: 'Icons';
+    font-size: large;
+}
+
+.axanael_paint {
+    width: 50%;
+    height: 100%;
+    border: 1px solid #000;
+}
