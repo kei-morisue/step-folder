@@ -5,9 +5,17 @@
 }
 
 .axanael_tools {
-    width: 50%;
+    width: 35%;
     background-color: lightgray;
     border: 1px solid #000;
+}
+
+.axanael_lib {
+    display: inline;
+}
+
+.axanael_lib svg {
+    background-color: white;
 }
 
 .axanael_body {
@@ -20,7 +28,7 @@
 }
 
 .axanael_paint {
-    width: 50%;
+    width: 65%;
     height: 100%;
     border: 1px solid #000;
 }

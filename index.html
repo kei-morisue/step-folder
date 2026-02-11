@@ -71,6 +71,7 @@
             <svg id="cpedit" class="paint_edit"></svg>
         </div>
     </dialog>
+
     <dialog id="axanael" class="axanael">
         <button id="axanael_discard" class="discardclose">&#xe040</button>
         <button id="axanael_close" class="discardclose">✖︎</button>
@@ -89,15 +90,34 @@
                         Symbols
                     </p>
                 </span>
-                <span id="axanael_lib" class="openclose"><b>Libs</b></span>
-                <span id="axanael_lib_b">
+                <span id="axanael_lib" class="openclose"><b>Templates</b></span>
+                <div id="axanael_lib">
                     <p>
-                        LIB
+                        <input type="radio" name="templates" id="template_00_select">
+                        <svg id="template_00_body">
+                            <path marker-end="url(#arrow_head_v)" d="M 50 50 C 45 30, 70 20, 100 50" stroke="black"
+                                fill="transparent" width="3" />
+                        </svg>
                     </p>
-                </span>
+                    <p>
+                        <input type="radio" name="templates" id="template_01_select">
+                        <svg id="template_01_body">
+                            <path marker-end="url(#arrow_head_m)" d="M 50 50 C 75 25, 100 50, 100 50" stroke="black"
+                                fill="transparent" width="3" />
+                        </svg>
+                    </p>
+                    <p>
+                        <input type="radio" name="templates" id="template_02_select">
+                        <svg id="template_02_body">
+                            <path d="M 60 40 L 90 70 L 100 60 L 100 100 L 60 100 L 70 90 L 40 60 Z" stroke="black"
+                                fill="white" width="3" />
+                        </svg>
+                    </p>
+                </div>
             </div>
         </div>
     </dialog>
+    <svg id="defs"></svg>
     <span class="step_preview">
         <div>
             <b>Steps</b>
