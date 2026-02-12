@@ -4,6 +4,10 @@
     background-color: darkgray;
 }
 
+.axanael_control_b input[type="range"] {
+    width: 50%;
+}
+
 .axanael_tools {
     width: 35%;
     background-color: lightgray;

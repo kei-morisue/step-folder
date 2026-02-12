@@ -1,4 +1,5 @@
 import { Y } from "./y.js"
+import { SYM } from "./symbol.js"
 import { SEG } from "./segment.js";
 import { DRAW } from "./draw.js";
 import { N } from "./nath.js";
@@ -49,7 +50,8 @@ export const DRAW_LIN = {
     },
 
     draw_symbol: (svg, symbol) => {
-        svg.appendChild(symbol);
+        const el = SYM.create(symbol.type, symbol.params);
+        svg.appendChild(el);
     },
 
     draw_state: (svg, FOLD, S, T, clip_c, depth, id = 0, symbols = []) => {
@@ -79,7 +81,7 @@ export const DRAW_LIN = {
         const F_sym = FV.map((_) => { return []; });
         for (const [si, s] of symbols.entries()) {
             const fi = S_.length - s.depth - 1;
-            F_sym[fi].push(s.svg);
+            F_sym[fi].push(s);
         }
         for (let i = 0; i < S_.length; i++) {
             const face_idx = S_[i];

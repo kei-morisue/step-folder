@@ -4,7 +4,7 @@ import { DRAW as D } from "../defox/draw.js"
 import { SEG } from "../defox/segment.js"
 import { PRJ } from "../defox/project.js"
 
-import { DRAW } from "./draw.js"
+import { SYM } from "../defox/symbol.js"
 import { PAINT } from "./paint.js"
 
 
@@ -24,7 +24,10 @@ export const GUI = {
                 document.getElementById("axanael_discard").onclick = GUI.discard;
                 GUI.set_svg(svg);
                 svg.onmousemove = PAINT.onmove;
-                document.getElementById("axanael_open").click();
+                svg.onclick = PAINT.onclick;
+                // document.getElementById("prev").click();
+                // document.getElementById("prev").click();
+                // document.getElementById("axanael_open").click();
             });
 
     },
@@ -33,6 +36,7 @@ export const GUI = {
         const svg = document.getElementById("axanael_paint");
         document.getElementById("axanael").showModal();
         const i = PRJ.current_idx
+        PRJ.record(i);
         const FOLD = PRJ.steps[i].fold_d;
         const S = STEP.LIN.S;
 
@@ -46,23 +50,51 @@ export const GUI = {
     },
 
     set_depths: (S) => {
-        const body = SVG.clear(document.getElementById("axanael_control_b"));
+        const body = SVG.clear("axanael_control_b");
         const l = S.length;
-        for (const [i, s] of PAINT.symbols.entries()) {
+        for (const [i, symbol] of PAINT.symbols.entries()) {
             const num = (i + "").padStart(2, "0");
             const range = document.createElement("input");
             range.type = "range";
             range.min = 0;
-            range.max = l;
+            range.max = l - 1;
             range.step = 1;
-            range.value = S.depth;
+            range.value = symbol.depth;
             range.id = `axanael_depth_${num}`;
-            body.appendChild(range);
 
             range.oninput = (e) => {
-                s.depth = e.target.value;
+                symbol.depth = parseInt(e.target.value);
                 PAINT.redraw();
             };
+            const rem = document.createElement("button");
+            rem.innerHTML = "remove";
+            rem.onclick = () => {
+                PAINT.symbols.splice(i, 1);
+                GUI.set_depths(S);
+                PAINT.redraw();
+            }
+            const flip = document.createElement("button");
+            flip.innerHTML = "flip";
+            flip.onclick = () => {
+                symbol.params.is_clockwise = !symbol.params.is_clockwise;
+                PAINT.redraw();
+            }
+
+            const rev = document.createElement("button");
+            rev.innerHTML = "reverse";
+            rev.onclick = () => {
+                const s = symbol.params.s;
+                const e = symbol.params.e;
+                symbol.params.e = s;
+                symbol.params.s = e;
+                PAINT.redraw();
+            }
+            const span = document.createElement("span");
+            body.appendChild(span);
+            span.appendChild(range);
+            span.appendChild(flip);
+            span.appendChild(rev);
+            span.appendChild(rem);
 
         }
     },
@@ -91,9 +123,9 @@ export const GUI = {
     set_templates: () => {
         const body = SVG.clear("axanael_lib");
 
-        GUI.set_template(body, 0, DRAW.create_arrow_mv([0, 0], [500, 500], false, true));
-        GUI.set_template(body, 1, DRAW.create_arrow_mv([0, 0], [500, 500], true, true));
-        GUI.set_template(body, 2, DRAW.create_arrow_sink([0, 0], [500, 500], false));
+        GUI.set_template(body, 0, SYM.create_arrow_mv([0, 0], [.5, .5], false, true));
+        GUI.set_template(body, 1, SYM.create_arrow_mv([0, 0], [.5, .5], true, true));
+        GUI.set_template(body, 2, SYM.create_arrow_sink([0, 0], [.5, .5], false));
 
     },
     set_template: (body, i, sym) => {

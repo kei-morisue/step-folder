@@ -5,7 +5,7 @@
     </svg>
     <div id="axanael_tools" class="axanael_tools">
         <span id="axanael_control" class="openclose"><b>Control</b></span>
-        <span id="axanael_control_b">
+        <span id="axanael_control_b" class="axanael_control_b">
         </span>
         <span  class="openclose"><b>Templates</b></span>
         <div id="axanael_lib"></div>

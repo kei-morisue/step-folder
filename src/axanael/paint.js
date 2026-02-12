@@ -7,11 +7,12 @@ import { PRJ } from "../defox/project.js"
 import { STEP } from "../defox/step.js"
 import { N } from "../defox/nath.js"
 import { DRAW_LIN } from "../defox/draw_lin.js"
+import { SYM } from "../defox/symbol.js"
 
 import { L } from "../cyborg/lath.js"
 import { PAINT as P } from "../cyborg/paint.js"
 
-import { DRAW } from "./draw.js"
+import { GUI } from "./gui.js"
 
 export const PAINT = {
     symbols: [],
@@ -43,13 +44,29 @@ export const PAINT = {
         PAINT.segment = L.find_seg(
             pt,
             PAINT.segs,
-            FOLD.EA
+            FOLD.UA,
+            (i) => { return FOLD.UA[i] != "F"; }
         )
         PAINT.hilight_segment();
     },
+    onclick: (e) => {
+        if (PAINT.segment[0] < 0) { return; }
 
+        const [p_, q_] = PAINT.segs[PAINT.segment[0]];
+        const [x, y] = M.sub(q_, p_);
+        const q = M.add([x / 2, y / 2], M.add([-y / 2, x / 2], p_));
+        const p = M.add(q, [y, -x]);
+
+        const is_clockwise = true;
+        const is_m = false;
+
+        const pa = { s: p, e: q, is_clockwise, is_m };
+        PAINT.symbols.push({ depth: 0, type: 0, params: pa });
+        GUI.set_depths(PAINT.S);
+        PAINT.redraw();
+    },
     hilight_segment: () => {
-
+        if (PAINT.segment[0] < 0) { return; }
         const s = SVG.SCALE;
         const T = P.get_T();
         const [v1_, v2_] = PAINT.segs[PAINT.segment[0]];
@@ -78,7 +95,7 @@ export const PAINT = {
         PAINT.mode = 0;
         PAINT.segment = -1;
         PAINT.vertex = undefined;
-        PAINT.segs = FOLD.EV.map((vs) => M.expand(vs, FOLD.Vf));
+        PAINT.segs = FOLD.UV.map((vs) => M.expand(vs, FOLD.Vf));
     },
 
     redraw: () => {
