@@ -26,7 +26,7 @@ export const DRAW_LIN = {
         });
     },
 
-    draw_face: (svg, face, edges, creases, assigns, a, is_pair) => {
+    draw_face: (svg, face, edges, assigns, is_pair) => {
         SVG.draw_polygons(svg, [face], {
             id: true,
             fill: is_pair ? DRAW.color.face.top : DRAW.color.face.bottom,
@@ -46,11 +46,13 @@ export const DRAW_LIN = {
                 return w;
             })
         });
-
-        DRAW_LIN.draw_creases(svg, creases, a, is_pair);
-
     },
-    draw_state: (svg, FOLD, S, T, clip_c, depth, id = 0) => {
+
+    draw_symbol: (svg, symbol) => {
+        svg.appendChild(symbol);
+    },
+
+    draw_state: (svg, FOLD, S, T, clip_c, depth, id = 0, symbols = []) => {
         const det = N.det(T[0]);
         const is_flip = det < 0;
         if (!S) {
@@ -62,7 +64,7 @@ export const DRAW_LIN = {
         const faces = FV.map(v => M.expand(v, V_));
         const S_ = is_flip ? S.toReversed() : S
 
-        const g_step = SVG.append("g", svg);
+        const g_step = SVG.append("g", svg, { id: `${svg.id}_${id}` });
         const g_clip = SVG.append("g", g_step);
         if (Math.abs(det) > 1) {
             SVG3.draw_clip_path(g_step, g_clip, .5 * SVG.SCALE, id);
@@ -73,17 +75,34 @@ export const DRAW_LIN = {
             SVG3.draw_mask(g_step, g_mask, .2 * SVG.SCALE, Math.abs(det) > 1, id);
         }
 
+
+        const F_sym = FV.map((_) => { return []; });
+        for (const [si, s] of symbols.entries()) {
+            const fi = S_.length - s.depth - 1;
+            F_sym[fi].push(s.svg);
+        }
         for (let i = 0; i < S_.length; i++) {
             const face_idx = S_[i];
-            const g = SVG.append("g", i > S_.length - depth - 1 ? g_mask : g_clip, { id: "face_" + face_idx })
+            const par = i > S_.length - depth - 1 ? g_mask : g_clip;
+            const g = SVG.append("g", par, { id: "face_" + face_idx })
             const face = faces[face_idx];
             const is_pair = Ff[face_idx] ^ is_flip;
             const edges = FE[face_idx].map((e) => M.expand(EV[e], V_));
             const assigns = FE[face_idx].map((e) => EA[e]);
+
+            DRAW_LIN.draw_face(g, face, edges, assigns, is_pair);
+
             const a = FU[face_idx].map((ui) => UA[ui]);
             const creases = SEG.clip_edges(FU[face_idx], UV, V_, Vc, clip_c);
+            DRAW_LIN.draw_creases(g, creases, a, is_pair);
 
-            DRAW_LIN.draw_face(g, face, edges, creases, assigns, a, is_pair);
+            const ss = F_sym[i];
+            if (ss) {
+                for (const s of ss) {
+                    DRAW_LIN.draw_symbol(g, s);
+                }
+            }
+
         }
 
     },

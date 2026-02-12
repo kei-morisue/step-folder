@@ -1,13 +1,29 @@
 import { SVG } from "../flatfolder/svg.js"
+import { M } from "../flatfolder/math.js"
+
+
 import { SEG } from "../defox/segment.js"
 import { PRJ } from "../defox/project.js"
 import { STEP } from "../defox/step.js"
+import { N } from "../defox/nath.js"
+import { DRAW_LIN } from "../defox/draw_lin.js"
+
+import { L } from "../cyborg/lath.js"
+import { PAINT as P } from "../cyborg/paint.js"
 
 import { DRAW } from "./draw.js"
 
 export const PAINT = {
-    depth: 0,
+    symbols: [],
+    FOLD: undefined,
+    S: undefined,
     svg: undefined,
+    segs: [],
+
+    svg_selection: undefined,
+    mode: 0,
+    segment: -1,
+    vertex: undefined,
 
     get_pointer_loc: (e) => {
         const svg = PAINT.svg;
@@ -21,19 +37,61 @@ export const PAINT = {
         return [x0, y0];
     },
 
-    initialize: (FOLD, S) => {
-
+    onmove: (e) => {
+        const FOLD = PAINT.FOLD;
+        const pt = PAINT.get_pointer_loc(e);
+        PAINT.segment = L.find_seg(
+            pt,
+            PAINT.segs,
+            FOLD.EA
+        )
+        PAINT.hilight_segment();
     },
 
-    redraw: (svg) => {
-        const i = PRJ.current_idx
-        const FOLD = PRJ.steps[i].fold_d;
-        const S = STEP.LIN.S;
+    hilight_segment: () => {
 
+        const s = SVG.SCALE;
+        const T = P.get_T();
+        const [v1_, v2_] = PAINT.segs[PAINT.segment[0]];
+        const v1 = N.transform(T, v1_);
+        const v2 = N.transform(T, v2_);
+        SVG.clear("axanael_selection");
+        const seg_svg = SVG.append(
+            "line",
+            PAINT.svg_selection,
+            {
+                x1: v1[0] * s,
+                x2: v2[0] * s,
+                y1: v1[1] * s,
+                y2: v2[1] * s
+            });
+        const color = "magenta";
+        seg_svg.setAttribute("stroke", color);
+        seg_svg.setAttribute("stroke-width", 6);
+    },
+
+    initialize: (svg, FOLD, S, symbols) => {
+        PAINT.svg = svg;
+        PAINT.symbols = symbols;
+        PAINT.FOLD = FOLD;
+        PAINT.S = S;
+        PAINT.mode = 0;
+        PAINT.segment = -1;
+        PAINT.vertex = undefined;
+        PAINT.segs = FOLD.EV.map((vs) => M.expand(vs, FOLD.Vf));
+    },
+
+    redraw: () => {
+        const svg = SVG.clear(PAINT.svg.id);
         const T = STEP.get_transform();
         const c = SEG.clip;
-        const d = PAINT.depth;
-        DRAW.draw_state(svg, FOLD, S, T, c, d, i);
+        const d = STEP.depth;
+        const symbols = PAINT.symbols
+        const FOLD = PAINT.FOLD;
+        const S = PAINT.S;
+        const i = PRJ.current_idx;
+        DRAW_LIN.draw_state(svg, FOLD, S, T, c, d, i, symbols);
+        PAINT.svg_selection = SVG.append("g", PAINT.svg, { id: "axanael_selection" });
     }
 
 }

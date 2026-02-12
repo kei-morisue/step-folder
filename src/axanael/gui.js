@@ -10,39 +10,63 @@ import { PAINT } from "./paint.js"
 
 export const GUI = {
     startup: () => {
-        const svg = document.getElementById("axanael_paint");
-        const defs = document.getElementById("defs");
-        GUI.fetch(defs, './resources/defs.xml');
+        const axa = document.getElementById("axanael")
+        axa.style.background = D.color.background;
+        fetch('./resources/axanael.xml')
+            .then(response => response.text())
+            .then(html => {
+                axa.innerHTML = html;
 
-        document.getElementById("axanael").style.background = D.color.background;
-        document.getElementById("axanael_open").onclick = GUI.open;
-        document.getElementById("axanael_close").onclick = GUI.close;
-        document.getElementById("axanael_discard").onclick = GUI.discard;
-        document.getElementById("axanael_depth").oninput = (e) => {
-            PAINT.depth = e.target.value;
-            PAINT.redraw(svg);
-        };
+                const svg = document.getElementById("axanael_paint");
 
-
-        GUI.set_svg(svg);
-        for (let i = 0; i < 3; i++) {
-            for (const k of ["body"]) {
-                const id = (i + "").padStart(2, "0");
-                const tmp = document.getElementById(`template_${id}_${k}`);
-                GUI.set_template(tmp);
-            }
-        }
+                document.getElementById("axanael_open").onclick = GUI.open;
+                document.getElementById("axanael_close").onclick = GUI.close;
+                document.getElementById("axanael_discard").onclick = GUI.discard;
+                GUI.set_svg(svg);
+                svg.onmousemove = PAINT.onmove;
+                document.getElementById("axanael_open").click();
+            });
 
     },
 
     open: () => {
         const svg = document.getElementById("axanael_paint");
         document.getElementById("axanael").showModal();
+        const i = PRJ.current_idx
+        const FOLD = PRJ.steps[i].fold_d;
         const S = STEP.LIN.S;
-        document.getElementById("axanael_depth").max = S.length;
-        PAINT.redraw(svg);
+
+        const syms = [];
+        PAINT.initialize(svg, FOLD, S, syms);
+        GUI.set_depths(S);
+        GUI.set_templates();
+
+        PAINT.redraw();
 
     },
+
+    set_depths: (S) => {
+        const body = SVG.clear(document.getElementById("axanael_control_b"));
+        const l = S.length;
+        for (const [i, s] of PAINT.symbols.entries()) {
+            const num = (i + "").padStart(2, "0");
+            const range = document.createElement("input");
+            range.type = "range";
+            range.min = 0;
+            range.max = l;
+            range.step = 1;
+            range.value = S.depth;
+            range.id = `axanael_depth_${num}`;
+            body.appendChild(range);
+
+            range.oninput = (e) => {
+                s.depth = e.target.value;
+                PAINT.redraw();
+            };
+
+        }
+    },
+
     close: () => {
         document.getElementById("axanael").close();
 
@@ -64,23 +88,39 @@ export const GUI = {
         }
     },
 
-    fetch: (par, url) => {
-        fetch(url)
-            .then(response => response.text())
-            .then(svgText => {
-                par.innerHTML = svgText;
-            });
+    set_templates: () => {
+        const body = SVG.clear("axanael_lib");
+
+        GUI.set_template(body, 0, DRAW.create_arrow_mv([0, 0], [500, 500], false, true));
+        GUI.set_template(body, 1, DRAW.create_arrow_mv([0, 0], [500, 500], true, true));
+        GUI.set_template(body, 2, DRAW.create_arrow_sink([0, 0], [500, 500], false));
+
     },
-    set_template: (svg) => {
-        for (const [k, v] of Object.entries({
-            xmlns: SVG.NS,
-            width: 100,
-            height: 40,
-            viewBox: "0 30 100 70",
-        })) {
-            svg.setAttribute(k, v);
+    set_template: (body, i, sym) => {
+        const p = document.createElement("p");
+        body.appendChild(p);
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "templates";
+        const num = (i + "").padStart(2, "0");
+        input.id = `template_${num}_select`;
+        const svg = document.createElementNS(SVG.NS, "svg");
+        input.click = () => {
+            PAINT.mode = i;
         }
-        svg.style.background = D.color.background;
-    }
+        const s = SVG.SCALE / 2;
+        svg.setAttribute("width", s);
+        svg.setAttribute("height", s);
+        const b = SVG.MARGIN / 2;
+        svg.setAttribute("viewBox", `-${b} -${b} ${2 * b + s} ${2 * b + s}`);
+        svg.style.background = D.color.background
+        svg.style.width = "20%";
+        svg.style.height = "20%";
+
+        svg.appendChild(sym);
+        p.appendChild(input);
+        p.appendChild(svg);
+
+    },
 
 }

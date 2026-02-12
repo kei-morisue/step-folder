@@ -7,100 +7,107 @@ import { ACT } from "./action.js";
 export const GUI = {
 
     startup: () => {
+        fetch('./resources/cyborg.xml')
+            .then(response => response.text())
+            .then(svgText => {
+                const dialog = document.getElementById("cpeditor");
+                dialog.innerHTML = svgText;
 
-        const dialog = document.getElementById("cpeditor");
-        const showButton = document.getElementById("opencpeditor");
-        const closeButton = document.getElementById("closeDialog");
-        const discardButton = document.getElementById("discardDialog");
-        const svg = document.getElementById("cpedit");
-        const input_angle_num = document.getElementById("cpedit_angle_num");
-        const input_a = document.getElementById("cpedit_input_a");
-        const mv = document.getElementById("cpedit_mv");
-        const to_m = document.getElementById("cpedit_to_m");
-        const to_v = document.getElementById("cpedit_to_v");
-        const to_aux = document.getElementById("cpedit_to_aux");
 
-        const input_angle = document.getElementById("cpedit_input_angle");
-        const input_free = document.getElementById("cpedit_input_free");
-        const input_bisector = document.getElementById("cpedit_input_bisector");
-        const input_mirror = document.getElementById("cpedit_input_mirror");
-        const zoom_out = document.getElementById("cpedit_zoomout");
-        const zoom_in = document.getElementById("cpedit_zoomin");
-        const move = document.getElementById("cpedit_move");
-        const reset = document.getElementById("cpedit_reset");
-        const undo = document.getElementById("cpedit_undo");
-        const redo = document.getElementById("cpedit_redo");
+                const showButton = document.getElementById("opencpeditor");
+                const closeButton = document.getElementById("closeDialog");
+                const discardButton = document.getElementById("discardDialog");
+                const svg = document.getElementById("cpedit");
+                const input_angle_num = document.getElementById("cpedit_angle_num");
+                const input_a = document.getElementById("cpedit_input_a");
+                const mv = document.getElementById("cpedit_mv");
+                const to_m = document.getElementById("cpedit_to_m");
+                const to_v = document.getElementById("cpedit_to_v");
+                const to_aux = document.getElementById("cpedit_to_aux");
 
-        const trim = document.getElementById("cpedit_trim");
+                const input_angle = document.getElementById("cpedit_input_angle");
+                const input_free = document.getElementById("cpedit_input_free");
+                const input_bisector = document.getElementById("cpedit_input_bisector");
+                const input_mirror = document.getElementById("cpedit_input_mirror");
+                const zoom_out = document.getElementById("cpedit_zoomout");
+                const zoom_in = document.getElementById("cpedit_zoomin");
+                const move = document.getElementById("cpedit_move");
+                const reset = document.getElementById("cpedit_reset");
+                const undo = document.getElementById("cpedit_undo");
+                const redo = document.getElementById("cpedit_redo");
 
-        const bg = [mv, input_angle, input_free, input_bisector, move, to_m, to_aux, to_v, input_mirror];
-        closeButton.onclick = GUI.close;
-        discardButton.onclick = GUI.discard;
+                const trim = document.getElementById("cpedit_trim");
 
-        showButton.onclick = GUI.open;
-        svg.onpointermove = ACT.hilight;
-        svg.onclick = ACT.onclick;
-        svg.onmouseleave = PAINT.onmouseout;
-        svg.oncontextmenu = ACT.oncontextmenu;
-        input_a.onclick = GUI.toggle_input_a;
-        mv.onclick = () => {
-            PAINT.set_mode("mv");
-            GUI.reset_bg(bg, mv);
-        }
-        to_m.onclick = () => {
-            PAINT.set_mode("to_m");
-            GUI.reset_bg(bg, to_m);
-        }
-        to_v.onclick = () => {
-            PAINT.set_mode("to_v");
-            GUI.reset_bg(bg, to_v);
-        }
-        to_aux.onclick = () => {
-            PAINT.set_mode("to_aux");
-            GUI.reset_bg(bg, to_aux);
-        }
-        input_angle.onclick = () => {
-            PAINT.set_mode("input_angle");
-            GUI.reset_bg(bg, input_angle);
+                const bg = [mv, input_angle, input_free, input_bisector, move, to_m, to_aux, to_v, input_mirror];
+                closeButton.onclick = GUI.close;
+                discardButton.onclick = GUI.discard;
 
-        }
-        input_free.onclick = () => {
-            PAINT.set_mode("input_free");
-            GUI.reset_bg(bg, input_free);
-        }
-        input_bisector.onclick = () => {
-            PAINT.set_mode("input_bisector");
-            GUI.reset_bg(bg, input_bisector);
-        }
-        input_mirror.onclick = () => {
-            PAINT.set_mode("input_mirror");
-            GUI.reset_bg(bg, input_mirror);
-        }
-        move.onclick = () => {
-            PAINT.set_mode("move");
-            GUI.reset_bg(bg, move);
-        }
-        trim.onclick = PAINT.trim;
-        reset.onclick = PAINT.reset_view;
-        undo.onclick = PAINT.undo;
-        redo.onclick = PAINT.redo;
+                showButton.onclick = GUI.open;
+                svg.onpointermove = ACT.hilight;
+                svg.onclick = ACT.onclick;
+                svg.onmouseleave = PAINT.onmouseout;
+                svg.oncontextmenu = ACT.oncontextmenu;
+                input_a.onclick = GUI.toggle_input_a;
+                mv.onclick = () => {
+                    PAINT.set_mode("mv");
+                    GUI.reset_bg(bg, mv);
+                }
+                to_m.onclick = () => {
+                    PAINT.set_mode("to_m");
+                    GUI.reset_bg(bg, to_m);
+                }
+                to_v.onclick = () => {
+                    PAINT.set_mode("to_v");
+                    GUI.reset_bg(bg, to_v);
+                }
+                to_aux.onclick = () => {
+                    PAINT.set_mode("to_aux");
+                    GUI.reset_bg(bg, to_aux);
+                }
+                input_angle.onclick = () => {
+                    PAINT.set_mode("input_angle");
+                    GUI.reset_bg(bg, input_angle);
 
-        input_angle_num.onchange = () => {
-            PAINT.bind_angle = 2 * Math.PI / input_angle_num.value;
-        }
-        zoom_in.onclick = () => {
-            PAINT.scale = Math.min(10, PAINT.scale + 1);
-            PAINT.redraw();
-        }
-        zoom_out.onclick = () => {
-            PAINT.scale = Math.max(1, PAINT.scale - 1);
-            PAINT.redraw();
-        }
+                }
+                input_free.onclick = () => {
+                    PAINT.set_mode("input_free");
+                    GUI.reset_bg(bg, input_free);
+                }
+                input_bisector.onclick = () => {
+                    PAINT.set_mode("input_bisector");
+                    GUI.reset_bg(bg, input_bisector);
+                }
+                input_mirror.onclick = () => {
+                    PAINT.set_mode("input_mirror");
+                    GUI.reset_bg(bg, input_mirror);
+                }
+                move.onclick = () => {
+                    PAINT.set_mode("move");
+                    GUI.reset_bg(bg, move);
+                }
+                trim.onclick = PAINT.trim;
+                reset.onclick = PAINT.reset_view;
+                undo.onclick = PAINT.undo;
+                redo.onclick = PAINT.redo;
 
-        dialog.onkeydown = GUI.bind;
-        GUI.set_svg(svg.id);
-        mv.click();
+                input_angle_num.onchange = () => {
+                    PAINT.bind_angle = 2 * Math.PI / input_angle_num.value;
+                }
+                zoom_in.onclick = () => {
+                    PAINT.scale = Math.min(10, PAINT.scale + 1);
+                    PAINT.redraw();
+                }
+                zoom_out.onclick = () => {
+                    PAINT.scale = Math.max(1, PAINT.scale - 1);
+                    PAINT.redraw();
+                }
+
+                dialog.onkeydown = GUI.bind;
+                GUI.set_svg(svg.id);
+                mv.click();
+            });
     },
+
     reset_bg: (bg, b_0) => {
         for (const b of bg) {
             b.style["background-color"] = "";

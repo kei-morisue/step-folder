@@ -10,6 +10,9 @@ export const GUI = {
 
     startup: () => {
         CON.build();
+        const defs = document.getElementById("defs");
+        GUI.fetch(defs, './resources/defs.xml');
+
         GUI_IO.startup();
         GUI_STATE.startup();
         GUI_PAGE.startup();
@@ -31,5 +34,12 @@ export const GUI = {
         }
     },
 
+    fetch: (par, url) => {
+        fetch(url)
+            .then(response => response.text())
+            .then(xml => {
+                par.innerHTML = xml;
+            });
+    },
 
 }

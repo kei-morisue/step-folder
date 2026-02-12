@@ -136,9 +136,6 @@ export const L = {
             if (!cond(i)) {
                 continue;
             }
-            if (EA[i] == "B") {
-                continue;
-            }
             const l = L.dist(p0, seg);
             if (min_l > l) {
                 min_l = l;

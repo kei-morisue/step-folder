@@ -1,0 +1,13 @@
+<button id="axanael_discard" class="discardclose">&#xe040</button>
+<button id="axanael_close" class="discardclose">✖︎</button>
+<div id="axanael_body" class="axanael_body">
+    <svg id="axanael_paint" class="axanael_paint">
+    </svg>
+    <div id="axanael_tools" class="axanael_tools">
+        <span id="axanael_control" class="openclose"><b>Control</b></span>
+        <span id="axanael_control_b">
+        </span>
+        <span  class="openclose"><b>Templates</b></span>
+        <div id="axanael_lib"></div>
+    </div>
+</div>

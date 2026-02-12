@@ -101,7 +101,7 @@ export const ACT = {
                 PAINT.segs,
                 PAINT.EA,
                 (idx) => {
-                    return PAINT.EA[idx] != "M"
+                    return PAINT.EA[idx] != "M" && PAINT.EA[idx] != "B"
                 });
             PAINT.hilight_mv(seg);
             return true;
@@ -113,7 +113,7 @@ export const ACT = {
                 PAINT.segs,
                 PAINT.EA,
                 (idx) => {
-                    return PAINT.EA[idx] != "V"
+                    return PAINT.EA[idx] != "V" && PAINT.EA[idx] != "B"
                 });
             PAINT.hilight_mv(seg);
             return true;
@@ -454,7 +454,13 @@ export const ACT = {
 
     remove: (e) => {
         const pt = PAINT.get_pointer_loc(e);
-        const s_i = L.find_seg(pt, PAINT.segs, PAINT.EA)[0];
+        const s_i = L.find_seg(
+            pt,
+            PAINT.segs,
+            PAINT.EA,
+            (idx) => {
+                return PAINT.EA[idx] != "B"
+            })[0];
         if (s_i < 0) {
             return true;
         }
