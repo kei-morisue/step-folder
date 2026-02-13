@@ -7,75 +7,89 @@ import { SYM } from "../symbol.js";
 
 export const GUI_PAGE = {
     startup: () => {
-        document.getElementById("topcolor").onchange = (e) => {
-            DRAW.color.face.top = e.target.value
-            STEP.redraw()
-        }
+        const preview = document.getElementById("preview");
+        fetch('./resources/preview.xml')
+            .then(response => response.text())
+            .then(xml => {
+                preview.innerHTML = xml;
 
-        document.getElementById("bottomcolor").onchange = (e) => {
-            DRAW.color.face.bottom = e.target.value
-            STEP.redraw()
-        }
+                document.getElementById("page_export").onclick = (e) => {
+                    const ext = document.getElementById("page_export_ext").value;
+                    const pj = document.getElementById("proj_name").value;
+                    IO3.write("page", pj, ext);
+                };
 
-        document.getElementById("bgcolor").onchange = (e) => {
-            DRAW.color.background = e.target.value
-            STEP.update_dist()
-        }
+                document.getElementById("topcolor").onchange = (e) => {
+                    DRAW.color.face.top = e.target.value
+                    STEP.redraw()
+                }
 
-        document.getElementById("page_next").onclick = GUI_PAGE.next;
-        document.getElementById("page_prev").onclick = GUI_PAGE.prev;
+                document.getElementById("bottomcolor").onchange = (e) => {
+                    DRAW.color.face.bottom = e.target.value
+                    STEP.redraw()
+                }
 
-        document.getElementById("page_reload").onclick = (e) => {
-            PRJ.record(PRJ.current_idx);
-            PRJ.redraw_page();
-        }
+                document.getElementById("bgcolor").onchange = (e) => {
+                    DRAW.color.background = e.target.value
+                    STEP.update_dist()
+                }
+
+                document.getElementById("page_next").onclick = GUI_PAGE.next;
+                document.getElementById("page_prev").onclick = GUI_PAGE.prev;
+
+                document.getElementById("page_reload").onclick = (e) => {
+                    PRJ.record(PRJ.current_idx);
+                    PRJ.redraw_page();
+                }
 
 
-        document.getElementById("loc_text").onchange = (e) => {
-            PAGE.text.location = e.target.value;
-            PRJ.redraw_page();
-        }
+                document.getElementById("loc_text").onchange = (e) => {
+                    PAGE.text.location = e.target.value;
+                    PRJ.redraw_page();
+                }
 
-        PRJ.setup_number_options(
-            ["width_crease",
-                "width_boundary",
-                "width_MMVV",
-                "width_arrow"],
-            ["F", "B", ["MM", "VV"]],
-            [1, 3, 6],
-            DRAW.width.edge
-        );
-        PRJ.setup_number_options(
-            ["width_arrow"],
-            ["arrow"],
-            [3],
-            SYM.width
-        );
+                PRJ.setup_number_options(
+                    ["width_crease",
+                        "width_boundary",
+                        "width_MMVV",
+                        "width_arrow"],
+                    ["F", "B", ["MM", "VV"]],
+                    [1, 3, 6],
+                    DRAW.width.edge
+                );
+                PRJ.setup_number_options(
+                    ["width_arrow"],
+                    ["arrow"],
+                    [4],
+                    SYM.width
+                );
 
-        PRJ.setup_number_options(
-            ["size_text"],
-            ["size"],
-            [100],
-            PAGE.text
-        );
-        PRJ.setup_number_options(
-            ["dim_r", "dim_c", "dim_b"],
-            ["rows", "cols", "blanks"],
-            [4, 3, 1],
-            PAGE.layout
-        );
-        PRJ.setup_number_options(
-            ["dim_w", "dim_h", "dim_x", "dim_y", "step_x"],
-            ["width", "height", "margin_x", "margin_y", "margin_step"],
-            [2894, 4093, 50, 80, 20],
-            PAGE.dim
-        );
-        GUI.open_close("option_color", "inline");
-        GUI.open_close("option_width", "inline");
-        GUI.open_close("option_layers", "inline");
-        GUI.open_close("option_text", "inline");
-        GUI.open_close("option_layout", "inline");
-        GUI.open_close("option_dim", "inline");
+                PRJ.setup_number_options(
+                    ["size_text"],
+                    ["size"],
+                    [100],
+                    PAGE.text
+                );
+                PRJ.setup_number_options(
+                    ["dim_r", "dim_c", "dim_b"],
+                    ["rows", "cols", "blanks"],
+                    [4, 3, 1],
+                    PAGE.layout
+                );
+                PRJ.setup_number_options(
+                    ["dim_w", "dim_h", "dim_x", "dim_y", "step_x"],
+                    ["width", "height", "margin_x", "margin_y", "margin_step"],
+                    [2894, 4093, 50, 80, 20],
+                    PAGE.dim
+                );
+                GUI.open_close("option_color", "inline");
+                GUI.open_close("option_width", "inline");
+                GUI.open_close("option_layers", "inline");
+                GUI.open_close("option_text", "inline");
+                GUI.open_close("option_layout", "inline");
+                GUI.open_close("option_dim", "inline");
+                PRJ.redraw_page();
+            });
     },
 
     prev: () => {

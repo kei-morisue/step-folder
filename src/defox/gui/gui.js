@@ -19,7 +19,7 @@ export const GUI = {
         GUI_IO.import_cp("sample", SMPL.hf, true);
         GUI_IO.import_cp("sample", SMPL.sq);
         GUI_IO.import_cp("sample", SMPL.hanikamu);
-        PRJ.redraw_page();
+
     },
 
     open_close: (id, display_style) => {

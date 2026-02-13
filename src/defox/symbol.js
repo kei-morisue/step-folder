@@ -13,7 +13,7 @@ import { STEP } from "./step.js";
 
 export const SYM = {
     width: {
-        arrow: 3,
+        arrow: 4,
     },
     color: {
         arrow: "black",
