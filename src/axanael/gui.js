@@ -25,9 +25,7 @@ export const GUI = {
                 GUI.set_svg(svg);
                 svg.onmousemove = PAINT.onmove;
                 svg.onclick = PAINT.onclick;
-                // document.getElementById("prev").click();
-                // document.getElementById("prev").click();
-                // document.getElementById("axanael_open").click();
+                svg.onmouseout = PAINT.onout;
             });
 
     },
@@ -41,7 +39,7 @@ export const GUI = {
         const S = STEP.LIN.S;
         const T = STEP.get_transform();
 
-        const syms = [];
+        const syms = STEP.SYMBOLS ?? [];
         PAINT.initialize(svg, FOLD, S, T, syms);
         GUI.set_controls(S);
         GUI.set_templates();
@@ -55,15 +53,15 @@ export const GUI = {
         const l = S.length;
         for (const [i, symbol] of PAINT.symbols.entries()) {
             const num = (i + "").padStart(2, "0");
-            const range = document.createElement("input");
-            range.type = "range";
-            range.min = 0;
-            range.max = l - 1;
-            range.step = 1;
-            range.value = symbol.depth;
-            range.id = `axanael_depth_${num}`;
+            const range_d = document.createElement("input");
+            range_d.type = "range";
+            range_d.min = 0;
+            range_d.max = l - 1;
+            range_d.step = 1;
+            range_d.value = symbol.depth;
+            range_d.id = `axanael_depth_${num}`;
 
-            range.oninput = (e) => {
+            range_d.oninput = (e) => {
                 symbol.depth = parseInt(e.target.value);
                 PAINT.redraw();
             };
@@ -84,15 +82,12 @@ export const GUI = {
             const rev = document.createElement("button");
             rev.innerHTML = "reverse";
             rev.onclick = () => {
-                const s = symbol.params.s;
-                const e = symbol.params.e;
-                symbol.params.e = s;
-                symbol.params.s = e;
+                symbol.params.is_rev = !symbol.params.is_rev;
                 PAINT.redraw();
             }
             const span = document.createElement("span");
             body.appendChild(span);
-            span.appendChild(range);
+            span.appendChild(range_d);
             span.appendChild(flip);
             span.appendChild(rev);
             span.appendChild(rem);
@@ -102,7 +97,8 @@ export const GUI = {
 
     close: () => {
         document.getElementById("axanael").close();
-
+        STEP.SYMBOLS = PAINT.symbols;
+        STEP.redraw();
     },
     discard: () => {
         document.getElementById("axanael").close();
@@ -123,38 +119,39 @@ export const GUI = {
 
     set_templates: () => {
         const body = SVG.clear("axanael_lib");
-
-        GUI.set_template(body, 0, SYM.create_arrow_mv([0, 0], [.5, .5], false, true));
-        GUI.set_template(body, 0, SYM.create_arrow_mv([0, 0], [.5, .5], true, true));
-        GUI.set_template(body, 0, SYM.create_arrow_mv([0, 0], [.5, .5], false, true, true));
-        GUI.set_template(body, 0, SYM.create_arrow_mv([0, 0], [.5, .5], true, true, true));
-        GUI.set_template(body, 2, SYM.create_arrow_sink([0, 0], [.5, .5], false));
+        const p1 = document.createElement("p");
+        const p2 = document.createElement("p");
+        body.appendChild(p1);
+        body.appendChild(p2);
+        GUI.set_template(p1, 0, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], false, true));
+        GUI.set_template(p1, 1, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], true, true));
+        GUI.set_template(p1, 2, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], false, true, true));
+        GUI.set_template(p1, 3, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], true, true, true));
+        GUI.set_template(p2, 4, SYM.create_arrow_sink([0.505, 0.505], [.495, .495], false));
+        GUI.set_template(p2, 5, SYM.create_arrow_sink([0.505, 0.505], [.495, .495], true));
 
     },
-    set_template: (body, i, sym) => {
-        const p = document.createElement("span");
-        body.appendChild(p);
+    set_template: (body, type, sym) => {
+        const span = document.createElement("span");
+        body.appendChild(span);
         const input = document.createElement("input");
         input.type = "radio";
         input.name = "templates";
-        const num = (i + "").padStart(2, "0");
-        input.id = `template_${num}_select`;
         const svg = document.createElementNS(SVG.NS, "svg");
-        input.click = () => {
-            PAINT.mode = i;
+        input.onclick = () => {
+            PAINT.type = type;
         }
-        const s = SVG.SCALE / 2;
-        svg.setAttribute("width", s);
-        svg.setAttribute("height", s);
+        const s = SVG.SCALE;
+        svg.setAttribute("width", s * 0.15);
+        svg.setAttribute("height", s * 0.15);
         const b = SVG.MARGIN;
-        svg.setAttribute("viewBox", `-${b} -${b} ${b + s} ${b + s}`);
+        svg.setAttribute("viewBox", `${s * 0.4} ${s * 0.40} ${s * 0.2} ${s * 0.2}`);
         svg.style.background = D.color.background
-        svg.style.width = "10%";
-        svg.style.height = "10%";
+
 
         svg.appendChild(sym);
-        p.appendChild(input);
-        p.appendChild(svg);
+        span.appendChild(input);
+        span.appendChild(svg);
 
     },
 

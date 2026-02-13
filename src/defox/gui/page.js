@@ -3,6 +3,7 @@ import { DRAW } from "../draw.js";
 import { PRJ } from "../project.js";
 import { PAGE } from "../page.js";
 import { GUI } from "./gui.js";
+import { SYM } from "../symbol.js";
 
 export const GUI_PAGE = {
     startup: () => {
@@ -38,11 +39,19 @@ export const GUI_PAGE = {
         PRJ.setup_number_options(
             ["width_crease",
                 "width_boundary",
-                "width_MMVV"],
+                "width_MMVV",
+                "width_arrow"],
             ["F", "B", ["MM", "VV"]],
             [1, 3, 6],
             DRAW.width.edge
         );
+        PRJ.setup_number_options(
+            ["width_arrow"],
+            ["arrow"],
+            [3],
+            SYM.width
+        );
+
         PRJ.setup_number_options(
             ["size_text"],
             ["size"],

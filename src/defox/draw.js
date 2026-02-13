@@ -109,7 +109,13 @@ export const DRAW = {
         SVG.draw_segments(g2, creases, { stroke_width: widths_c, stroke: colors_c });
 
     },
-    draw_state: (svg, FOLD, CELL, STATE, T, clip_c, id = 0) => {
+    draw_symbol: (svg, symbol, FOLD, T) => {
+        const el = SYM.create(symbol.type, symbol.params, FOLD, T);
+        if (el) {
+            svg.appendChild(el);
+        }
+    },
+    draw_state: (svg, FOLD, CELL, STATE, T, clip_c, id = 0, symbols = []) => {
         const det = N.det(T[0]);
         const is_flip = det < 0
         if (STATE == undefined) {
@@ -190,7 +196,9 @@ export const DRAW = {
                 DRAW.draw_creases(gg, creases_clipped, as, is_flip ^ Ff[fi]);
             }
         }
-
+        for (const [si, s] of symbols.entries()) {
+            DRAW.draw_symbol(g, s, FOLD, T);
+        }
     },
 
 

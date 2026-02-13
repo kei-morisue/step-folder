@@ -49,10 +49,7 @@ export const DRAW_LIN = {
         });
     },
 
-    draw_symbol: (svg, symbol) => {
-        const el = SYM.create(symbol.type, symbol.params);
-        svg.appendChild(el);
-    },
+
 
     draw_state: (svg, FOLD, S, T, clip_c, depth, id = 0, symbols = []) => {
         const det = N.det(T[0]);
@@ -101,7 +98,7 @@ export const DRAW_LIN = {
             const ss = F_sym[i];
             if (ss) {
                 for (const s of ss) {
-                    DRAW_LIN.draw_symbol(g, s);
+                    DRAW.draw_symbol(g, s, FOLD, T);
                 }
             }
 

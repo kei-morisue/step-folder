@@ -113,7 +113,7 @@ export const IO3 = {    // INPUT-OUTPUT
         const data_ = [];
         for (const d of data) {
             const d_ = {};
-            for (const key of ["fold_cp", "cell_cp", "fold", "cell_d", "params", "lin"]) {
+            for (const key of ["fold_cp", "cell_cp", "fold", "cell_d", "params", "lin", "symbols"]) {
                 d_[key] = d[key];
             }
             data_.push(d_);

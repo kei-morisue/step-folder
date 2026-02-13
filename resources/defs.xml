@@ -11,9 +11,9 @@
     orient="auto-start-reverse">
     <path d="M 0 0 L 7 3 L 7 0 L 12 5 L 7 10 L 7 7 L 0 10 z" fill="black" />
 </marker>
-<marker id="arrow_head_closed_sink" viewBox="0 0 12 10" refX="12" refY="5" markerWidth="60" markerHeight="60"
+<marker id="arrow_head_closed_sink" viewBox="-1 0 14 10" refX="12" refY="5" markerWidth="30" markerHeight="30"
     orient="auto-start-reverse">
-    <path d="M 0 0 L 7 3 L 7 0 L 12 5 L 7 10 L 7 7 L 0 10 z" fill="black" />
+    <path d="M 0 0 L 7 3 L 7 0 L 12 5 L 7 10 L 7 7 L 0 10 z" fill="white" stroke="black"/>
 </marker>
 
 <marker id="arrow_head_flip" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10"

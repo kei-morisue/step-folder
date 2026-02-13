@@ -7,24 +7,32 @@ import { PRJ } from "../defox/project.js"
 import { STEP } from "../defox/step.js"
 import { N } from "../defox/nath.js"
 import { DRAW_LIN } from "../defox/draw_lin.js"
-import { SYM } from "../defox/symbol.js"
 
 import { L } from "../cyborg/lath.js"
 import { PAINT as P } from "../cyborg/paint.js"
 
 import { GUI } from "./gui.js"
+import { TMP } from "./template.js"
 
 export const PAINT = {
     symbols: [],
     FOLD: undefined,
     S: undefined,
     svg: undefined,
-    segs: [],
+    creases: [],
+    vertices: [],
+    edges: [],
+
 
     svg_selection: undefined,
-    mode: 0,
+    type: 0,
     segment: -1,
     vertex: undefined,
+    onout: () => {
+        PAINT.segment = -1;
+        PAINT.vertex = undefined;
+        PAINT.redraw();
+    },
 
     get_pointer_loc: (e) => {
         const svg = PAINT.svg;
@@ -41,27 +49,39 @@ export const PAINT = {
     onmove: (e) => {
         const FOLD = PAINT.FOLD;
         const pt = PAINT.get_pointer_loc(e);
-        PAINT.segment = L.find_seg(
-            pt,
-            PAINT.segs,
-            FOLD.UA,
-            (i) => { return FOLD.UA[i] != "F"; }
-        )
+
+        switch (PAINT.type) {
+            default:
+                PAINT.segment = L.find_seg(
+                    pt,
+                    PAINT.creases,
+                    FOLD.UA,
+                    (i) => { return FOLD.UA[i] != "F"; }
+                )
+                break;
+        }
         PAINT.hilight_segment();
     },
     onclick: (e) => {
-        if (PAINT.segment[0] < 0) { return; }
+        const c_idx = PAINT.segment[0];
+        if (c_idx < 0) { return; }
 
-        const [p_, q_] = PAINT.segs[PAINT.segment[0]];
-        const [x, y] = M.sub(q_, p_);
-        const q = M.add([x / 2, y / 2], M.add([-y / 2, x / 2], p_));
-        const p = M.add(q, [y, -x]);
-
-        const is_clockwise = true;
-        const is_m = false;
-
-        const pa = { s: p, e: q, is_clockwise, is_m };
-        PAINT.symbols.push({ depth: 0, type: 0, params: pa });
+        let sym = undefined;
+        switch (PAINT.type) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+                sym = TMP.mv(c_idx, 0, PAINT.type);
+                break;
+            case 4:
+                sym = TMP.sink(c_idx, 0, false, PAINT.type);
+            case 5:
+                sym = TMP.sink(c_idx, 0, true, PAINT.type);
+            default:
+                break;
+        }
+        PAINT.symbols.push(sym);
         GUI.set_controls(PAINT.S);
         PAINT.redraw();
     },
@@ -69,7 +89,7 @@ export const PAINT = {
         if (PAINT.segment[0] < 0) { return; }
         const s = SVG.SCALE;
         const T = P.get_T();
-        const [v1_, v2_] = PAINT.segs[PAINT.segment[0]];
+        const [v1_, v2_] = PAINT.creases[PAINT.segment[0]];
         const v1 = N.transform(T, v1_);
         const v2 = N.transform(T, v2_);
         SVG.clear("axanael_selection");
@@ -92,12 +112,14 @@ export const PAINT = {
         PAINT.symbols = symbols;
         PAINT.FOLD = FOLD;
         PAINT.S = S;
-        PAINT.mode = 0;
+        PAINT.type = 0;
         PAINT.segment = -1;
         PAINT.vertex = undefined;
         const V_ = M.normalize_points(FOLD.Vf).map((v) => N.transform(T, v));
 
-        PAINT.segs = FOLD.UV.map((vs) => M.expand(vs, V_));
+        PAINT.creases = FOLD.UV.map((vs) => M.expand(vs, V_));
+        PAINT.edges = FOLD.EV.map((vs) => M.expand(vs, V_));
+        PAINT.vertices = V_;
     },
 
     redraw: () => {

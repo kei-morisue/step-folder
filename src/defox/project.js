@@ -85,6 +85,8 @@ export const PRJ = {
         STEP.CELL_D = PRJ.steps[i].cell_d;
         STEP.LIN = PRJ.steps[i].lin;
 
+        STEP.SYMBOLS = PRJ.steps[i].symbols;
+
         const p = PRJ.steps[i].params;
         PRJ.restore_params(p);
 
@@ -130,6 +132,7 @@ export const PRJ = {
         PRJ.steps[i].cell_d = STEP.CELL_D;
         PRJ.steps[i].lin = STEP.LIN;
         PRJ.steps[i].params = PRJ.parameters();
+        PRJ.steps[i].symbols = STEP.SYMBOLS;
     },
 
     parameters: () => {
