@@ -39,17 +39,18 @@ export const GUI = {
         PRJ.record(i);
         const FOLD = PRJ.steps[i].fold_d;
         const S = STEP.LIN.S;
+        const T = STEP.get_transform();
 
         const syms = [];
-        PAINT.initialize(svg, FOLD, S, syms);
-        GUI.set_depths(S);
+        PAINT.initialize(svg, FOLD, S, T, syms);
+        GUI.set_controls(S);
         GUI.set_templates();
 
         PAINT.redraw();
 
     },
 
-    set_depths: (S) => {
+    set_controls: (S) => {
         const body = SVG.clear("axanael_control_b");
         const l = S.length;
         for (const [i, symbol] of PAINT.symbols.entries()) {
@@ -70,7 +71,7 @@ export const GUI = {
             rem.innerHTML = "remove";
             rem.onclick = () => {
                 PAINT.symbols.splice(i, 1);
-                GUI.set_depths(S);
+                GUI.set_controls(S);
                 PAINT.redraw();
             }
             const flip = document.createElement("button");
@@ -124,12 +125,14 @@ export const GUI = {
         const body = SVG.clear("axanael_lib");
 
         GUI.set_template(body, 0, SYM.create_arrow_mv([0, 0], [.5, .5], false, true));
-        GUI.set_template(body, 1, SYM.create_arrow_mv([0, 0], [.5, .5], true, true));
+        GUI.set_template(body, 0, SYM.create_arrow_mv([0, 0], [.5, .5], true, true));
+        GUI.set_template(body, 0, SYM.create_arrow_mv([0, 0], [.5, .5], false, true, true));
+        GUI.set_template(body, 0, SYM.create_arrow_mv([0, 0], [.5, .5], true, true, true));
         GUI.set_template(body, 2, SYM.create_arrow_sink([0, 0], [.5, .5], false));
 
     },
     set_template: (body, i, sym) => {
-        const p = document.createElement("p");
+        const p = document.createElement("span");
         body.appendChild(p);
         const input = document.createElement("input");
         input.type = "radio";
@@ -143,11 +146,11 @@ export const GUI = {
         const s = SVG.SCALE / 2;
         svg.setAttribute("width", s);
         svg.setAttribute("height", s);
-        const b = SVG.MARGIN / 2;
-        svg.setAttribute("viewBox", `-${b} -${b} ${2 * b + s} ${2 * b + s}`);
+        const b = SVG.MARGIN;
+        svg.setAttribute("viewBox", `-${b} -${b} ${b + s} ${b + s}`);
         svg.style.background = D.color.background
-        svg.style.width = "20%";
-        svg.style.height = "20%";
+        svg.style.width = "10%";
+        svg.style.height = "10%";
 
         svg.appendChild(sym);
         p.appendChild(input);

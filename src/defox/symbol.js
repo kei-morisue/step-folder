@@ -24,7 +24,7 @@ export const SYM = {
         switch (type) {
             case 0:
 
-                return SYM.create_arrow_mv(params.s, params.e, false, params.is_clockwise);
+                return SYM.create_arrow_mv(params.s, params.e, false, params.is_clockwise, true);
 
             default:
                 break;
@@ -32,7 +32,7 @@ export const SYM = {
 
     },
 
-    create_arrow_mv: (s, e, is_m, is_clockwese) => {
+    create_arrow_mv: (s, e, is_m, is_clockwese, is_sqeezed) => {
 
 
         const k = SVG.SCALE;
@@ -42,7 +42,7 @@ export const SYM = {
         const d = M.sub([x1, y1], [x0, y0]);
         const [dx, dy] = d;
         const n = is_clockwese ? [dy, -dx] : [-dy, dx];
-        const [x, y] = M.add(M.add([x0, y0], M.mul(d, .5)), M.mul(n, 0.3));
+        const [x, y] = M.add(M.add([x0, y0], M.mul(d, is_sqeezed ? -.5 : .5)), M.mul(n, 0.5));
 
         sym.setAttribute("d", `M ${x0} ${y0} S ${x} ${y}, ${x1} ${y1}`);
         sym.setAttribute("stroke", SYM.color.arrow);

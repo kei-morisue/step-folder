@@ -15,7 +15,7 @@
 }
 
 .axanael_lib {
-    display: inline;
+    display: flex;
 }
 
 .axanael_lib svg {

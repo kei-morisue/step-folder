@@ -62,7 +62,7 @@ export const PAINT = {
 
         const pa = { s: p, e: q, is_clockwise, is_m };
         PAINT.symbols.push({ depth: 0, type: 0, params: pa });
-        GUI.set_depths(PAINT.S);
+        GUI.set_controls(PAINT.S);
         PAINT.redraw();
     },
     hilight_segment: () => {
@@ -87,7 +87,7 @@ export const PAINT = {
         seg_svg.setAttribute("stroke-width", 6);
     },
 
-    initialize: (svg, FOLD, S, symbols) => {
+    initialize: (svg, FOLD, S, T, symbols) => {
         PAINT.svg = svg;
         PAINT.symbols = symbols;
         PAINT.FOLD = FOLD;
@@ -95,7 +95,9 @@ export const PAINT = {
         PAINT.mode = 0;
         PAINT.segment = -1;
         PAINT.vertex = undefined;
-        PAINT.segs = FOLD.UV.map((vs) => M.expand(vs, FOLD.Vf));
+        const V_ = M.normalize_points(FOLD.Vf).map((v) => N.transform(T, v));
+
+        PAINT.segs = FOLD.UV.map((vs) => M.expand(vs, V_));
     },
 
     redraw: () => {

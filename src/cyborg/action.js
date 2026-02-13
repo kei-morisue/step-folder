@@ -246,8 +246,8 @@ export const ACT = {
             const EA = PAINT.EA.map(a => a);
             EA[i] = a;
             PAINT.EA = EA;
-            PAINT.record()
-            PAINT.redraw();
+            PAINT.record();
+            PAINT.update_cp(CP);
             ACT.hilight(e);
             return true;
         }
