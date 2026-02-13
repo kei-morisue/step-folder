@@ -3,11 +3,11 @@ import { N } from "./nath.js";
 import { SEG } from "./segment.js";
 import { STEP } from "./step.js";
 import { SVG3 } from "./svg.js";
+import { SYM } from "./symbol.js"
 
 import { M } from "../flatfolder/math.js";
 
 import { SVG } from "../flatfolder/svg.js";
-
 
 export const DRAW = {
     color: {

@@ -63,12 +63,13 @@ export const PAGE = {
             const T = STEP.get_T(flip0, rotate, scale, cx, cy);
             const FOLD = steps[i].fold_d;
             const CELL = steps[i].cell_d;
+            const symbols = steps[i].symbols ?? [];
 
             if (CELL) {
                 const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
-                DRAW.draw_state(panel_d, FOLD, CELL, STATE, T, clip, i);
+                DRAW.draw_state(panel_d, FOLD, CELL, STATE, T, clip, i, symbols);
             } else {
-                DRAW_LIN.draw_state(panel_d, FOLD, steps[i].lin.S, T, clip, depth, i);
+                DRAW_LIN.draw_state(panel_d, FOLD, steps[i].lin.S, T, clip, depth, i, symbols);
             }
             const t = PAGE.text.size;
             let num = i + 1;
