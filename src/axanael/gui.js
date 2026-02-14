@@ -3,9 +3,10 @@ import { STEP } from "../defox/step.js"
 import { DRAW as D } from "../defox/draw.js"
 import { SEG } from "../defox/segment.js"
 import { PRJ } from "../defox/project.js"
-
 import { SYM } from "../defox/symbol.js"
+
 import { PAINT } from "./paint.js"
+import { CTRL } from "./control.js"
 
 
 export const GUI = {
@@ -41,57 +42,17 @@ export const GUI = {
 
         const syms = STEP.SYMBOLS ?? [];
         PAINT.initialize(svg, FOLD, S, T, syms);
-        GUI.set_controls(S);
+        GUI.set_controls(S.length);
         GUI.set_templates();
 
         PAINT.redraw();
 
     },
 
-    set_controls: (S) => {
+    set_controls: (length) => {
         const body = SVG.clear("axanael_control_b");
-        const l = S.length;
         for (const [i, symbol] of PAINT.symbols.entries()) {
-            const num = (i + "").padStart(2, "0");
-            const range_d = document.createElement("input");
-            range_d.type = "range";
-            range_d.min = 0;
-            range_d.max = l - 1;
-            range_d.step = 1;
-            range_d.value = symbol.depth;
-            range_d.id = `axanael_depth_${num}`;
-
-            range_d.oninput = (e) => {
-                symbol.depth = parseInt(e.target.value);
-                PAINT.redraw();
-            };
-            const rem = document.createElement("button");
-            rem.innerHTML = "remove";
-            rem.onclick = () => {
-                PAINT.symbols.splice(i, 1);
-                GUI.set_controls(S);
-                PAINT.redraw();
-            }
-            const flip = document.createElement("button");
-            flip.innerHTML = "flip";
-            flip.onclick = () => {
-                symbol.params.is_clockwise = !symbol.params.is_clockwise;
-                PAINT.redraw();
-            }
-
-            const rev = document.createElement("button");
-            rev.innerHTML = "reverse";
-            rev.onclick = () => {
-                symbol.params.is_rev = !symbol.params.is_rev;
-                PAINT.redraw();
-            }
-            const span = document.createElement("span");
-            body.appendChild(span);
-            span.appendChild(range_d);
-            span.appendChild(flip);
-            span.appendChild(rev);
-            span.appendChild(rem);
-
+            CTRL.set(body, i, symbol, length);
         }
     },
 
@@ -121,14 +82,20 @@ export const GUI = {
         const body = SVG.clear("axanael_lib");
         const p1 = document.createElement("p");
         const p2 = document.createElement("p");
+        const p3 = document.createElement("p");
+
         body.appendChild(p1);
         body.appendChild(p2);
+        body.appendChild(p3);
+
         GUI.set_template(p1, 0, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], false, true));
         GUI.set_template(p1, 1, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], true, true));
         GUI.set_template(p1, 2, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], false, true, true));
         GUI.set_template(p1, 3, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], true, true, true));
         GUI.set_template(p2, 4, SYM.create_arrow_sink([0.505, 0.505], [.495, .495], false));
         GUI.set_template(p2, 5, SYM.create_arrow_sink([0.505, 0.505], [.495, .495], true));
+        GUI.set_template(p2, 6, SYM.create_fold_unfold([0.55, 0.55], [.45, .45], false, false));
+        GUI.set_template(p2, 7, SYM.create_fold_unfold([0.55, 0.55], [.45, .45], false, true));
 
     },
     set_template: (body, type, sym) => {

@@ -49,6 +49,10 @@ export const SYM = {
                 return SYM.create_arrow_sink(s, e, false);
             case 5:
                 return SYM.create_arrow_sink(s, e, true);
+            case 6:
+                return SYM.create_fold_unfold(s, e, params.is_clockwise, false);
+            case 7:
+                return SYM.create_fold_unfold(s, e, params.is_clockwise, true);
             default:
                 return undefined;
         }
@@ -56,14 +60,14 @@ export const SYM = {
 
     create_arrow_mv: (s, e, is_m, is_clockwese, is_sqeezed) => {
         const k = SVG.SCALE;
-        const sym = document.createElementNS(SVG.NS, "path");
         const [x0, y0] = M.mul(s, k);
         const [x1, y1] = M.mul(e, k);
         const d = M.sub([x1, y1], [x0, y0]);
         const [dx, dy] = d;
         const n = is_clockwese ? [dy, -dx] : [-dy, dx];
-        const [x, y] = M.add(M.add([x0, y0], M.mul(d, is_sqeezed ? -.5 : .5)), M.mul(n, 0.5));
+        const [x, y] = M.add(M.add([x0, y0], M.mul(d, is_sqeezed ? -.5 : .5)), M.mul(n, 0.3));
 
+        const sym = document.createElementNS(SVG.NS, "path");
         sym.setAttribute("d", `M ${x0} ${y0} S ${x} ${y}, ${x1} ${y1}`);
         sym.setAttribute("stroke", SYM.color.arrow);
         sym.setAttribute("stroke-width", SYM.width.arrow);
@@ -76,13 +80,13 @@ export const SYM = {
 
 
     create_arrow_sink: (s, e, is_closed) => {
-        const sym = document.createElementNS(SVG.NS, "path");
         const k = SVG.SCALE;
         const [x1, y1] = M.mul(e, k);
         const d = M.sub([x1, y1], M.mul(s, k));
         const u = M.unit(d);
         const [x, y] = M.add([x1, y1], u);
 
+        const sym = document.createElementNS(SVG.NS, "path");
         sym.setAttribute("d", `M ${x} ${y} L ${x1} ${y1}`);
         sym.setAttribute("stroke", SYM.color.arrow);
         sym.setAttribute("stroke-width", SYM.width.arrow);
@@ -92,6 +96,35 @@ export const SYM = {
         sym.setAttribute("marker-end", end);
         sym.setAttribute("fill", "transparent");
         return sym;
+    },
+
+    create_fold_unfold: (s, e, is_clockwese, is_sqeezed) => {
+        const k = SVG.SCALE;
+        const [x0, y0] = M.mul(s, k);
+        const [x1, y1] = M.mul(e, k);
+        const d = M.sub([x1, y1], [x0, y0]);
+        const [dx, dy] = d;
+        const n = is_clockwese ? [dy, -dx] : [-dy, dx];
+        const [x, y] = M.add(M.add([x0, y0], M.mul(d, is_sqeezed ? -.3 : .5)), M.mul(n, 0.3));
+
+
+        const [x2, y2] = M.add([x0, y0], M.mul(n, 0.3));
+        const dd = M.sub([x2, y2], [x1, y1]);
+        const [dxx, dyy] = dd;
+        const nn = is_clockwese ? [dyy, -dxx] : [-dyy, dxx];
+        const [xx, yy] = M.add(M.add([x1, y1], M.mul(dd, .5)), M.mul(nn, -0.3));
+
+
+        const sym = document.createElementNS(SVG.NS, "path");
+        sym.setAttribute("d", `M ${x0} ${y0} S ${x} ${y}, ${x1} ${y1} L ${x1} ${y1} S ${xx} ${yy}, ${x2} ${y2}`);
+        sym.setAttribute("stroke", SYM.color.arrow);
+        sym.setAttribute("stroke-width", SYM.width.arrow);
+        sym.setAttribute("stroke-linecap", "butt");
+        const end = "url(#arrow_head_fold_unfold)";
+        sym.setAttribute("marker-end", end);
+        sym.setAttribute("fill", "transparent");
+        return sym;
+
     },
 
 }

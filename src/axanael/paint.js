@@ -78,11 +78,15 @@ export const PAINT = {
                 sym = TMP.sink(c_idx, 0, false, PAINT.type);
             case 5:
                 sym = TMP.sink(c_idx, 0, true, PAINT.type);
+            case 6:
+            case 7:
+                sym = TMP.fold_unfold(c_idx, 0, PAINT.type);
+                break;
             default:
                 break;
         }
         PAINT.symbols.push(sym);
-        GUI.set_controls(PAINT.S);
+        GUI.set_controls(PAINT.S.length);
         PAINT.redraw();
     },
     hilight_segment: () => {

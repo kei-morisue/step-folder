@@ -25,4 +25,12 @@ export const TMP = {
         const pa = { crease_index: c_idx, is_closed, is_rev };
         return { depth, type, params: pa };
     },
+
+    fold_unfold: (crease_index, depth, type) => {
+        const is_clockwise = false;
+        const is_rev = false;
+        const pa = { crease_index, is_rev, is_clockwise };
+        return { depth, type, params: pa };
+    },
+
 }
