@@ -7,6 +7,7 @@ import { SYM } from "../defox/symbol.js"
 
 import { PAINT } from "./paint.js"
 import { CTRL } from "./control.js"
+import { TMP } from "./template.js"
 
 
 export const GUI = {
@@ -88,37 +89,15 @@ export const GUI = {
         body.appendChild(p2);
         body.appendChild(p3);
 
-        GUI.set_template(p1, 0, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], false, true));
-        GUI.set_template(p1, 1, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], true, true));
-        GUI.set_template(p1, 2, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], false, true, true));
-        GUI.set_template(p1, 3, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], true, true, true));
-        GUI.set_template(p2, 4, SYM.create_arrow_sink([0.505, 0.505], [.495, .495], false));
-        GUI.set_template(p2, 5, SYM.create_arrow_sink([0.505, 0.505], [.495, .495], true));
-        GUI.set_template(p2, 6, SYM.create_fold_unfold([0.55, 0.55], [.45, .45], false, false));
-        GUI.set_template(p2, 7, SYM.create_fold_unfold([0.55, 0.55], [.45, .45], false, true));
-
-    },
-    set_template: (body, type, sym) => {
-        const span = document.createElement("span");
-        body.appendChild(span);
-        const input = document.createElement("input");
-        input.type = "radio";
-        input.name = "templates";
-        const svg = document.createElementNS(SVG.NS, "svg");
-        input.onclick = () => {
-            PAINT.type = type;
-        }
-        const s = SVG.SCALE;
-        svg.setAttribute("width", s * 0.15);
-        svg.setAttribute("height", s * 0.15);
-        const b = SVG.MARGIN;
-        svg.setAttribute("viewBox", `${s * 0.4} ${s * 0.40} ${s * 0.2} ${s * 0.2}`);
-        svg.style.background = D.color.background
-
-
-        svg.appendChild(sym);
-        span.appendChild(input);
-        span.appendChild(svg);
+        TMP.set_template(p1, 0, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], false, true));
+        TMP.set_template(p1, 1, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], true, true));
+        TMP.set_template(p1, 2, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], false, true, true));
+        TMP.set_template(p1, 3, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], true, true, true));
+        TMP.set_template(p2, 4, SYM.create_arrow_sink([0.505, 0.505], [.495, .495], false));
+        TMP.set_template(p2, 5, SYM.create_arrow_sink([0.505, 0.505], [.495, .495], true));
+        TMP.set_template(p2, 6, SYM.create_fold_unfold([0.55, 0.55], [.45, .45], false, false));
+        TMP.set_template(p2, 7, SYM.create_fold_unfold([0.55, 0.55], [.45, .45], false, true));
+        TMP.set_template(p3, 8, SYM.create_flip([.5, .5], false, 100));
 
     },
 

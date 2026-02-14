@@ -64,7 +64,6 @@ export const PAINT = {
     },
     onclick: (e) => {
         const c_idx = PAINT.segment[0];
-        if (c_idx < 0) { return; }
 
         let sym = undefined;
         switch (PAINT.type) {
@@ -72,15 +71,22 @@ export const PAINT = {
             case 1:
             case 2:
             case 3:
+                if (c_idx < 0) { return; }
                 sym = TMP.mv(c_idx, 0, PAINT.type);
                 break;
             case 4:
+                if (c_idx < 0) { return; }
                 sym = TMP.sink(c_idx, 0, false, PAINT.type);
             case 5:
+                if (c_idx < 0) { return; }
                 sym = TMP.sink(c_idx, 0, true, PAINT.type);
             case 6:
             case 7:
+                if (c_idx < 0) { return; }
                 sym = TMP.fold_unfold(c_idx, 0, PAINT.type);
+                break;
+            case 8:
+                sym = TMP.flip(.95, .5, 0, PAINT.type);
                 break;
             default:
                 break;

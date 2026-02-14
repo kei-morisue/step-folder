@@ -28,13 +28,16 @@ export const SYM = {
     create: (type, params, FOLD, T) => {
         const i = params.crease_index;
 
-        const { Vf, UV } = FOLD;
-        const V_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
+        let s, e;
+        if (i >= 0) {
+            const { Vf, UV } = FOLD;
+            const V_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
+            const [p, q] = M.expand(UV[i], V_);
 
-        const [p, q] = M.expand(UV[i], V_);
-        let [s, e] = SYM.get_cross(p, q);
-        if (params.is_rev) {
-            [s, e] = [e, s];
+            [s, e] = SYM.get_cross(p, q);
+            if (params.is_rev) {
+                [s, e] = [e, s];
+            }
         }
         switch (type) {
             case 0:
@@ -53,6 +56,9 @@ export const SYM = {
                 return SYM.create_fold_unfold(s, e, params.is_clockwise, false);
             case 7:
                 return SYM.create_fold_unfold(s, e, params.is_clockwise, true);
+            case 8:
+                const c = [params.cx, params.cy];
+                return SYM.create_flip(c, params.is_rev, 100);
             default:
                 return undefined;
         }
@@ -122,6 +128,37 @@ export const SYM = {
         sym.setAttribute("stroke-linecap", "butt");
         const end = "url(#arrow_head_fold_unfold)";
         sym.setAttribute("marker-end", end);
+        sym.setAttribute("fill", "transparent");
+        return sym;
+
+    },
+
+
+    create_flip: (center, is_rev, size = 100) => {
+        const k = SVG.SCALE;
+        const [cx, cy] = center;
+        const [x, y] = [cx * k, cy * k];
+        const kk = size / 2;
+        const [x0, y0] = [x - kk * Math.sqrt(3), y + size / 2];
+        const [x1, y1] = [x + kk * Math.sqrt(3), y + size / 2];
+        const [mx, my] = [x, y + size];
+        const [nx, ny] = [x, y];
+
+
+        const sym = document.createElementNS(SVG.NS, "path");
+        sym.setAttribute("d", `M ${x0} ${y0} A ${size} ${size} 0 0 0 ${mx} ${my} A ${size / 2} ${size / 2} 0 0 1 ${nx} ${ny} A ${size / 2} ${size / 2} 0 1 1 ${mx} ${my} A ${size} ${size} 0 0 0 ${x1} ${y1}`);
+        sym.setAttribute("stroke", SYM.color.arrow);
+        sym.setAttribute("stroke-width", SYM.width.arrow);
+        sym.setAttribute("stroke-linecap", "butt");
+        const end = "url(#arrow_head_flip)";
+        if (is_rev) {
+            sym.setAttribute("marker-start", end);
+        }
+        else {
+            sym.setAttribute("marker-end", end);
+        }
+        // const mid = "url(#arrow_body_flip)";
+        // sym.setAttribute("marker-mid", mid);
         sym.setAttribute("fill", "transparent");
         return sym;
 
