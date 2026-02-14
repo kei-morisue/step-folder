@@ -51,6 +51,10 @@ export const PAINT = {
         const pt = PAINT.get_pointer_loc(e);
 
         switch (PAINT.type) {
+            case 9:
+                PAINT.vertex = L.find_v(pt, PAINT.vertices, 10);
+                PAINT.hilight_vertex();
+                break;
             default:
                 PAINT.segment = L.find_seg(
                     pt,
@@ -58,12 +62,13 @@ export const PAINT = {
                     FOLD.UA,
                     (i) => { return FOLD.UA[i] != "F"; }
                 )
+                PAINT.hilight_segment();
                 break;
         }
-        PAINT.hilight_segment();
     },
     onclick: (e) => {
         const c_idx = PAINT.segment[0];
+        const v = PAINT.vertex;
 
         let sym = undefined;
         switch (PAINT.type) {
@@ -88,6 +93,8 @@ export const PAINT = {
             case 8:
                 sym = TMP.flip(.95, .5, 0, PAINT.type);
                 break;
+            case 9:
+                sym = TMP.reference_point(v, 0, PAINT.type);
             default:
                 break;
         }
@@ -115,6 +122,25 @@ export const PAINT = {
         const color = "magenta";
         seg_svg.setAttribute("stroke", color);
         seg_svg.setAttribute("stroke-width", 6);
+    },
+    hilight_vertex: () => {
+        if (!PAINT.vertex) { return; }
+        const s = SVG.SCALE;
+        const T = P.get_T();
+        const v = N.transform(T, PAINT.vertex);
+        SVG.clear("axanael_selection");
+        const seg_svg = SVG.append(
+            "circle",
+            PAINT.svg_selection,
+            {
+                cx: v[0] * s,
+                cy: v[1] * s,
+                r: 10,
+                fill: "transparent",
+            });
+        const color = "magenta";
+        seg_svg.setAttribute("stroke", color);
+        seg_svg.setAttribute("stroke-width", 4);
     },
 
     initialize: (svg, FOLD, S, T, symbols) => {

@@ -42,6 +42,11 @@ export const TMP = {
         return { depth, type, params: pa };
 
     },
+    reference_point: ([cx, cy], depth, type) => {
+        const pa = { cx, cy };
+        return { depth, type, params: pa };
+
+    },
 
     set_template: (body, type, sym) => {
         const span = document.createElement("span");

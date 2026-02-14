@@ -14,9 +14,11 @@ import { STEP } from "./step.js";
 export const SYM = {
     width: {
         arrow: 4,
+        reference_point: 4,
     },
     color: {
         arrow: "black",
+        reference_point: "magenta",
     },
     get_cross: (p, q) => {
         const [x, y] = M.sub(q, p);
@@ -27,11 +29,11 @@ export const SYM = {
 
     create: (type, params, FOLD, T) => {
         const i = params.crease_index;
+        const { Vf, UV } = FOLD;
+        const V_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
 
-        let s, e;
+        let s, e, v;
         if (i >= 0) {
-            const { Vf, UV } = FOLD;
-            const V_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
             const [p, q] = M.expand(UV[i], V_);
 
             [s, e] = SYM.get_cross(p, q);
@@ -59,6 +61,9 @@ export const SYM = {
             case 8:
                 const c = [params.cx, params.cy];
                 return SYM.create_flip(c, params.is_rev, 100);
+            case 9:
+                const v = [params.cx, params.cy];
+                return SYM.create_reference_point(v);
             default:
                 return undefined;
         }
@@ -157,11 +162,20 @@ export const SYM = {
         else {
             sym.setAttribute("marker-end", end);
         }
-        // const mid = "url(#arrow_body_flip)";
-        // sym.setAttribute("marker-mid", mid);
         sym.setAttribute("fill", "transparent");
         return sym;
+    },
 
+    create_reference_point: ([cx, cy], r = 20) => {
+        const [x, y] = M.mul([cx, cy], SVG.SCALE);
+        const sym = document.createElementNS(SVG.NS, "circle");
+        sym.setAttribute("cx", x);
+        sym.setAttribute("cy", y);
+        sym.setAttribute("r", r);
+        sym.setAttribute("stroke", SYM.color.reference_point);
+        sym.setAttribute("stroke-width", SYM.width.reference_point);
+        sym.setAttribute("fill", "transparent");
+        return sym;
     },
 
 }

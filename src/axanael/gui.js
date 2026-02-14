@@ -98,6 +98,7 @@ export const GUI = {
         TMP.set_template(p2, 6, SYM.create_fold_unfold([0.55, 0.55], [.45, .45], false, false));
         TMP.set_template(p2, 7, SYM.create_fold_unfold([0.55, 0.55], [.45, .45], false, true));
         TMP.set_template(p3, 8, SYM.create_flip([.5, .5], false, 100));
+        TMP.set_template(p3, 9, SYM.create_reference_point([.5, .5]));
 
     },
 
