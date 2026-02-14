@@ -1,5 +1,5 @@
-<button id="axanael_discard" class="discardclose">&#xe040</button>
-<button id="axanael_close" class="discardclose">✖︎</button>
+<button id="axanael_discard" class="discardclose">&#xe040;</button>
+<button id="axanael_close" class="discardclose"><i class="bi bi-floppy"></i></button>
 <div id="axanael_body" class="axanael_body">
     <svg id="axanael_paint" class="axanael_paint">
     </svg>
@@ -7,7 +7,6 @@
         <span  class="openclose"><b>Templates</b></span>
         <div id="axanael_lib" class="axanael_lib"></div>
         <span id="axanael_control" class="openclose"><b>Control</b></span>
-        <span id="axanael_control_b" class="axanael_control_b">
-        </span>
+        <span id="axanael_control_b" class="axanael_control_b"></span>
     </div>
 </div>

@@ -20,6 +20,16 @@
     height: 30px;
 }
 
+.axanael_control_b svg {
+    width: 30px;
+    height: 30px;
+}
+
+.axanael_controls {
+    border: 1px solid #000;
+}
+
+
 .axanael_body {
     display: flex;
 }

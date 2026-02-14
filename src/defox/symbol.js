@@ -23,10 +23,13 @@ export const SYM = {
     radius: {
         reference_point: 20,
     },
-    get_cross: (p, q) => {
-        const [x, y] = M.sub(q, p);
-        const e = M.add([x / 2, y / 2], M.add([-y / 2, x / 2], p));
-        const s = M.add(e, [y, -x]);
+    get_cross: (p, q, l, alpha) => {
+        const d = M.sub(q, p);
+        const [x, y] = d;
+        const dm = M.mul(d, (alpha + .5));
+        const n = M.mul([-y, x], l * .5);
+        const e = M.add(dm, M.add(n, p));
+        const s = M.add(e, M.mul([y, -x], l));
         return [s, e];
     },
 
@@ -39,11 +42,18 @@ export const SYM = {
         if (i >= 0) {
             const [p, q] = M.expand(UV[i], V_);
 
-            [s, e] = SYM.get_cross(p, q);
+            [s, e] = SYM.get_cross(p, q, params.length, params.offset);
             if (params.is_rev) {
                 [s, e] = [e, s];
             }
         }
+
+        const j = params.vertex_index;
+        if (j >= 0) {
+            v = V_[j];
+        }
+
+
         switch (type) {
             case 0:
                 return SYM.create_arrow_mv(s, e, false, params.is_clockwise, false);
@@ -65,8 +75,8 @@ export const SYM = {
                 const c = [params.cx, params.cy];
                 return SYM.create_flip(c, params.is_rev, 100);
             case 9:
-                const v = [params.cx, params.cy];
-                return SYM.create_reference_point(v, SYM.radius.reference_point);
+                const l = params.length;
+                return SYM.create_reference_point(v, l * SYM.radius.reference_point);
             default:
                 return undefined;
         }

@@ -25,6 +25,8 @@
 .discardclose {
     font-family: 'Icons';
     font-size: large;
+    width: 30px;
+    height: 30px;
 }
 
 .tool_buttons span {

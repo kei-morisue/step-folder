@@ -150,14 +150,14 @@ export const STEP = {
             return;
         }
         const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
-        DRAW.draw_state(SVG.clear(svg_state), FOLD, CELL, STATE, T, SEG.clip, STEP.id, STEP.SYMBOLS ?? []);
+        DRAW.draw_state(SVG.clear(svg_state), FOLD, CELL, STATE, T, SEG.clip, STEP.id, STEP.SYMBOLS);
         return STATE
     },
     update_serial_state: (FOLD, S, svg_state, T) => {
         if (!FOLD) {
             return;
         }
-        DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, S, T, SEG.clip, STEP.depth, STEP.id, STEP.SYMBOLS ?? []);
+        DRAW_LIN.draw_state(SVG.clear(svg_state), FOLD, S, T, SEG.clip, STEP.depth, STEP.id, STEP.SYMBOLS);
         return undefined;
     },
 };

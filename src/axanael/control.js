@@ -23,7 +23,12 @@ export const CTRL = {
             symbol.depth = parseInt(e.target.value);
             PAINT.redraw();
         };
-        return range_d;
+        const div = document.createElement("div");
+        const lbl = document.createElement("label");
+        div.appendChild(lbl);
+        div.appendChild(range_d);
+        lbl.innerHTML = "depth";
+        return div;
     },
 
     set_remove: (i, l) => {
@@ -57,19 +62,32 @@ export const CTRL = {
         return rev;
     },
 
-    set_scale: (symbol) => {
-        const range_s = document.createElement("input");
-        range_s.type = "range";
-        range_s.min = 0;
-        range_s.max = 5;
-        range_s.step = 0.0001;
-        range_s.value = 1;
+    set_length: (symbol) => {
+        const range_l = document.createElement("input");
+        range_l.type = "range";
+        range_l.min = 0;
+        range_l.max = 5;
+        range_l.step = 0.0001;
+        range_l.value = 1;
 
-        range_s.oninput = (e) => {
-            symbol.params.scale = parseInt(e.target.value);
+        range_l.oninput = (e) => {
+            symbol.params.length = parseFloat(e.target.value);
             PAINT.redraw();
         };
-        return range_s;
+        const div = document.createElement("div");
+        const lbl = document.createElement("label");
+        const reset = document.createElement("button");
+        reset.onclick = () => {
+            range_l.value = 1;
+            symbol.params.length = 1;
+            PAINT.redraw();
+        }
+        div.appendChild(lbl);
+        div.appendChild(range_l);
+        div.appendChild(reset);
+        lbl.innerHTML = "length";
+        reset.innerHTML = "reset";
+        return div;
     },
 
     set_offset: (symbol) => {
@@ -81,34 +99,62 @@ export const CTRL = {
         range_off.value = 1;
 
         range_off.oninput = (e) => {
-            symbol.params.offset = parseInt(e.target.value);
+            symbol.params.offset = parseFloat(e.target.value);
             PAINT.redraw();
         };
-        return range_off;
+        const div = document.createElement("div");
+        const lbl = document.createElement("label");
+        const reset = document.createElement("button");
+        reset.onclick = () => {
+            range_l.offset = 0;
+            symbol.params.offset = 0;
+            PAINT.redraw();
+        }
+        div.appendChild(lbl);
+        div.appendChild(range_off);
+        div.appendChild(reset);
+        lbl.innerHTML = "offset";
+        reset.innerHTML = "reset";
+        return div;
     },
 
     set: (body, i, symbol, l) => {
 
-        const span = document.createElement("span");
-        body.appendChild(span);
+        const div = document.createElement("div");
+        div.setAttribute("class", "axanael_controls");
+        body.appendChild(div);
+        const template = document.getElementById(`template_${symbol.type}`).cloneNode(true);
+        div.appendChild(template);
 
-        if ([0, 1, 2, 3, 6, 7].indexOf(symbol.type) >= 0) {
+        const buttons = document.createElement("div");
+        div.appendChild(buttons);
+        if (symbol.params.is_clockwise != undefined) {
             const flip = CTRL.set_flip(symbol);
-            span.appendChild(flip);
+            buttons.appendChild(flip);
         }
 
-        if ([0, 1, 2, 3, 4, 5, 6, 7].indexOf(symbol.type) >= 0) {
+        if (symbol.params.is_rev != undefined) {
             const rev = CTRL.set_reverse(symbol);
-            span.appendChild(rev);
+            buttons.appendChild(rev);
+        }
+
+        if (symbol.params.length != undefined) {
+            const length = CTRL.set_length(symbol);
+            div.appendChild(length);
+        }
+
+        if (symbol.params.offset != undefined) {
+            const offset = CTRL.set_offset(symbol);
+            div.appendChild(offset);
         }
 
 
         const range_d = CTRL.set_range(symbol, l);
-        span.appendChild(range_d);
+        div.appendChild(range_d);
 
 
         const rem = CTRL.set_remove(i, l);
-        span.appendChild(rem);
+        div.appendChild(rem);
 
     },
 }

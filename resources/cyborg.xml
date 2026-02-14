@@ -1,5 +1,5 @@
-<button id="discardDialog" class="discardclose">&#xe040</button>
-<button id="closeDialog">✖︎</button>
+<button id="discardDialog" class="discardclose">&#xe040;</button>
+<button id="closeDialog" class="discardclose"><i class="bi bi-floppy"></i></button>
 <div class="cpeditor_body">
     <div class="tools">
         <div class="tool_buttons">

@@ -13,6 +13,7 @@ import { PAINT as P } from "../cyborg/paint.js"
 
 import { GUI } from "./gui.js"
 import { TMP } from "./template.js"
+import { K } from "./kath.js"
 
 export const PAINT = {
     symbols: [],
@@ -28,6 +29,10 @@ export const PAINT = {
     type: 0,
     segment: -1,
     vertex: undefined,
+
+    radius: {
+        bound: 10,
+    },
     onout: () => {
         PAINT.segment = -1;
         PAINT.vertex = undefined;
@@ -52,7 +57,7 @@ export const PAINT = {
 
         switch (PAINT.type) {
             case 9:
-                PAINT.vertex = L.find_v(pt, PAINT.vertices, 10);
+                PAINT.vertex = K.find_v(pt, PAINT.vertices, PAINT.radius.bound);
                 PAINT.hilight_vertex();
                 break;
             default:
@@ -68,7 +73,7 @@ export const PAINT = {
     },
     onclick: (e) => {
         const c_idx = PAINT.segment[0];
-        const v = PAINT.vertex;
+        const v_idx = PAINT.vertex;
 
         let sym = undefined;
         switch (PAINT.type) {
@@ -94,7 +99,7 @@ export const PAINT = {
                 sym = TMP.flip(.95, .5, 0, PAINT.type);
                 break;
             case 9:
-                sym = TMP.reference_point(v, 0, PAINT.type);
+                sym = TMP.reference_point(v_idx, 0, PAINT.type);
             default:
                 break;
         }
@@ -124,10 +129,10 @@ export const PAINT = {
         seg_svg.setAttribute("stroke-width", 6);
     },
     hilight_vertex: () => {
-        if (!PAINT.vertex) { return; }
+        if (PAINT.vertex < 0) { return; }
         const s = SVG.SCALE;
         const T = P.get_T();
-        const v = N.transform(T, PAINT.vertex);
+        const v = N.transform(T, PAINT.vertices[PAINT.vertex]);
         SVG.clear("axanael_selection");
         const seg_svg = SVG.append(
             "circle",
