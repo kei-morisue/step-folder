@@ -20,6 +20,9 @@ export const SYM = {
         arrow: "black",
         reference_point: "magenta",
     },
+    radius: {
+        reference_point: 20,
+    },
     get_cross: (p, q) => {
         const [x, y] = M.sub(q, p);
         const e = M.add([x / 2, y / 2], M.add([-y / 2, x / 2], p));
@@ -63,7 +66,7 @@ export const SYM = {
                 return SYM.create_flip(c, params.is_rev, 100);
             case 9:
                 const v = [params.cx, params.cy];
-                return SYM.create_reference_point(v);
+                return SYM.create_reference_point(v, SYM.radius.reference_point);
             default:
                 return undefined;
         }
@@ -166,7 +169,7 @@ export const SYM = {
         return sym;
     },
 
-    create_reference_point: ([cx, cy], r = 20) => {
+    create_reference_point: ([cx, cy], r) => {
         const [x, y] = M.mul([cx, cy], SVG.SCALE);
         const sym = document.createElementNS(SVG.NS, "circle");
         sym.setAttribute("cx", x);
