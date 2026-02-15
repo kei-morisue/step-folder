@@ -4,6 +4,7 @@ import { PRJ } from "../project.js";
 import { PAGE } from "../page.js";
 import { GUI } from "./gui.js";
 import { SYM } from "../symbol.js";
+import { IO3 } from "../io.js";
 
 export const GUI_PAGE = {
     startup: () => {

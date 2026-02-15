@@ -93,8 +93,8 @@ export const IO3 = {    // INPUT-OUTPUT
         var svg = document.getElementById(svg_id);
         var svgData = new XMLSerializer().serializeToString(svg);
         var canvas = document.createElement("canvas");
-        canvas.width = svg.width.baseVal.value;
-        canvas.height = svg.height.baseVal.value;
+        canvas.width = PAGE.dim.width;
+        canvas.height = PAGE.dim.height;
 
         var ctx = canvas.getContext("2d");
         var image = new Image;
