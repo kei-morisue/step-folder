@@ -30,7 +30,7 @@ export const SYM = {
         const { Vf, UV } = FOLD;
         const V_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
 
-        let s, e, v;
+        let s, e, v, v1;
         if (i >= 0) {
             const [p, q] = M.expand(UV[i], V_);
 
@@ -45,20 +45,26 @@ export const SYM = {
             v = V_[j];
         }
 
+        const j1 = params.vertex_index_1;
+        if (j1 >= 0) {
+            const v1_ = V_[j1];
+            const d = M.sub(v1_, v);
+            v1 = M.add(v, M.mul(d, params.length));
+        }
 
         switch (type) {
             case 0:
-                return SYM.create_arrow_mv(s, e, false, params.is_clockwise, false);
+                return SYM.create_mv(s, e, false, params.is_clockwise, false);
             case 1:
-                return SYM.create_arrow_mv(s, e, true, params.is_clockwise, false);
+                return SYM.create_mv(s, e, true, params.is_clockwise, false);
             case 2:
-                return SYM.create_arrow_mv(s, e, false, params.is_clockwise, true);
+                return SYM.create_mv(s, e, false, params.is_clockwise, true);
             case 3:
-                return SYM.create_arrow_mv(s, e, true, params.is_clockwise, true);
+                return SYM.create_mv(s, e, true, params.is_clockwise, true);
             case 4:
-                return SYM.create_arrow_sink(s, e, false);
+                return SYM.create_sink(s, e, false);
             case 5:
-                return SYM.create_arrow_sink(s, e, true);
+                return SYM.create_sink(s, e, true);
             case 6:
                 return SYM.create_fold_unfold(s, e, params.is_clockwise, false);
             case 7:
@@ -71,12 +77,16 @@ export const SYM = {
                 return SYM.create_reference_point(v, l * SYM.radius.reference_point);
             case 10:
                 return SYM.create_pleat(s, e, params.is_clockwise);
+            case 11:
+                return SYM.create_inside_reverse(v, v1, params.is_clockwise, false);
+            case 12:
+                return SYM.create_inside_reverse(v, v1, params.is_clockwise, true);
             default:
                 return undefined;
         }
     },
 
-    create_arrow_mv: (s, e, is_m, is_clockwese, is_sqeezed) => {
+    create_mv: (s, e, is_m, is_clockwese, is_sqeezed) => {
         const k = SVG.SCALE;
         const [x0, y0] = M.mul(s, k);
         const [x1, y1] = M.mul(e, k);
@@ -96,8 +106,31 @@ export const SYM = {
         return sym;
     },
 
+    create_inside_reverse: (s, e, is_clockwese, is_sqeezed) => {
+        const k = SVG.SCALE;
+        const [x0, y0] = M.mul(s, k);
+        const [x1, y1] = M.mul(e, k);
+        const d = M.sub([x1, y1], [x0, y0]);
+        const [dx, dy] = d;
+        const n = is_clockwese ? [dy, -dx] : [-dy, dx];
+        const [x, y] = M.add(M.add([x0, y0], d), M.mul(n, .2));
 
-    create_arrow_sink: (s, e, is_closed) => {
+        const [px, py] = M.add(M.add([x0, y0], M.mul(d, is_sqeezed ? -.5 : .5)), M.mul(n, is_sqeezed ? 1 : 1));
+        const [qx, qy] = M.add(M.add([x, y], M.mul(d, is_sqeezed ? .5 : -.5)), M.mul(n, is_sqeezed ? -1.5 : -1.5));
+
+        const sym = document.createElementNS(SVG.NS, "path");
+        sym.setAttribute("d", `M ${x0} ${y0} C ${px} ${py}, ${qx} ${qy}, ${x} ${y}`);
+
+        sym.setAttribute("stroke", SYM.color.arrow);
+        sym.setAttribute("stroke-width", SYM.width.arrow);
+        sym.setAttribute("stroke-linecap", "butt");
+        const end = "url(#arrow_head_inside_reverse)";
+        sym.setAttribute("marker-end", end);
+        sym.setAttribute("fill", "transparent");
+        return sym;
+    },
+
+    create_sink: (s, e, is_closed) => {
         const k = SVG.SCALE;
         const [x1, y1] = M.mul(e, k);
         const d = M.sub([x1, y1], M.mul(s, k));

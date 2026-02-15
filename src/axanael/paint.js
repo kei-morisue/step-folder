@@ -28,14 +28,16 @@ export const PAINT = {
     svg_selection: undefined,
     type: 0,
     segment: -1,
-    vertex: undefined,
+    vertex: -1,
+    v0: -1,
+    v1: -1,
 
     radius: {
         bound: 10,
     },
     onout: () => {
         PAINT.segment = -1;
-        PAINT.vertex = undefined;
+        PAINT.vertex = -1;
         PAINT.redraw();
     },
 
@@ -57,8 +59,11 @@ export const PAINT = {
 
         switch (PAINT.type) {
             case 9:
+            case 11:
+            case 12:
                 PAINT.vertex = K.find_v(pt, PAINT.vertices, PAINT.radius.bound);
-                PAINT.hilight_vertex();
+                PAINT.hilight_vertex(SVG.clear(PAINT.svg_selection.id), PAINT.vertex);
+                PAINT.hilight_vertex(PAINT.svg_selection, PAINT.v0);
                 break;
             default:
                 PAINT.segment = L.find_seg(
@@ -105,6 +110,24 @@ export const PAINT = {
                 if (c_idx < 0) { return; }
                 sym = TMP.pleat(c_idx, 0, PAINT.type);
                 break;
+            case 11:
+                if (v_idx < 0) { return; }
+                if (PAINT.v0 < 0) {
+                    PAINT.v0 = v_idx;
+                    return;
+                }
+                sym = TMP.inside_reverse(PAINT.v0, v_idx, 0, PAINT.type);
+                PAINT.v0 = -1;
+                break;
+            case 12:
+                if (v_idx < 0) { return; }
+                if (PAINT.v0 < 0) {
+                    PAINT.v0 = v_idx;
+                    return;
+                }
+                sym = TMP.inside_reverse(PAINT.v0, v_idx, 0, PAINT.type);
+                PAINT.v0 = -1;
+                break;
             default:
                 break;
         }
@@ -133,15 +156,14 @@ export const PAINT = {
         seg_svg.setAttribute("stroke", color);
         seg_svg.setAttribute("stroke-width", 6);
     },
-    hilight_vertex: () => {
-        if (PAINT.vertex < 0) { return; }
+    hilight_vertex: (svg, v_idx) => {
+        if (v_idx < 0) { return; }
         const s = SVG.SCALE;
         const T = P.get_T();
-        const v = N.transform(T, PAINT.vertices[PAINT.vertex]);
-        SVG.clear("axanael_selection");
+        const v = N.transform(T, PAINT.vertices[v_idx]);
         const seg_svg = SVG.append(
             "circle",
-            PAINT.svg_selection,
+            svg,
             {
                 cx: v[0] * s,
                 cy: v[1] * s,
@@ -160,12 +182,21 @@ export const PAINT = {
         PAINT.S = S;
         PAINT.type = 0;
         PAINT.segment = -1;
-        PAINT.vertex = undefined;
+        PAINT.vertex = -1;
+        PAINT.v0 = -1;
+        PAINT.v1 = -1;
         const V_ = M.normalize_points(FOLD.Vf).map((v) => N.transform(T, v));
 
         PAINT.creases = FOLD.UV.map((vs) => M.expand(vs, V_));
         PAINT.edges = FOLD.EV.map((vs) => M.expand(vs, V_));
         PAINT.vertices = V_;
+    },
+
+    reset: () => {
+        PAINT.segment = -1;
+        PAINT.vertex = -1;
+        PAINT.v0 = -1;
+        PAINT.v1 = -1;
     },
 
     redraw: () => {

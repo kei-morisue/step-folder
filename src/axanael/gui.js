@@ -89,17 +89,19 @@ export const GUI = {
         body.appendChild(p2);
         body.appendChild(p3);
 
-        TMP.set_template(p1, 0, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], false, true));
-        TMP.set_template(p1, 1, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], true, true));
-        TMP.set_template(p1, 2, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], false, true, true));
-        TMP.set_template(p1, 3, SYM.create_arrow_mv([0.55, 0.55], [.45, .45], true, true, true));
-        TMP.set_template(p2, 4, SYM.create_arrow_sink([0.505, 0.505], [.495, .495], false));
-        TMP.set_template(p2, 5, SYM.create_arrow_sink([0.505, 0.505], [.495, .495], true));
+        TMP.set_template(p1, 0, SYM.create_mv([0.55, 0.55], [.45, .45], false, true));
+        TMP.set_template(p1, 1, SYM.create_mv([0.55, 0.55], [.45, .45], true, true));
+        TMP.set_template(p1, 2, SYM.create_mv([0.55, 0.55], [.45, .45], false, true, true));
+        TMP.set_template(p1, 3, SYM.create_mv([0.55, 0.55], [.45, .45], true, true, true));
+        TMP.set_template(p2, 4, SYM.create_sink([0.505, 0.505], [.495, .495], false));
+        TMP.set_template(p2, 5, SYM.create_sink([0.505, 0.505], [.495, .495], true));
         TMP.set_template(p2, 6, SYM.create_fold_unfold([0.55, 0.55], [.45, .45], false, false));
         TMP.set_template(p2, 7, SYM.create_fold_unfold([0.55, 0.55], [.45, .45], false, true));
         TMP.set_template(p3, 8, SYM.create_flip([.5, .5], false, 100));
         TMP.set_template(p3, 9, SYM.create_reference_point([.5, .5], SYM.radius.reference_point));
         TMP.set_template(p3, 10, SYM.create_pleat([0.55, 0.55], [.45, .45], true));
+        TMP.set_template(p3, 11, SYM.create_inside_reverse([0.55, 0.55], [.45, .45], true, false));
+        TMP.set_template(p3, 12, SYM.create_inside_reverse([0.55, 0.55], [.45, .45], true, true));
 
     },
 

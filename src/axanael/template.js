@@ -46,6 +46,12 @@ export const TMP = {
         return { depth, type, params: pa };
     },
 
+    inside_reverse: (vertex_index, vertex_index_1, depth, type) => {
+        const is_clockwise = false;
+        const pa = { length: 1, vertex_index, vertex_index_1, is_clockwise };
+        return { depth, type, params: pa };
+    },
+
     set_template: (body, type, sym) => {
         const span = document.createElement("span");
         body.appendChild(span);
@@ -55,6 +61,7 @@ export const TMP = {
         const svg = document.createElementNS(SVG.NS, "svg");
         input.onclick = () => {
             PAINT.type = type;
+            PAINT.reset();
         }
         const s = SVG.SCALE;
         svg.setAttribute("width", s * 0.15);
