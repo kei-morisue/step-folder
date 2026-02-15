@@ -32,6 +32,7 @@ export const GUI_IO = {
         document.getElementById("export").onclick = (e) => {
             const ext = document.getElementById("export_ext").value;
             const pj = document.getElementById("proj_name").value;
+
             IO3.write("state3", pj, ext, PRJ.current_idx);
         };
 

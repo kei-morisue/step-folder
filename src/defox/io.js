@@ -1,6 +1,7 @@
 import { IO } from "../flatfolder/io.js";
 import { M } from "../flatfolder/math.js";
 import { X } from "../flatfolder/conversion.js";
+import { SVG } from "../flatfolder/svg.js";
 import { N } from "./nath.js";
 import { Y } from "./y.js";
 import { PRJ } from "./project.js";
@@ -30,7 +31,7 @@ export const IO3 = {    // INPUT-OUTPUT
             const FOLD = PRJ.steps[idx].fold_cp;
             const cp = Y.FOLD_2_CP(FOLD);
             let blob = new Blob([cp], { type: "text/plain" });
-            let link = document.createElement("a"); // aタグのエレメントを作成
+            let link = document.createElement("a");
             link.href = window.URL.createObjectURL(blob);
             const num = IO3.format_num(idx);
             link.download = num + ".cp";
@@ -80,21 +81,27 @@ export const IO3 = {    // INPUT-OUTPUT
     write_pngs: (svg_id, name, idx = undefined) => {
         if (idx) {
             PRJ.restore(idx);
-            IO3.write_png(svg_id, name, idx);
+            const width = SVG.SCALE;
+            const height = SVG.SCALE;
+            const dim = { width, height };
+            IO3.write_png(svg_id, name, dim, idx);
             return;
         }
         for (let j = 0; j < PAGE.get_pages(PRJ.steps); j++) {
             PAGE.current_idx = j;
             PRJ.redraw_page();
-            IO3.write_png(svg_id, name + "_page_", j);
+            const width = PAGE.dim.width;
+            const height = PAGE.dim.height;
+            const dim = { width, height };
+            IO3.write_png(svg_id, name + "_page_", dim, j);
         }
     },
-    write_png: (svg_id, name, idx) => {
+    write_png: (svg_id, name, dim, idx) => {
         var svg = document.getElementById(svg_id);
         var svgData = new XMLSerializer().serializeToString(svg);
         var canvas = document.createElement("canvas");
-        canvas.width = PAGE.dim.width;
-        canvas.height = PAGE.dim.height;
+        canvas.width = dim.width;
+        canvas.height = dim.height;
 
         var ctx = canvas.getContext("2d");
         var image = new Image;
