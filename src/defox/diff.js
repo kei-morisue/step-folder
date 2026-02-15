@@ -86,6 +86,13 @@ export const DIFF = {
                 Vc[v] = true;
             }
         }
+        for (const [ui, [p_i, q_i]] of UV.entries()) {
+            const a = UA[ui];
+            if (a != "F") {
+                Vc[p_i] = false;
+                Vc[q_i] = false;
+            }
+        }
         const [Vf, Ff] = Y.V_FV_EV_EA_FU_UV_2_Vf_Ff(V, FV, EV, EA, FU, UV)
         const FF_map = F0.FV.map((vs) => [])
         for (const [i, vs] of FV.entries()) {
