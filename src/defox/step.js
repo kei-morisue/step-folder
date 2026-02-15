@@ -90,9 +90,8 @@ export const STEP = {
         const FOLD = STEP.FOLD;
         const CELL = Y.FOLD_2_CELL(STEP.FOLD_D);
         STEP.CELL_D = CELL;
-        const FO = DIST.infer_FO(FOLD, CELL);
-        STEP.FOLD_D.FO = FO;
-        STEP.FOLD.FO = FO;
+        STEP.FOLD_D.FO = FOLD.FO;
+        // STEP.FOLD.FO = FO;
         const T = STEP.get_transform();
         const STATE = STEP.update_state(STEP.FOLD_D, CELL, "state3", T)
         if (STATE) {
