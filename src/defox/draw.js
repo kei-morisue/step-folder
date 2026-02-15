@@ -115,7 +115,7 @@ export const DRAW = {
             svg.appendChild(el);
         }
     },
-    draw_state: (svg, FOLD, CELL, STATE, T, clip_c, id = 0, symbols = []) => {
+    draw_state: (svg, FOLD, CELL, STATE, T, clip_c, id = 0, symbols) => {
         const det = N.det(T[0]);
         const is_flip = det < 0
         if (STATE == undefined) {

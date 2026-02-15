@@ -26,6 +26,12 @@
         <path d="M 1.5 0 L 10 5 L 1.5 10" width="4" stroke="black"
         fill="transparent"/>
     </marker>
+    <marker id="arrow_head_pleat" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10"
+        orient="auto-start-reverse">
+        <path d="M 1.5 0 L 10 5 L 1.5 10" width="4" stroke="black"
+        fill="transparent"/>
+    </marker>
+
     <marker id="arrow_head_inside_reverse" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10"
         orient="auto-start-reverse">
         <path d="M 1.5 0 L 10 5 L 1.5 10" width="4" stroke="black"

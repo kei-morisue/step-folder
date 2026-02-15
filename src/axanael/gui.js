@@ -41,7 +41,7 @@ export const GUI = {
         const S = STEP.LIN.S;
         const T = STEP.get_transform();
 
-        const syms = STEP.SYMBOLS ?? [];
+        const syms = PRJ.steps[i].symbols;
         PAINT.initialize(svg, FOLD, S, T, syms);
         GUI.set_controls(S.length);
         GUI.set_templates();
@@ -99,6 +99,7 @@ export const GUI = {
         TMP.set_template(p2, 7, SYM.create_fold_unfold([0.55, 0.55], [.45, .45], false, true));
         TMP.set_template(p3, 8, SYM.create_flip([.5, .5], false, 100));
         TMP.set_template(p3, 9, SYM.create_reference_point([.5, .5], SYM.radius.reference_point));
+        TMP.set_template(p3, 10, SYM.create_pleat([0.55, 0.55], [.45, .45], true));
 
     },
 

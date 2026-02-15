@@ -2,14 +2,6 @@ import { SVG } from "../flatfolder/svg.js"
 import { M } from "../flatfolder/math.js";
 
 import { N } from "../defox/nath.js";
-import { SEG } from "../defox/segment.js";
-import { DRAW_LIN } from "../defox/draw_lin.js";
-import { SVG3 } from "../defox/svg.js";
-
-import { DRAW as D } from "../defox/draw.js";
-
-import { Z } from "../cyborg/z.js";
-import { STEP } from "./step.js";
 
 export const SYM = {
     width: {
@@ -77,6 +69,8 @@ export const SYM = {
             case 9:
                 const l = params.length;
                 return SYM.create_reference_point(v, l * SYM.radius.reference_point);
+            case 10:
+                return SYM.create_pleat(s, e, params.is_clockwise);
             default:
                 return undefined;
         }
@@ -151,6 +145,30 @@ export const SYM = {
 
     },
 
+    create_pleat: (s, e, is_clockwese) => {
+        const k = SVG.SCALE;
+        const [x0, y0] = M.mul(s, k);
+        const [x1, y1] = M.mul(e, k);
+        const d = M.sub([x1, y1], [x0, y0]);
+        const [dx, dy] = d;
+        const n = is_clockwese ? [dy, -dx] : [-dy, dx];
+        const [x2, y2] = M.add(M.add([x0, y0], M.mul(d, .5)), M.mul(n, 0.2));
+
+
+        const [x3, y3] = M.sub([x2, y2], d);
+
+
+        const sym = document.createElementNS(SVG.NS, "path");
+        sym.setAttribute("d", `M ${x3} ${y3} L ${x2} ${y2} L ${x0} ${y0} L ${x1} ${y1}`);
+        sym.setAttribute("stroke", SYM.color.arrow);
+        sym.setAttribute("stroke-width", SYM.width.arrow);
+        sym.setAttribute("stroke-linecap", "butt");
+        const end = "url(#arrow_head_pleat)";
+        sym.setAttribute("marker-end", end);
+        sym.setAttribute("fill", "transparent");
+        return sym;
+
+    },
 
     create_flip: (center, is_rev, size = 100) => {
         const k = SVG.SCALE;

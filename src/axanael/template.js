@@ -39,6 +39,13 @@ export const TMP = {
 
     },
 
+    pleat: (crease_index, depth, type) => {
+        const is_clockwise = false;
+        const is_rev = false;
+        const pa = { length: 1, offset: 0, crease_index, is_rev, is_clockwise };
+        return { depth, type, params: pa };
+    },
+
     set_template: (body, type, sym) => {
         const span = document.createElement("span");
         body.appendChild(span);

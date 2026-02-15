@@ -50,7 +50,7 @@ export const STEP = {
     },
     redraw: () => {
         const T = STEP.get_transform();
-        DRAW.draw_state(SVG.clear("state0"), STEP.FOLD0, STEP.CELL0, STEP.STATE0, T, SEG.clip, STEP.id);
+        DRAW.draw_state(SVG.clear("state0"), STEP.FOLD0, STEP.CELL0, STEP.STATE0, T, SEG.clip, STEP.id, []);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
         DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"))
         if (STEP.CELL_D) {

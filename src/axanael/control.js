@@ -66,9 +66,9 @@ export const CTRL = {
         const range_l = document.createElement("input");
         range_l.type = "range";
         range_l.min = 0;
-        range_l.max = 5;
+        range_l.max = 10;
         range_l.step = 0.0001;
-        range_l.value = 1;
+        range_l.value = symbol.params.length;
 
         range_l.oninput = (e) => {
             symbol.params.length = parseFloat(e.target.value);
@@ -96,7 +96,7 @@ export const CTRL = {
         range_off.min = -5;
         range_off.max = 5;
         range_off.step = 0.0001;
-        range_off.value = 1;
+        range_off.value = symbol.params.offset;
 
         range_off.oninput = (e) => {
             symbol.params.offset = parseFloat(e.target.value);

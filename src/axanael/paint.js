@@ -100,6 +100,11 @@ export const PAINT = {
                 break;
             case 9:
                 sym = TMP.reference_point(v_idx, 0, PAINT.type);
+                break;
+            case 10:
+                if (c_idx < 0) { return; }
+                sym = TMP.pleat(c_idx, 0, PAINT.type);
+                break;
             default:
                 break;
         }
