@@ -66,11 +66,12 @@ export const PAINT = {
                 PAINT.hilight_vertex(PAINT.svg_selection, PAINT.v0);
                 break;
             default:
+                const as = FOLD.UA.concat(FOLD.EA);
                 PAINT.segment = L.find_seg(
                     pt,
                     PAINT.creases,
-                    FOLD.UA,
-                    (i) => { return FOLD.UA[i] != "F"; }
+                    as,
+                    (i) => { return as[i] != "F" && as[i] != "M" && as[i] != "V" && as[i] != "B"; }
                 )
                 PAINT.hilight_segment();
                 break;
@@ -187,8 +188,9 @@ export const PAINT = {
         PAINT.v1 = -1;
         const V_ = M.normalize_points(FOLD.Vf).map((v) => N.transform(T, v));
 
-        PAINT.creases = FOLD.UV.map((vs) => M.expand(vs, V_));
-        PAINT.edges = FOLD.EV.map((vs) => M.expand(vs, V_));
+        const creases = FOLD.UV.map((vs) => M.expand(vs, V_));
+        const edges = FOLD.EV.map((vs) => M.expand(vs, V_));
+        PAINT.creases = creases.concat(edges);
         PAINT.vertices = V_;
     },
 

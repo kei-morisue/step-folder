@@ -48,7 +48,8 @@ export const TMP = {
 
     inside_reverse: (vertex_index, vertex_index_1, depth, type) => {
         const is_clockwise = false;
-        const pa = { length: 1, vertex_index, vertex_index_1, is_clockwise };
+        const offset = 0;
+        const pa = { length: 1, vertex_index, vertex_index_1, offset, is_clockwise };
         return { depth, type, params: pa };
     },
 

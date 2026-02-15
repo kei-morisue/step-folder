@@ -106,7 +106,7 @@ export const CTRL = {
         const lbl = document.createElement("label");
         const reset = document.createElement("button");
         reset.onclick = () => {
-            range_l.offset = 0;
+            range_off.value = 0;
             symbol.params.offset = 0;
             PAINT.redraw();
         }

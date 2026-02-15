@@ -27,12 +27,12 @@ export const SYM = {
 
     create: (type, params, FOLD, T) => {
         const i = params.crease_index;
-        const { Vf, UV } = FOLD;
+        const { Vf, UV, EV } = FOLD;
         const V_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
 
         let s, e, v, v1;
         if (i >= 0) {
-            const [p, q] = M.expand(UV[i], V_);
+            const [p, q] = M.expand(UV.concat(EV)[i], V_);
 
             [s, e] = SYM.get_cross(p, q, params.length, params.offset);
             if (params.is_rev) {
@@ -78,9 +78,9 @@ export const SYM = {
             case 10:
                 return SYM.create_pleat(s, e, params.is_clockwise);
             case 11:
-                return SYM.create_inside_reverse(v, v1, params.is_clockwise, false);
+                return SYM.create_inside_reverse(v, v1, params.is_clockwise, params.offset, false);
             case 12:
-                return SYM.create_inside_reverse(v, v1, params.is_clockwise, true);
+                return SYM.create_inside_reverse(v, v1, params.is_clockwise, params.offset, true);
             default:
                 return undefined;
         }
@@ -106,7 +106,7 @@ export const SYM = {
         return sym;
     },
 
-    create_inside_reverse: (s, e, is_clockwese, is_sqeezed) => {
+    create_inside_reverse: (s, e, is_clockwese, offset, is_sqeezed) => {
         const k = SVG.SCALE;
         const [x0, y0] = M.mul(s, k);
         const [x1, y1] = M.mul(e, k);
@@ -115,8 +115,8 @@ export const SYM = {
         const n = is_clockwese ? [dy, -dx] : [-dy, dx];
         const [x, y] = M.add(M.add([x0, y0], d), M.mul(n, .2));
 
-        const [px, py] = M.add(M.add([x0, y0], M.mul(d, is_sqeezed ? -.5 : .5)), M.mul(n, is_sqeezed ? 1 : 1));
-        const [qx, qy] = M.add(M.add([x, y], M.mul(d, is_sqeezed ? .5 : -.5)), M.mul(n, is_sqeezed ? -1.5 : -1.5));
+        const [px, py] = M.add(M.add([x0, y0], M.mul(d, is_sqeezed ? -.5 : .5)), M.mul(n, offset / 5 + 1));
+        const [qx, qy] = M.add(M.add([x, y], M.mul(d, is_sqeezed ? .5 : -.5)), M.mul(n, -1.5 * offset / 5 - 1.5));
 
         const sym = document.createElementNS(SVG.NS, "path");
         sym.setAttribute("d", `M ${x0} ${y0} C ${px} ${py}, ${qx} ${qy}, ${x} ${y}`);
