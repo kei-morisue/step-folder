@@ -42,11 +42,13 @@ export const PRJ = {
     },
     duplicate: () => {
         const i = PRJ.current_idx;
+        PRJ.record(i);
         const s = PRJ.steps[i];
         const step = {
             fold_cp: s.fold_cp,
             cell_cp: s.cell_cp,
-            params: s.params
+            params: s.params,
+            symbols: [],
         };
 
         PRJ.steps.splice(i + 1, 0, step);

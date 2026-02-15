@@ -134,6 +134,7 @@ export const STEP = {
 
     update_states: () => {
         const T = STEP.get_transform();
+        STEP.SYMBOLS = [];
         STEP.STATE0 = STEP.update_state(STEP.FOLD0, STEP.CELL0, "state0", T);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
         if (STEP.FOLD1) {

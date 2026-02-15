@@ -29,7 +29,8 @@ export const TMP = {
 
     flip: (cx, cy, depth, type) => {
         const is_rev = false;
-        const pa = { length: 1, cx, cy, is_rev };
+        const offset = 0;
+        const pa = { length: 1, cx, cy, is_rev, offset };
         return { depth, type, params: pa };
 
     },

@@ -14,6 +14,7 @@ export const SYM = {
     },
     radius: {
         reference_point: 20,
+        flip: 100,
     },
     get_cross: (p, q, l, alpha) => {
         const d = M.sub(q, p);
@@ -32,7 +33,8 @@ export const SYM = {
 
         let s, e, v, v1;
         if (i >= 0) {
-            const [p, q] = M.expand(UV.concat(EV)[i], V_);
+            const creases = UV.concat(EV);
+            const [p, q] = M.expand(creases[i], V_);
 
             [s, e] = SYM.get_cross(p, q, params.length, params.offset);
             if (params.is_rev) {
@@ -70,8 +72,8 @@ export const SYM = {
             case 7:
                 return SYM.create_fold_unfold(s, e, params.is_clockwise, true);
             case 8:
-                const c = [params.cx, params.cy];
-                return SYM.create_flip(c, params.is_rev, 100);
+                const c = [params.cx * (params.offset + 1), params.cy];
+                return SYM.create_flip(c, params.is_rev, SYM.radius.flip * params.length);
             case 9:
                 const l = params.length;
                 return SYM.create_reference_point(v, l * SYM.radius.reference_point);

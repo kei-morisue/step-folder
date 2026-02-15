@@ -35,7 +35,7 @@ export const GUI = {
     open: () => {
         const svg = document.getElementById("axanael_paint");
         document.getElementById("axanael").showModal();
-        const i = PRJ.current_idx
+        const i = PRJ.current_idx;
         PRJ.record(i);
         const FOLD = PRJ.steps[i].fold_d;
         const S = STEP.LIN.S;
@@ -43,8 +43,8 @@ export const GUI = {
 
         const syms = PRJ.steps[i].symbols;
         PAINT.initialize(svg, FOLD, S, T, syms);
-        GUI.set_controls(S.length);
         GUI.set_templates();
+        GUI.set_controls(S.length);
 
         PAINT.redraw();
 

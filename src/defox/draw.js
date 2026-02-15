@@ -197,7 +197,7 @@ export const DRAW = {
             }
         }
         for (const [si, s] of symbols.entries()) {
-            DRAW.draw_symbol(g, s, FOLD, T);
+            DRAW.draw_symbol(g_step, s, FOLD, T);
         }
     },
 

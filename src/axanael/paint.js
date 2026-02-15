@@ -6,7 +6,10 @@ import { SEG } from "../defox/segment.js"
 import { PRJ } from "../defox/project.js"
 import { STEP } from "../defox/step.js"
 import { N } from "../defox/nath.js"
+import { Y } from "../defox/y.js"
 import { DRAW_LIN } from "../defox/draw_lin.js"
+import { DRAW } from "../defox/draw.js"
+
 
 import { L } from "../cyborg/lath.js"
 import { PAINT as P } from "../cyborg/paint.js"
@@ -192,6 +195,7 @@ export const PAINT = {
         const edges = FOLD.EV.map((vs) => M.expand(vs, V_));
         PAINT.creases = creases.concat(edges);
         PAINT.vertices = V_;
+        PAINT.svg_selection = SVG.append("g", PAINT.svg, { id: "axanael_selection" });
     },
 
     reset: () => {
