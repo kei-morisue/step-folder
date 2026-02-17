@@ -100,11 +100,12 @@ export const GUI = {
         TMP.set_template(p2, 6, SYM.create_fold_unfold([0.55, 0.55], [.45, .45], false, false));
         TMP.set_template(p2, 7, SYM.create_fold_unfold([0.55, 0.55], [.45, .45], false, true));
         TMP.set_template(p3, 8, SYM.create_flip([.5, .5], false, 100));
-        TMP.set_template(p3, 9, SYM.create_reference_point([.5, .5], SYM.radius.reference_point));
         TMP.set_template(p3, 10, SYM.create_pleat([0.55, 0.55], [.45, .45], true));
         TMP.set_template(p3, 11, SYM.create_inside_reverse([0.55, 0.55], [.45, .45], true, false));
         TMP.set_template(p3, 12, SYM.create_inside_reverse([0.55, 0.55], [.45, .45], true, true));
+        TMP.set_template(p4, 9, SYM.create_reference_point([.5, .5], SYM.radius.reference_point));
         TMP.set_template(p4, 13, SYM.create_right_angle([.5, .5], [0.50, 0.505], [.505, .5]));
+        TMP.set_template(p4, 14, SYM.create_angle_bisector([.5, .5], [0.50, 0.505], [.505, .495]));
 
     },
 

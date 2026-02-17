@@ -153,6 +153,20 @@ export const PAINT = {
                 PAINT.v0 = -1;
                 PAINT.v1 = -1;
                 break;
+            case 14:
+                if (v_idx < 0) { return; }
+                if (PAINT.v0 < 0) {
+                    PAINT.v0 = v_idx;
+                    return;
+                }
+                if (PAINT.v1 < 0) {
+                    PAINT.v1 = v_idx;
+                    return;
+                }
+                sym = TMP.angle_bisector(PAINT.v0, PAINT.v1, v_idx, 0, PAINT.type);
+                PAINT.v0 = -1;
+                PAINT.v1 = -1;
+                break;
             default:
                 break;
         }

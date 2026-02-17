@@ -9,7 +9,7 @@
 }
 
 .axanael_control_b {
-    height: 50%;
+    height: 55%;
     overflow: auto;
 }
 
@@ -27,7 +27,7 @@
 }
 
 .axanael_lib {
-    height: 30%;
+    height: 35%;
     overflow: auto;
 }
 
@@ -43,7 +43,7 @@
 
 .axanael_body {
     display: flex;
-    height: 80%;
+    height: 90%;
 }
 
 .open_axanael {

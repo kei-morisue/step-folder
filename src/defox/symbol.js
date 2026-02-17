@@ -15,10 +15,12 @@ export const SYM = {
         reference_point: "magenta",
         right_angle: "magenta",
         angle_bisector: "magenta",
+        angle_bisector: "magenta",
     },
     radius: {
         reference_point: 20,
         flip: 100,
+        angle_bisector: 10,
     },
     get_cross: (p, q, l, alpha) => {
         const d = M.sub(q, p);
@@ -95,6 +97,8 @@ export const SYM = {
                 return SYM.create_inside_reverse(v, v1, params.is_clockwise, params.offset, true);
             case 13:
                 return SYM.create_right_angle(v, v1, v2, params.length, params.offset);
+            case 14:
+                return SYM.create_angle_bisector(v, v1, v2, params.length, params.offset);
             default:
                 return undefined;
         }
@@ -275,7 +279,28 @@ export const SYM = {
         sym.setAttribute("stroke-width", SYM.width.right_angle);
         sym.setAttribute("fill", "transparent");
         return sym;
+    },
 
+    create_angle_bisector: (m, s, e, size = 1, offset = 0) => {
+        const k = SVG.SCALE;
+        const [ds, de] = [M.sub(s, m), M.sub(e, m)];
+        const [us, ue] = [M.unit(ds), M.unit(de)];
+        const um = M.unit(M.add(us, ue));
+        const da = M.unit(M.add(us, um));
+        const db = M.unit(M.add(ue, um));
+
+
+        const [mx, my] = M.mul(m, k);
+        const l = (offset + 1) * 50;
+        const [ax, ay] = M.add([mx, my], M.mul(da, l));
+        const [bx, by] = M.add([mx, my], M.mul(db, l));
+
+        const sym = document.createElementNS(SVG.NS, "g");
+        const a = SVG.append("circle", sym, { cx: ax, cy: ay, r: size * SYM.radius.angle_bisector });
+        const b = SVG.append("circle", sym, { cx: bx, cy: by, r: size * SYM.radius.angle_bisector });
+        a.setAttribute("fill", SYM.color.angle_bisector);
+        b.setAttribute("fill", SYM.color.angle_bisector);
+        return sym;
     },
 
 }
