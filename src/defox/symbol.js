@@ -7,10 +7,14 @@ export const SYM = {
     width: {
         arrow: 4,
         reference_point: 4,
+        right_angle: 4,
+        angle_bisector: 4,
     },
     color: {
         arrow: "black",
         reference_point: "magenta",
+        right_angle: "magenta",
+        angle_bisector: "magenta",
     },
     radius: {
         reference_point: 20,
@@ -31,7 +35,7 @@ export const SYM = {
         const { Vf, UV, EV } = FOLD;
         const V_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
 
-        let s, e, v, v1;
+        let s, e, v, v1, v2;
         if (i >= 0) {
             const creases = UV.concat(EV);
             const [p, q] = M.expand(creases[i], V_);
@@ -52,6 +56,12 @@ export const SYM = {
             const v1_ = V_[j1];
             const d = M.sub(v1_, v);
             v1 = M.add(v, M.mul(d, params.length));
+        }
+        const j2 = params.vertex_index_2;
+        if (j2 >= 0) {
+            const v2_ = V_[j2];
+            const d = M.sub(v2_, v);
+            v2 = M.add(v, M.mul(d, params.length));
         }
 
         switch (type) {
@@ -83,6 +93,8 @@ export const SYM = {
                 return SYM.create_inside_reverse(v, v1, params.is_clockwise, params.offset, false);
             case 12:
                 return SYM.create_inside_reverse(v, v1, params.is_clockwise, params.offset, true);
+            case 13:
+                return SYM.create_right_angle(v, v1, v2, params.length, params.offset);
             default:
                 return undefined;
         }
@@ -242,6 +254,28 @@ export const SYM = {
         sym.setAttribute("stroke-width", SYM.width.reference_point);
         sym.setAttribute("fill", "transparent");
         return sym;
+    },
+
+    create_right_angle: (m, s, e, size = 1, offset = 0) => {
+        const k = SVG.SCALE;
+        const [ds, de] = [M.sub(s, m), M.sub(e, m)];
+        const [us, ue] = [M.unit(ds), M.unit(de)];
+        const dm = M.add(M.mul(us, (offset + 1) * 5), M.mul(ue, (offset + 1) * 5));
+        const [mx, my] = M.add(M.mul(m, k), dm);
+        const l = size * 30;
+        const [sx, sy] = M.add([mx, my], M.mul(us, l));
+        const [ex, ey] = M.add([mx, my], M.mul(ue, l));
+        const [ax, ay] = M.add([mx, my], M.mul(us, l / 2));
+        const [bx, by] = M.add([ax, ay], M.mul(ue, l / 2));
+        const [cx, cy] = M.add([mx, my], M.mul(ue, l / 2));
+
+        const sym = document.createElementNS(SVG.NS, "path");
+        sym.setAttribute("d", `M ${sx} ${sy} L ${mx} ${my} L ${ex} ${ey} M ${ax} ${ay} L ${bx} ${by} L ${cx} ${cy}`);
+        sym.setAttribute("stroke", SYM.color.right_angle);
+        sym.setAttribute("stroke-width", SYM.width.right_angle);
+        sym.setAttribute("fill", "transparent");
+        return sym;
+
     },
 
 }

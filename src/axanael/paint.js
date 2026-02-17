@@ -68,6 +68,13 @@ export const PAINT = {
                 PAINT.hilight_vertex(SVG.clear(PAINT.svg_selection.id), PAINT.vertex);
                 PAINT.hilight_vertex(PAINT.svg_selection, PAINT.v0);
                 break;
+            case 13:
+            case 14:
+                PAINT.vertex = K.find_v(pt, PAINT.vertices, PAINT.radius.bound);
+                PAINT.hilight_vertex(SVG.clear(PAINT.svg_selection.id), PAINT.vertex);
+                PAINT.hilight_vertex(PAINT.svg_selection, PAINT.v0);
+                PAINT.hilight_vertex(PAINT.svg_selection, PAINT.v1);
+                break;
             default:
                 const as = FOLD.UA.concat(FOLD.EA);
                 PAINT.segment = L.find_seg(
@@ -131,6 +138,20 @@ export const PAINT = {
                 }
                 sym = TMP.inside_reverse(PAINT.v0, v_idx, 0, PAINT.type);
                 PAINT.v0 = -1;
+                break;
+            case 13:
+                if (v_idx < 0) { return; }
+                if (PAINT.v0 < 0) {
+                    PAINT.v0 = v_idx;
+                    return;
+                }
+                if (PAINT.v1 < 0) {
+                    PAINT.v1 = v_idx;
+                    return;
+                }
+                sym = TMP.right_angle(PAINT.v0, PAINT.v1, v_idx, 0, PAINT.type);
+                PAINT.v0 = -1;
+                PAINT.v1 = -1;
                 break;
             default:
                 break;

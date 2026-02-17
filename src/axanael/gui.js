@@ -84,10 +84,12 @@ export const GUI = {
         const p1 = document.createElement("p");
         const p2 = document.createElement("p");
         const p3 = document.createElement("p");
+        const p4 = document.createElement("p");
 
         body.appendChild(p1);
         body.appendChild(p2);
         body.appendChild(p3);
+        body.appendChild(p4);
 
         TMP.set_template(p1, 0, SYM.create_mv([0.55, 0.55], [.45, .45], false, true));
         TMP.set_template(p1, 1, SYM.create_mv([0.55, 0.55], [.45, .45], true, true));
@@ -102,6 +104,7 @@ export const GUI = {
         TMP.set_template(p3, 10, SYM.create_pleat([0.55, 0.55], [.45, .45], true));
         TMP.set_template(p3, 11, SYM.create_inside_reverse([0.55, 0.55], [.45, .45], true, false));
         TMP.set_template(p3, 12, SYM.create_inside_reverse([0.55, 0.55], [.45, .45], true, true));
+        TMP.set_template(p4, 13, SYM.create_right_angle([.5, .5], [0.50, 0.505], [.505, .5]));
 
     },
 

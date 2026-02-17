@@ -2,9 +2,9 @@
     <span id="option_color_b" class="openclose"><b>Color Options</b></span>
     <span id="option_color" style="display: none;">
         <label for="topcolor">Top Color</label>
-        <input type="color" id="topcolor" value="#8F8F8F">
+        <input type="color" id="topcolor" value="#f8ebb8">
         <label for="bottomcolor">Bottom Color</label>
-        <input type="color" id="bottomcolor" value="#FFFFFF">
+        <input type="color" id="bottomcolor" value="#53d8f9">
         <label for="bottomcolor">BG Color</label>
         <input type="color" id="bgcolor" value="#00FF00">
     </span>

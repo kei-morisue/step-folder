@@ -54,6 +54,18 @@ export const TMP = {
         return { depth, type, params: pa };
     },
 
+    angle_bisector: (vertex_index, vertex_index_1, vertex_index_2, depth, type) => {
+        const offset = 0;
+        const pa = { length: 1, vertex_index, vertex_index_1, vertex_index_2, offset };
+        return { depth, type, params: pa };
+    },
+    right_angle: (vertex_index, vertex_index_1, vertex_index_2, depth, type) => {
+        const offset = 0;
+        const length = 1;
+        const params = { length, vertex_index, vertex_index_1, vertex_index_2, offset };
+        return { depth, type, params };
+    },
+
     set_template: (body, type, sym) => {
         const span = document.createElement("span");
         body.appendChild(span);
