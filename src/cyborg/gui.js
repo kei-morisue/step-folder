@@ -2,6 +2,7 @@ import { SVG } from "../flatfolder/svg.js";
 import { PRJ } from "../defox/project.js";
 import { PAINT } from "./paint.js";
 import { STEP } from "../defox/step.js";
+import { DIFF } from "../defox/diff.js";
 import { ACT } from "./action.js";
 
 export const GUI = {
@@ -206,9 +207,9 @@ export const GUI = {
         STEP.update_dist();
         PRJ.record(i - 1);
         PRJ.restore(i);
-        const F_origin = PRJ.steps[i - 1].fold_cp;
-        const F_apply = STEP.FOLD0;
-        DIFF.infer_FO(F_origin, F_apply);
+        // const F_origin = PRJ.steps[i - 1].fold_cp;
+        // const F_apply = STEP.FOLD0;
+        // DIFF.infer_FO(F_origin, F_apply);
 
         STEP.update_states();
         STEP.update_dist();
