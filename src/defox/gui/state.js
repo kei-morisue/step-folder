@@ -9,6 +9,7 @@ import { SEG } from "../segment.js";
 import { PRJ } from "../project.js";
 import { GUI } from "./gui.js";
 import { PAGE } from "../page.js";
+import { DIFF } from "../diff.js";
 
 export const GUI_STATE = {
 
@@ -51,6 +52,9 @@ export const GUI_STATE = {
             if (i < 1) {
                 return;
             }
+            const F_origin = PRJ.steps[i - 1].fold_cp;
+            const F_apply = STEP.FOLD0;
+            DIFF.infer_FO(F_origin, F_apply);
             STEP.update_states();
             STEP.update_dist();
             STEP.redraw();

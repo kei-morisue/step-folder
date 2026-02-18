@@ -102,7 +102,7 @@ export const GUI = {
                     PAINT.redraw();
                 }
 
-                dialog.onkeydown = GUI.bind;
+                dialog.onkeydown = GUI.key_bind;
                 GUI.set_svg(svg.id);
                 mv.click();
             });
@@ -114,7 +114,7 @@ export const GUI = {
         }
         b_0.style["background-color"] = "darkgray";
     },
-    bind: (e) => {
+    key_bind: (e) => {
         const mv = document.getElementById("cpedit_mv");
         const input_angle = document.getElementById("cpedit_input_angle");
         const undo = document.getElementById("cpedit_undo");
@@ -206,11 +206,14 @@ export const GUI = {
         STEP.update_dist();
         PRJ.record(i - 1);
         PRJ.restore(i);
+        const F_origin = PRJ.steps[i - 1].fold_cp;
+        const F_apply = STEP.FOLD0;
+        DIFF.infer_FO(F_origin, F_apply);
+
         STEP.update_states();
         STEP.update_dist();
         PRJ.record(i);
         STEP.redraw();
-        PRJ.redraw_page();
         PAINT.reset();
     },
 

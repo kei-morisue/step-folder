@@ -131,4 +131,27 @@ export const DIFF = {
         });
         return [FOLD, { S, cycle }];
     },
+
+
+    infer_FO: (F_origin, F_apply) => {
+        const { V, FV } = F_apply;
+        const FF_map = F_origin.FV.map((vs) => [])
+        for (const [i, vs] of FV.entries()) {
+            const c = M.interior_point(M.expand(vs, V))
+            for (const [j, ws] of F_origin.FV.entries()) {
+                if (N.is_inside(c, M.expand(ws, F_origin.V))
+                ) {
+                    FF_map[j].push(i);
+                    break;
+                }
+            }
+        }
+        const FO = []
+        for (const [, [f1, f2, o]] of F_origin.FO.entries()) {
+            const gi = FF_map[f1][0];
+            const hi = FF_map[f2][0];
+            FO.push([gi, hi, o])
+        }
+        F_apply.FO = FO;
+    }
 }
