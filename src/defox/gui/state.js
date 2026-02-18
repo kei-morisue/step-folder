@@ -46,6 +46,15 @@ export const GUI_STATE = {
             STEP.update_dist();
             STEP.redraw();
         }
+        document.getElementById("infer_layer_order").onclick = (e) => {
+            const i = PRJ.current_idx;
+            if (i < 1) {
+                return;
+            }
+            STEP.update_states();
+            STEP.update_dist();
+            STEP.redraw();
+        }
 
         document.getElementById("state3").onwheel = (e) => {
             e.preventDefault();

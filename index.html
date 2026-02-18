@@ -26,7 +26,6 @@
             <button id="import_proj">Import Project</button>
             <button id="import0">Insert Steps</button>
             <button id="remove">Remove Step</button>
-            <button id="duplicate">Duplicate Step</button>
             <button id="export">Export Step</button>
             <select id="export_ext">
                 <option value="cp">.cp</option>
@@ -72,6 +71,7 @@
                         <button id="infer_prev">Infer(Prev)</button>
                         <button id="infer_next">Infer(Next)</button>
                         <button id="opencpeditor" class="opendialog">&#xe029;</button>
+                        <button id="duplicate">Duplicate Step</button>
                     </p>
                     <p>
                         <label for="rotate">Angle</label>
@@ -109,6 +109,9 @@
                 </span>
                 <span id="option_layers_b" class="openclose"><b>Manual Layer Control</b></span>
                 <span id="option_layers">
+                    <div>
+                        <button id="infer_layer_order">Infer Layer Order</button>
+                    </div>
                     <label for="selectG">Group</label>
                     <select id="selectG"></select>
                     <label for="assign">state</label>
