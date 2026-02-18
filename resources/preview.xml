@@ -14,6 +14,8 @@
             <label for="width_crease">Crease Width</label>
             <input id="width_crease" type="number" max="10" min="1" value="1">
             <button id="width_crease_reset">Reset</button>
+            <label for="draw_uncreases">Draw Uncreases</label>
+            <input id="draw_uncreases" type="checkbox" checked>
         </p>
         <p>
             <label for="width_boundary">Boundary Width</label>

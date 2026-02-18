@@ -23,7 +23,7 @@ export const DRAW_LIN = {
             stroke_width: assigns.map((a) => {
                 const w = DRAW.width.edge[a]
                 return w ? w : DRAW.width.edge["B"];
-            })
+            }),
         });
     },
 
@@ -45,7 +45,14 @@ export const DRAW_LIN = {
             stroke_width: assigns.map((a) => {
                 const w = DRAW.width.edge[a]
                 return w;
-            })
+            }),
+            filter: (i) => {
+                if (DRAW.uncreases) {
+                    return true;
+                }
+                const a = assigns[i];
+                return a != "RM" && a != "RV" && a != "UF";
+            }
         });
     },
 

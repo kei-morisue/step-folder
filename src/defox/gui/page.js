@@ -29,6 +29,10 @@ export const GUI_PAGE = {
                     DRAW.color.face.bottom = e.target.value
                     STEP.redraw()
                 }
+                document.getElementById("draw_uncreases").onclick = (e) => {
+                    DRAW.uncreases = e.target.checked;
+                    STEP.redraw();
+                }
 
                 document.getElementById("bgcolor").onchange = (e) => {
                     DRAW.color.background = e.target.value

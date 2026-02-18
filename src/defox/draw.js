@@ -10,6 +10,7 @@ import { M } from "../flatfolder/math.js";
 import { SVG } from "../flatfolder/svg.js";
 
 export const DRAW = {
+    uncreases: true,
     color: {
         background: "#FFF",
         face: {
@@ -202,18 +203,24 @@ export const DRAW = {
     },
 
 
-    draw_creases: (svg, lines, as, is_pair) => {
+    draw_creases: (svg, lines, assigns, is_pair) => {
         SVG.draw_segments(svg, lines, {
-            stroke: as.map((a) => {
+            stroke: assigns.map((a) => {
                 if (is_pair) {
                     return DRAW.color.edge[DRAW.pair(a)];
                 }
                 return DRAW.color.edge[a];
             }),
-            stroke_width: as.map((a) => {
+            stroke_width: assigns.map((a) => {
                 const w = DRAW.width.edge[a]
                 return w ? w : DRAW.width.edge["B"];
-            })
+            }),
+            filter: (i) => {
+                if (DRAW.uncreases) {
+                    return true;
+                }
+                return assigns[i] != "RM" && assigns[i] != "RV" && assigns[i] != "UF";
+            },
         });
     },
 
