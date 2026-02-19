@@ -48,16 +48,16 @@ export const GUI_STATE = {
             STEP.redraw();
         }
         document.getElementById("infer_layer_order").onclick = (e) => {
-            const i = PRJ.current_idx;
-            if (i < 1) {
-                return;
-            }
-            const F_origin = PRJ.steps[i - 1].fold_cp;
-            const F_apply = STEP.FOLD0;
-            DIFF.infer_FO(F_origin, F_apply);
-            STEP.update_states();
-            STEP.update_dist();
-            STEP.redraw();
+            // const i = PRJ.current_idx;
+            // if (i < 1) {
+            //     return;
+            // }
+            // const F_origin = PRJ.steps[i - 1].fold_cp;
+            // const F_apply = STEP.FOLD0;
+            // DIFF.infer_FO(F_origin, F_apply);
+            // STEP.update_states();
+            // STEP.update_dist();
+            // STEP.redraw();
         }
 
         document.getElementById("state3").onwheel = (e) => {
