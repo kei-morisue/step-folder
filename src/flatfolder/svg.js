@@ -2,7 +2,6 @@ import { M } from "./math.js";
 
 export const SVG = {   // DRAWING
     SCALE: 1000,
-    MARGIN: 50,
     NS: "http://www.w3.org/2000/svg",
     append: (type, par, attrs = {}) => {
         const el = document.createElementNS(SVG.NS, type);
@@ -22,17 +21,16 @@ export const SVG = {   // DRAWING
         return el;
     },
     get_val: (val, i, def) => {
-        if (val == undefined) { return def; }
+        if (val == undefined)   { return def;    }
         if (Array.isArray(val)) { return val[i]; }
         return val;
     },
     draw_point: (svg, [x, y], color, r) => {
-        return SVG.append("circle", svg, { cx: x, cy: y, r: r, "fill": color });
+        return SVG.append("circle", svg, {cx: x, cy: y, r: r, "fill": color});
     },
-    draw_label: (svg, [x, y], color, i, size = 15) => {
+    draw_label: (svg, [x, y], color, i) => {
         const t = SVG.append("text", svg, {
-            x: x, y: y, "fill": color, "font-size": size + "pt"
-        });
+            x: x, y: y, "fill": color, "font-size": "15pt"});
         t.innerHTML = i;
         return t;
     },
@@ -47,7 +45,7 @@ export const SVG = {   // DRAWING
                 el.setAttribute("opacity", options.opacity);
             }
             if (options.text) {
-                SVG.draw_label(svg, [x, y], color, i, options.text_size ?? 10);
+                SVG.draw_label(svg, [x, y], color, i);
             }
         }
     },
@@ -55,7 +53,7 @@ export const SVG = {   // DRAWING
         for (const [i, l] of L.entries()) {
             if (options.filter && !options.filter(i)) { continue; }
             const [[x1, y1], [x2, y2]] = l.map(p => M.mul(p, SVG.SCALE));
-            const el = SVG.append("line", svg, { x1, x2, y1, y2 });
+            const el = SVG.append("line", svg, {x1, x2, y1, y2});
             const color = SVG.get_val(options.stroke, i, "black");
             const width = SVG.get_val(options.stroke_width, i, 1);
             el.setAttribute("stroke", color);
@@ -76,7 +74,7 @@ export const SVG = {   // DRAWING
             const color = SVG.get_val(options.fill, i, "black");
             if (color == undefined) { continue; }
             const V = F.map(v => v.join(",")).join(" ");
-            const el = SVG.append("polygon", svg, { points: V, fill: color });
+            const el = SVG.append("polygon", svg, {points: V, fill: color});
             if (options.stroke != undefined) {
                 const stroke = SVG.get_val(options.stroke, i);
                 const width = SVG.get_val(options.stroke_width, i, 1);
@@ -106,20 +104,20 @@ export const SVG = {   // DRAWING
             const F = M.expand(ps, P).map(p => M.mul(p, SVG.SCALE));
             const V = F.map(v => v.join(",")).join(" ");
             const id = `${svg.id}${i}`;
-            const clip = SVG.append("clipPath", svg, { id });
-            const el = SVG.append("polygon", clip, { points: V });
-            const g = SVG.append("g", svg, { "clip-path": `url(#${id})` });
-            const n = 4 * SVG.get_val(level, i, 2);
+            const clip = SVG.append("clipPath", svg, {id});
+            const el = SVG.append("polygon", clip, {points: V});
+            const g = SVG.append("g", svg, {"clip-path": `url(#${id})`});
+            const n = 4*SVG.get_val(level, i, 2);
             const G = Array(n).fill(0).map(() => SVG.append("g", g));
             const color = (Rf[i] != flip) ? 0xAA : 0xFF;
             const shift = 3;
             const C = Array(n).fill(0).map((a, i) => {
-                const c = (Math.max(color - (i + 1) * shift, 0)).toString(16);
+                const c = (Math.max(color - (i + 1)*shift, 0)).toString(16);
                 return `#${c}${c}${c}`;
             });
             const base = 2;
             const off = 1;
-            const W = Array(n).fill(0).map((a, i) => base + 2 * (n - i) * off);
+            const W = Array(n).fill(0).map((a, i) => base + 2*(n - i)*off);
             const Q = RP[i];
             for (let pi = 0; pi < Q.length; ++pi) {
                 const pj = (pi + 1) % Q.length;

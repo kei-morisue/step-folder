@@ -113,23 +113,20 @@ export const Y = {     // CONVERSION
         const Vf = M.normalize_points(W);
 
         const FOLD = { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA };
-        const { P, CP, SP, PP, SC, CS, SE, BF, FC, CF } = Y.FOLD_2_CELL(FOLD);
+        const { P, CP, SP, PP, SC, CS, SE, BF, BI, FC, CF } = Y.FOLD_2_CELL(FOLD);
 
-        const ExE = X.SE_2_ExE(SE);
-        const ExF = X.SE_CF_SC_2_ExF(SE, CF, SC);
 
-        const BI = new Map();
-        for (const [i, F] of BF.entries()) { BI.set(F, i); }
+        const BT = X.BF_BI_EF_SE_CF_SC_2_BT(BF, BI, EF, SE, CF, SC);
 
+        const CC = X.FC_BF_BI_BT_2_CC(FC, BF, BI, BT);
         const BA0 = SOLVER.EF_EA_Ff_BF_BI_2_BA0(EF, EA, Ff, BF, BI);
-        const [BT0, BT1, BT2] = X.BF_BI_EF_ExE_ExF_2_BT0_BT1_BT2(BF, BI, EF, ExE, ExF);
-        const BT3x = X.FC_BF_BI_BT0_BT1_2_BT3x(FC, BF, BI, BT0, BT1);
-        const [BT3,] = X.EF_SP_SE_CP_FC_CF_BF_BT3x_2_BT3(EF, SP, SE, CP, FC, CF, BF, BT3x);
-        const BT = BF.map((F, i) => [BT0[i], BT1[i], BT2[i], BT3[i]]);
+        const trans_count = { all: 0, reduced: 0 };
+        const BA = SOLVER.initial_assignment(BA0, BF, BT, BI, FC, CF, CC, trans_count);
 
-        const BA = SOLVER.initial_assignment(BA0, BF, BT, BI)
-        const GB = SOLVER.get_components(BI, BF, BT, BA);
-        const GA = SOLVER.solve(BI, BF, BT, BA, GB, Infinity);
+        const GB = SOLVER.get_components(BI, BF, BT, BA, FC, CF, CC, trans_count);
+
+        const GA = SOLVER.solve(BI, BF, BT, BA.map(a => a), GB, FC, CF, CC, Infinity);
+
         const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {
             return s * BigInt(A.length);
         }, BigInt(1));
@@ -143,33 +140,21 @@ export const Y = {     // CONVERSION
         const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI, GB, GA, GI };
         return [FOLD, CELL];
     },
-    V_2_W: (V, W) => {
-        const V_ = V.map((_) => undefined);
-        for (const [v_i, v] of V.entries()) {
-            for (const [w_i, w] of W.entries()) {
-                const [dx, dy] = M.sub(v, w);
-                if (Math.abs(dx) < 1e-4 && Math.abs(dy) < 1e-4) {
-                    V_[v_i] = w_i;
-                    break;
-                }
-            }
-            if (V_[v_i] == undefined) {
-                W.push(v);
-                V_[v_i] = W.length - 1;
-            }
-        }
-        return V_;
-    },
+
     FOLD_2_CELL: (FOLD) => {
         const { Vf, EV, EF, FV } = FOLD
         const L = EV.map((P) => M.expand(P, Vf));
         const [P, SP, SE, eps_i] = X.L_2_V_EV_EL(L);
         const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
         const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
-        const [CF, FC] = X.EF_FV_SP_SE_CP_SC_2_CF_FC(EF, FV, SP, SE, CP, SC);
-        const BF = X.CF_2_BF(CF);
+        let [CF, FC] = X.EF_FV_P_SP_SE_CP_SC_2_CF_FC(EF, FV, P, SP, SE, CP, SC);
 
-        return { P, CP, SP, PP, SC, CS, SE, BF, FC, CF }
+
+        const BF = X.EF_SP_SE_CP_CF_2_BF(EF, SP, SE, CP, CF);
+        const BI = new Map();
+        for (const [i, F] of BF.entries()) { BI.set(F, i); }
+
+        return { P, CP, SP, PP, SC, CS, SE, BF, BI, FC, CF }
     },
 
 

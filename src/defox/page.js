@@ -80,7 +80,7 @@ export const PAGE = {
                 loc[1] = h;
                 num = num + ". "
             }
-            const l = SVG.draw_label(panel, loc, PAGE.text.color, num, t);
+            const l = SVG3.draw_label(panel, loc, PAGE.text.color, num, t);
             l.setAttribute("font-family", PAGE.text.font);
             l.setAttribute("font-weight", PAGE.text.weght);
 

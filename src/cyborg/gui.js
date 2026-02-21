@@ -2,7 +2,7 @@ import { SVG } from "../flatfolder/svg.js";
 import { PRJ } from "../defox/project.js";
 import { PAINT } from "./paint.js";
 import { STEP } from "../defox/step.js";
-import { DIFF } from "../defox/diff.js";
+import { SVG3 } from "../defox/svg.js";
 import { ACT } from "./action.js";
 
 export const GUI = {
@@ -229,7 +229,7 @@ export const GUI = {
         dialog.close();
     },
     set_svg: (id) => {
-        const [b, s] = [SVG.MARGIN, SVG.SCALE];
+        const [b, s] = [SVG3.MARGIN, SVG.SCALE];
 
         const svg = document.getElementById(id);
         for (const [k, v] of Object.entries({

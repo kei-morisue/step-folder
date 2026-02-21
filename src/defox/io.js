@@ -161,17 +161,8 @@ export const IO3 = {    // INPUT-OUTPUT
         });
     },
 
-    cp_2_V_VV_EV_EA_EF_FV_FE: (doc, L_add = undefined) => {
-        let V, EV_, EV, EA_, EA, EF, FE, VV, FV;
-        let UV, FU;
-        let L, EL;
-        L = IO.CP_2_L(doc);
-        if (L_add) {
-            const L_norm = IO3.normalize_L(L)
-            L = L_add.concat(L_norm);
-        }
-        [V, EV_, EL,] = X.L_2_V_EV_EL(L);
-        EA_ = EL.map((ls) => {
+    EL_L_2_EA: (EL, L) => {
+        return EL.map((ls) => {
             let a = "F";
             for (const l_i of ls) {
                 const b = L[l_i][2];
@@ -182,20 +173,49 @@ export const IO3 = {    // INPUT-OUTPUT
             }
             return (a == "M") ? "V" : ((a == "V") ? "M" : a);
         });
+    },
 
-        V = M.normalize_points(V);
-        EV = [];
+    cp_2_V_VV_EV_EA_EF_FV_FE: (doc, L_add = undefined) => {
+        let V_, V, UV_, EV, UA_, EA, EF, FE, VV, FV;
+        let UV, FU;
+        let L, L_, EL, UL_;
+        L_ = IO.CP_2_L(doc);
+        L_ = IO3.normalize_L(L_)
+        if (L_add) {
+            L_ = L_add.concat(L_);
+        }
+        [V_, UV_, UL_,] = X.L_2_V_EV_EL(L_);
+        UA_ = IO3.EL_L_2_EA(UL_, L_);
+
         UV = [];
-        EA = [];
-        for (const [ei_, a_] of EA_.entries()) {
+        const V_u_i = [];
+        for (const [ei_, a_] of UA_.entries()) {
             if (a_ == "F") {
-                UV.push(EV_[ei_]);
-            }
-            else {
-                EV.push(EV_[ei_]);
-                EA.push(a_);
+                const [pi_, qi_] = UV_[ei_];
+                let pi, qi;
+                pi = V_u_i.indexOf(pi_);
+                if (pi < 0) {
+                    V_u_i.push(pi_);
+                    pi = V_u_i.length - 1;
+                }
+                qi = V_u_i.indexOf(qi_);
+                if (qi < 0) {
+                    V_u_i.push(qi_);
+                    qi = V_u_i.length - 1;
+                }
+                UV.push([pi, qi]);
             }
         }
+        const V_u = V_u_i.map((old_idx) => { return V_[old_idx] });
+        L = [];
+        for (const [p, q, a] of L_) {
+            if (a != "F") {
+                L.push([p, q, a]);
+            }
+        }
+        [V, EV, EL,] = X.L_2_V_EV_EL(L);
+        EA = IO3.EL_L_2_EA(EL, L);
+
 
         [VV, FV] = X.V_EV_2_VV_FV(V, EV);
 
@@ -213,6 +233,11 @@ export const IO3 = {    // INPUT-OUTPUT
                 EA[i] = "B";
             }
         }
+        const off = V.length;
+        UV = UV.map(([pi_, qi_]) => {
+            return [pi_ + off, qi_ + off];
+        })
+        V = V.concat(V_u);
         FU = FV.map(_ => []);
         for (const [ui, vv] of UV.entries()) {
             const c = M.centroid(M.expand(vv, V));

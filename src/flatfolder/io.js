@@ -5,9 +5,7 @@ import { X } from "./conversion.js";
 
 export const IO = {    // INPUT-OUTPUT
     write: (FOLD) => {
-        const {V, Vf, EV, EA, FV, FO} = FOLD;
-        const path = document.getElementById("import").value.split("\\");
-        const name = path[path.length - 1].split(".")[0];
+        const {name, V, Vf, EV, EA, FV, FO} = FOLD;
         FOLD = {
             file_spec: 1.1,
             file_creator: "flat-folder",
@@ -92,9 +90,9 @@ export const IO = {    // INPUT-OUTPUT
                 const attr = parts[0].trim();
                 const  val = parts[1].trim();
                 if (attr == "stroke") {
-                    if (val == "red" || val == "#FF0000") {
+                    if (val == "red" || val == "#FF0000" || val == "#ff0000") {
                         a = "M";
-                    } else if (val == "blue" || val == "#0000FF") {
+                    } else if (val == "blue" || val == "#0000FF" || val == "#0000ff") {
                         a = "V";
                     } else if (val == "gray" || val == "#808080") {
                         a = "F";
@@ -204,6 +202,18 @@ export const IO = {    // INPUT-OUTPUT
             FV = ex["faces_vertices"];
             M.sort_faces(FV, V);
             VV = X.V_FV_2_VV(V, FV);
+        } else {
+            let EL, eps_i;
+            const L = EV.map((e) => M.expand(e, V));
+            [V, EV, EL, eps_i] = X.L_2_V_EV_EL(L);
+            EA = EL.map(eL => {
+                for (const l of eL) {
+                    if (EA[l] != 'F') {
+                        return EA[l];
+                    }
+                }
+                return 'F';
+            });
         }
         return [V, EV, EA, VV, FV];
     },
@@ -228,9 +238,15 @@ export const IO = {    // INPUT-OUTPUT
             [V, EV, EL, eps_i] = X.L_2_V_EV_EL(L);
             const eps = M.min_line_length(L)/(2**eps_i);
             NOTE.time(`Used eps: ${2**eps_i} | ${eps}`);
-            EA = EL.map(l => L[l[0]][2]);
+            EA = EL.map(eL => {
+                for (const l of eL) {
+                    if (L[l][2] != 'F') {
+                        return L[l][2];
+                    }
+                }
+                return 'F';
+            });
         }
-        V = M.normalize_points(V);
         const flip_EA = (EA) => {
             return EA.map((a) => (a == "M") ? "V" : ((a == "V") ? "M" : a));
         };

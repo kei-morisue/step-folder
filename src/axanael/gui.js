@@ -4,6 +4,7 @@ import { DRAW as D } from "../defox/draw.js"
 import { SEG } from "../defox/segment.js"
 import { PRJ } from "../defox/project.js"
 import { SYM } from "../defox/symbol.js"
+import { SVG3 } from "../defox/svg.js"
 
 import { PAINT } from "./paint.js"
 import { CTRL } from "./control.js"
@@ -68,7 +69,7 @@ export const GUI = {
     },
 
     set_svg: (svg) => {
-        const [b, s] = [SVG.MARGIN, SVG.SCALE];
+        const [b, s] = [SVG3.MARGIN, SVG.SCALE];
         for (const [k, v] of Object.entries({
             xmlns: SVG.NS,
             height: s,

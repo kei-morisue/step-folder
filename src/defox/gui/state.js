@@ -10,6 +10,7 @@ import { PRJ } from "../project.js";
 import { GUI } from "./gui.js";
 import { PAGE } from "../page.js";
 import { DIFF } from "../diff.js";
+import { SVG3 } from "../svg.js";
 
 export const GUI_STATE = {
 
@@ -170,7 +171,7 @@ export const GUI_STATE = {
     },
 
     set_svg: (id) => {
-        const [b, s] = [SVG.MARGIN, SVG.SCALE];
+        const [b, s] = [SVG3.MARGIN, SVG.SCALE];
         const main = document.getElementById(id);
 
         for (const [i, ch] of [].entries.call(main.children)) {

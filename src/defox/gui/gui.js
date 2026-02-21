@@ -17,6 +17,9 @@ export const GUI = {
         GUI_STATE.startup();
         GUI_PAGE.startup();
         GUI_IO.import_cp("sample", SMPL.hf, true);
+        GUI_IO.import_cp("sample", SMPL.sq);
+        GUI_IO.import_cp("sample", SMPL.windmil);
+        GUI_IO.import_cp("sample", SMPL.hf);
         GUI_IO.import_cp("sample", SMPL.nonlin);
         GUI_IO.import_cp("sample", SMPL.sq);
         GUI_IO.import_cp("sample", SMPL.hanikamu);

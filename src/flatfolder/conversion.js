@@ -2,48 +2,45 @@ import { M } from "./math.js";
 import { CON } from "./constraints.js";
 import { NOTE } from "./note.js";
 import { AVL } from "./avl.js";
-// import { PAR } from "./parallel.js";
+import { PAR } from "./parallel.js";
 
 export const X = {     // CONVERSION
     L_2_V_EV_EL: (L) => {
         const d = M.min_line_length(L);
-        let nV = 0, nE = 0, count = 0;
         const k = 3;    // decrease eps until feature #s repeat sufficiently
-        let V_ = [], EV_ = [], EL_ = [], k_ = 1, i_ = 1;
-        NOTE.start_check("epsilon");
-        for (const i of Array(50).fill().map((_, j) => j + 3)) {
-            const eps = d / (2 ** i);
-            NOTE.check(2 ** i);
+        const N = 25;
+        let k_ = 0, i_ = 1, nV = 0, nE = 0, count = 0;
+        for (let i = 3; i < (N + 3); ++i) {
+            const eps = d/(2**i);
             if (eps < M.FLOAT_EPS) { break; }
-            try {
-                const [V, EV, EL] = X.L_eps_2_V_EV_EL(L, eps);
-                if ((V.length == nV) && (EV.length == nE)) {
-                    ++count;
-                    if (count <= k_) { continue; }
-                    V_ = V; EV_ = EV; EL_ = EL; k_ = count; i_ = i;
-                    if (count == k) { break; }
-                } else {
-                    nV = V.length;
-                    nE = EV.length;
-                    count = 0;
-                }
-            } catch { nV = 0; nE = 0; count = 0; }
+            const [V, EV, EL] = X.L_eps_2_V_EV_EL(L, eps);
+            if (V.length == 0) { nV = nE = count = 0; continue; }
+            count = ((V.length == nV) && (EV.length == nE)) ? (count + 1) : 1;
+            nV = V.length;
+            nE = EV.length;
+            if (count <= k_) { continue; }
+            k_ = count; i_ = i;
+            if (k_ == k) { break; }
         }
-        return [V_, EV_, EL_, i_ - k_];
+        const eps_i = i_ - k_ + 1;
+        const eps = d/(2**eps_i);
+        const [V, EV, EL] = X.L_eps_2_V_EV_EL(L, eps);
+        return [V, EV, EL, eps_i];
     },
     L_eps_2_V_EV_EL: (L, eps) => {
         const point_comp = ([x1, y1], [x2, y2]) => {    // point comparator
-            if (M.dist([x1, y1], [x2, y2]) < eps) { return 0; }
+            const dx = x1 - x2;
             const dy = y1 - y2;
-            return (Math.abs(dy) >= eps) ? dy : (x1 - x2);
+            return ((Math.abs(dy) > eps) ? ((dy < 0) ? -1 : 1) :
+                   ((Math.abs(dx) > eps) ? ((dx < 0) ? -1 : 1) : 0));
         };
         const line_intersect = ([x1, y1], [x2, y2], [x3, y3], [x4, y4]) => {
             const dx12 = x1 - x2, dx34 = x3 - x4;
             const dy12 = y1 - y2, dy34 = y3 - y4;
-            const denom = dx12 * dy34 - dx34 * dy12;
-            if (denom < eps * eps) { return undefined; }
-            const x = ((x1 * y2 - y1 * x2) * dx34 - (x3 * y4 - y3 * x4) * dx12) / denom;
-            const y = ((x1 * y2 - y1 * x2) * dy34 - (x3 * y4 - y3 * x4) * dy12) / denom;
+            const denom = dx12*dy34 - dx34*dy12;
+            if (Math.abs(denom) < eps*eps) { return undefined; }
+            const x = ((x1*y2 - y1*x2)*dx34 - (x3*y4 - y3*x4)*dx12)/denom;
+            const y = ((x1*y2 - y1*x2)*dy34 - (x3*y4 - y3*x4)*dy12)/denom;
             return [x, y];
         };
         const V = [[-Infinity, -Infinity]];     // sentinal first point
@@ -67,12 +64,16 @@ export const X = {     // CONVERSION
                 return j;
             });
             LV.push([vi, vj]);                  // index-based line data
-            const u = M.unit(M.sub(V[vj], V[vi]));
+            const d = M.sub(V[vj], V[vi]);
+            const u = M.unit(d);
             LU.push(u);
-            LA.push((u[1] < eps) ? 0 : M.angle(u));
+            LA.push((d[1] < eps) ? 0 : M.angle(d));
             LD.push(M.dot(M.perp(u), V[vj]));
             VL[vi].push(li);
         }
+        const [[x_min, y_min], [x_max, y_max]] = M.bounding_box(V.slice(1));
+        const HEIGHT = y_max - y_min, WIDTH = x_max - x_min;
+        const SCALE = (HEIGHT < WIDTH) ? WIDTH : HEIGHT;
         const SV = [[undefined, undefined]];    // sentinal segment
         const SU = [[-1, 0]];                   // unit vector along segment
         const SA = [Infinity];                  // angle
@@ -82,16 +83,13 @@ export const X = {     // CONVERSION
         const on_line = (vi, si) => (Math.abs(point_seg_dist(vi, si)) < eps);
         let curr;
         const seg_comp = (si, sj) => {
-            if (!on_line(curr, si)) {                // assumes si on curr
-                throw new Error();
-            }
             const dj = point_seg_dist(curr, sj);    // only search near curr,
             if (Math.abs(dj) < eps) {               // so can order locally
                 const pi = SV[si][1];
                 if ((pi != undefined) && on_line(pi, sj)) { return 0; }
-                return SA[sj] - SA[si];
+                return (SA[sj] - SA[si] > 0) ? 1 : -1;
             }
-            return -dj;
+            return ((-dj) > 0) ? 1 : -1;
         };
         const T = new AVL(seg_comp);
         const VP = Array(V).fill();
@@ -118,7 +116,7 @@ export const X = {     // CONVERSION
                 for (const li of SL[si]) {
                     if (point_comp(V[LV[li][1]], V[vi]) <= 0) {
                         ends = true;    // vertex used (ends some segment)
-                        continue;
+                        break;
                     }
                 }
                 if (!ends) {            // vertex unused (one segment passing)
@@ -126,9 +124,26 @@ export const X = {     // CONVERSION
                     continue;
                 }
             }
+            if (S1.length == 1) {
+                const s0 = S1[0];
+                let all_parallel = true;
+                for (const ll of VL[vi]) {
+                    if (!on_line(LV[ll][1], s0)) {
+                        all_parallel = false;
+                        break;
+                    }
+                }
+                if (all_parallel) {     // vertex unused (one segment passing)
+                    T.insert(s0);
+                    for (const ll of VL[vi]) {
+                        SL[s0].push(ll);
+                    }
+                    continue;
+                }
+            }
             VP[vi] = P.length;
             P.push(v);
-            for (const si of S1) {      // close segments
+            for (const si of S1) {      // close entering segments
                 SV[si][1] = vi;
                 for (const li of SL[si]) {
                     if (point_comp(V[LV[li][1]], V[vi]) <= 0) { continue; }
@@ -138,7 +153,7 @@ export const X = {     // CONVERSION
             VL[vi].sort((i, j) => {     // process lines by distance from vi
                 const dj = M.distsq(v, V[LV[j][1]]);
                 const di = M.distsq(v, V[LV[i][1]]);
-                return dj - di;
+                return (dj == di) ? (i - j) : ((dj < di) ? -1 : 1);
             });
             for (const li of VL[vi]) {      // add lines to new segments
                 const si = SV.length;
@@ -158,37 +173,37 @@ export const X = {     // CONVERSION
                 }
             }
             const pairs = [];
-            pairs.push([T.prev(0), T.next(0)]); SA[0] = -Infinity
-            pairs.push([T.prev(0), T.next(0)]); SA[0] = Infinity
+            SA[0] = -1;         pairs.push([T.prev(0), T.next(0)]);
+            SA[0] = Infinity;   pairs.push([T.prev(0), T.next(0)]);
             for (const [l, r] of pairs) {   // check adjacent pairs
                 if ((l == undefined) || (r == undefined)) {
                     continue;               // incomplete pair
                 }
                 const vl = SV[l][0], al = SA[l];
                 const vr = SV[r][0], ar = SA[r];
-                const x = line_intersect(V[vl], M.add(V[vl], SU[l]),
-                    V[vr], M.add(V[vr], SU[r]));
-                if ((x == undefined) ||                         // none
-                    (point_comp(x, v) == 0) ||                  // near curr
-                    ((point_comp(x, v) < 0) && (x[1] <= v[1]))  // behind sweep
-                ) { continue; }
+                const x = line_intersect(V[vl], M.add(V[vl], M.mul(SU[l], SCALE)),
+                                         V[vr], M.add(V[vr], M.mul(SU[r], SCALE)));
+                if (x == undefined) { continue; }   // none
+                const c = point_comp(x, v);
+                if (c == 0) { continue; }           // x is p
+                if ((c < 0) && ((x[1] - v[1]) < eps)) { continue; } // x is behind p
                 const vx = V.length;        // add point
                 V.push(x);
-                VL.push([]);
                 const vj = Q.insert(vx);
                 if (vj != undefined) {      // point near existing point
                     V.pop();
-                    VL.pop();
+                } else {
+                    VL.push([]);
                 }
             }
         }
+
+        if (T.length != 0) { return [[], [], []]; }
+
         const X = [];
         const X_map = new Map();
         for (let si = 1; si < SV.length; ++si) {    // combine redundant
             const pp = SV[si].map(vi => VP[vi]);
-            if ((pp[0] == undefined) || (pp[1] == undefined)) {
-                throw new Error();                  // missing endpoint
-            }
             if (pp[1] < pp[0]) { pp.reverse(); }
             const k = M.encode(pp);
             let xi = X_map.get(k);
@@ -335,19 +350,20 @@ export const X = {     // CONVERSION
         }
         const Vf = V.map((p) => undefined);
         const seen = new Set();
-        seen.add(0);                    // start search at face 0
         const [v1, v2,] = FV[0];        // first edge of first face
         for (const i of [v1, v2]) {
             Vf[i] = V[i];
         }            // [face, edge, len, parity]
         const Ff = new Array(FV.length);
-        const queue = [[0, v1, v2, Infinity, true]];
+        const Q = [[0, v1, v2, Infinity, true]];
         let next = 0;
-        while (next < queue.length) {                   // Prim's algorithm to
-            const [fi, i1, i2, l, s] = queue[next];     // traverse face graph
-            Ff[fi] = !s;                                // over spanning tree
-            next += 1;                                  // crossing edges of
-            const F = FV[fi];                           // maximum length
+        while (next < Q.length) {                       // Prim's algorithm to
+            const [fi, i1, i2, l, s] = Q[next];         // traverse face graph
+            next++;                                     // over spanning tree
+            if (seen.has(fi)) { continue; }             // crossing edges of
+            seen.add(fi);                               // low depth and
+            Ff[fi] = !s;                                // maximum length
+            const F = FV[fi];
             const x = M.unit(M.sub(V[i2], V[i1]));
             const y = M.perp(x);
             const xf = M.unit(M.sub(Vf[i2], Vf[i1]));
@@ -364,19 +380,16 @@ export const X = {     // CONVERSION
                 const len = M.distsq(V[vi], V[vj]);
                 const f = EF_map.get(M.encode([vi, vj]));
                 const a = EA_map.get(M.encode_order_pair([vi, vj]));
-                const new_s = (a == "M" || a == "V" || a == "U" || a == "RV" || a == "RM" || a == "UF") ? !s : s;
+                const new_s = (a == "M" || a == "V" || a == "U") ? !s : s;
                 if ((f != undefined) && !seen.has(f)) {
-                    queue.push([f, vj, vi, len, new_s]);
-                    seen.add(f);
-                    let prev = len;
-                    for (let i = queue.length - 1; i > next; --i) {
-                        const curr = queue[i - 1][3];   // O(n^2) but could be
-                        if (curr < prev) {              // O(n log n)
-                            [queue[i], queue[i - 1]] = [queue[i - 1], queue[i]];
+                    Q.push([f, vi, vj, len, new_s]);
+                    for (let i = Q.length - 1; i > next; --i) {
+                        const len_ = Q[i - 1][3];       // O(n^2) but could be
+                        if (len_ < len) {               // O(n log n)
+                            [Q[i], Q[i - 1]] = [Q[i - 1], Q[i]];
                         } else {
                             break;
                         }
-                        prev = curr;
                     }
                 }
                 vi = vj;
@@ -401,7 +414,7 @@ export const X = {     // CONVERSION
         }
         for (const [i, F] of EF.entries()) {
             const c = (F[0] == undefined) ? 1 :
-                ((F[1] == undefined) ? 0 : undefined);
+                     ((F[1] == undefined) ? 0 : undefined);
             if (c != undefined) {
                 EF[i] = [F[c]];
             }
@@ -428,103 +441,81 @@ export const X = {     // CONVERSION
         }
         return fB;
     },
-    EF_FV_SP_SE_CP_SC_2_CF_FC: (EF, FV, SP, SE, CP, SC) => {
-        const SF_map = new Map();
-        for (const [i, vs] of SP.entries()) {
-            const Fs = [];
+    EF_FV_P_SP_SE_CP_SC_2_CF_FC: (EF, FV, P, SP, SE, CP, SC) => {
+        const SF_map = new Map();   // set of faces bounding each segment
+        for (const [i, sP] of SP.entries()) {
+            const sF = [];
             for (const ei of SE[i]) {
                 for (const f of EF[ei]) {
-                    Fs.push(f);
+                    sF.push(f);
                 }
             }
-            SF_map.set(M.encode_order_pair(vs), Fs);
+            SF_map.set(M.encode_order_pair(sP), sF);
         }
-        const SC_map = new Map();
-        for (const [i, C] of CP.entries()) {
-            let v1 = C[C.length - 1];
-            for (const v2 of C) {
-                SC_map.set(M.encode([v2, v1]), i);
-                v1 = v2;
+        const SC_map = new Map();   // cell from directed segment
+        for (const [i, cP] of CP.entries()) {
+            let p1 = cP[cP.length - 1];
+            for (const p2 of cP) {
+                SC_map.set(M.encode([p2, p1]), i);
+                p1 = p2;
             }
         }
         const CF = CP.map(() => []);
-        const seen = new Set();
-        const queue = [];
-        for (const [i, Cs] of SC.entries()) {   // Look for a segment on the
-            if (Cs.length == 1) {               // border of the overlap graph
-                const ci = Cs[0];               // to start BFS
-                CF[ci] = SF_map.get(M.encode_order_pair(SP[i]));
-                queue.push(ci);
-                seen.add(ci);
-                break;
+        const Q = [];
+        {                                   // Look for a segment on the
+            let si, ci, d = -1;             // border of the overlap graph
+            for (const [i, sC] of SC.entries()) {   // to start BFS
+                if (sC.length == 1) {
+                    const [p1, p2] = SP[i].map(pi => P[pi]);
+                    const d_ = M.distsq(p1, p2);
+                    if (d_ > d) {
+                        si = i;
+                        ci = sC[0];
+                        d = d_;
+                    }
+                }
             }
+            CF[ci] = SF_map.get(M.encode_order_pair(SP[si]));
+            Q.push([ci, d]);
         }
         let next = 0;
-        while (next < queue.length) {   // BFS on cells in the overlap graph
-            const ci = queue[next];
-            next++;
-            const C = CP[ci];
-            let v1 = C[C.length - 1];
-            for (const v2 of C) {
-                const c = SC_map.get(M.encode([v1, v2]));
-                if ((c != undefined) && !seen.has(c)) {
-                    queue.push(c);
-                    seen.add(c);
-                    const Fs = new Set(CF[ci]);
-                    const k = M.encode_order_pair([v1, v2]);
-                    for (const f of SF_map.get(k)) {
-                        const removed = Fs.delete(f);
-                        if (!removed) {
-                            Fs.add(f);
+        const seen = new Set();
+        while (next < Q.length) {   // BFS on cells in the overlap graph
+            const ci = Q[next][0]; next++;
+            if (seen.has(ci)) { continue; }
+            seen.add(ci);
+            const cP = CP[ci];
+            let p1 = cP[cP.length - 1];
+            for (const p2 of cP) {
+                const cj = SC_map.get(M.encode([p1, p2]));
+                if ((cj != undefined) && !seen.has(cj)) {
+                    const d = M.distsq(P[p1], P[p2]);
+                    Q.push([cj, d]);
+                    for (let i = Q.length - 2; i > next; --i) {
+                        const d_ = Q[i][1];
+                        if (d_ < d) {
+                            [Q[i + 1], Q[i]] = [Q[i], Q[i + 1]];
                         }
                     }
-                    CF[c] = Array.from(Fs);
+                    const cF = new Set(CF[ci]);
+                    const k = M.encode_order_pair([p1, p2]);
+                    for (const f of SF_map.get(k)) {
+                        const removed = cF.delete(f);
+                        if (!removed) { cF.add(f); }
+                    }
+                    CF[cj] = Array.from(cF);
                 }
-                v1 = v2;
+                p1 = p2;
             }
         }
         const FC = FV.map(() => []);
-        for (let ci = 0; ci < CF.length; ci++) {
-            CF[ci].sort((a, b) => a - b);
-            for (const f of CF[ci]) {
+        for (const [ci, cF] of CF.entries()) {
+            cF.sort((a, b) => a - b);
+            for (const f of cF) {
                 FC[f].push(ci);
             }
         }
         return [CF, FC];
-    },
-    SE_2_ExE: (SE) => {
-        const ExE = new Set();
-        for (const edges of SE) {
-            for (const [j, v1] of edges.entries()) {
-                for (let k = j + 1; k < edges.length; ++k) {
-                    const v2 = edges[k];
-                    ExE.add(M.encode_order_pair([v1, v2]));
-                }
-            }
-        }
-        return Array.from(ExE);
-    },
-    SE_CF_SC_2_ExF: (SE, CF, SC) => {
-        const ExF = new Set();
-        for (const [i, C] of SC.entries()) {
-            if (C.length == 2) {
-                const E = SE[i];
-                const [c1, c2] = C;
-                const F = [];
-                const F1 = new Set(CF[c1]);
-                for (const fi of CF[c2]) {
-                    if (F1.has(fi)) {
-                        F.push(fi);
-                    }
-                }
-                for (const ei of E) {
-                    for (const fi of F) {
-                        ExF.add(M.encode([ei, fi]));
-                    }
-                }
-            }
-        }
-        return Array.from(ExF);
     },
     CF_2_BF: (CF) => {                          // O(|C|t^2) <= O(|F|^4)
         const BF_set = new Set();               // t is max faces in a cell
@@ -561,7 +552,7 @@ export const X = {     // CONVERSION
         }
         const BF_set = new Set();
         const seen = new Set();
-        const queue = [0];
+        const Q = [0];
         {
             const F = CF[0];
             for (let j = 1; j < F.length; ++j) {
@@ -572,14 +563,14 @@ export const X = {     // CONVERSION
         }
         let next = 0;
         const CF_set = CF.map(F => new Set(F));
-        while (next < queue.length) {   // BFS on cells in the overlap graph
-            const ci = queue[next++];
+        while (next < Q.length) {   // BFS on cells in the overlap graph
+            const ci = Q[next++];
             const C = CP[ci];
             let v1 = C[C.length - 1];
             for (const v2 of C) {
                 const cj = SC_map.get(M.encode([v1, v2]));
                 if ((cj != undefined) && !seen.has(cj)) {
-                    queue.push(cj);
+                    Q.push(cj);
                     seen.add(cj);
                     const Fi_set = CF_set[ci];
                     const Fj_set = CF_set[cj];
@@ -601,379 +592,182 @@ export const X = {     // CONVERSION
         return (BI.has(M.encode_order_pair(p)) ? 1 : 0);
     },
     add_constraint: (T, BI, BT) => {
-        if (T != undefined) {
-            const [type, F] = T;
-            const pairs = CON.type_F_2_pairs(type, F);
-            for (const p of pairs) {
-                const i = BI.get(M.encode_order_pair(p));
-                if (i == undefined) { debugger; }
-                BT[type][i].push(F);
-            }
+        if (T == undefined) { return; }
+        const [type, F] = T;
+        const pairs = CON.type_F_2_pairs(type, F);
+        for (const p of pairs) {
+            const i = BI.get(M.encode_order_pair(p));
+            if (i == undefined) { debugger; }
+            BT[i][type].push(M.encode(F));
         }
     },
-    BF_BI_EF_ExE_ExF_2_BT0_BT1_BT2: (BF, BI, EF, ExE, ExF) => {
-        const BT0 = BF.map(() => []); // taco-taco
-        const BT1 = BF.map(() => []); // taco-tortilla
-        const BT2 = BF.map(() => []); // tortilla-tortilla
-        const BT = [BT0, BT1, BT2];
+    ExE_fill_BT: (BT, BI, EF, SE) => {
+        const ExE = EF.map(() => new Set());
+        for (const edges of SE) {
+            for (const [j, v1] of edges.entries()) {
+                for (let k = j + 1; k < edges.length; ++k) {
+                    const v2 = edges[k];
+                    const [a, b] = (v1 < v2) ? [v1, v2] : [v2, v1];
+                    ExE[a].add(b);
+                }
+            }
+        }
+        NOTE.start_check("edge", ExE);
+        for (const [e1, E] of ExE.entries()) {
+            NOTE.check(e1);
+            for (const e2 of E) {
+                if ((EF[e1].length != 2) || (EF[e2].length != 2)) { continue; }
+                const [f1, f2] = EF[e1];
+                const [f3, f4] = EF[e2];
+                // note that all of f1, f2, f3, f4 must be unique
+                const f1f2 = X.check_overlap([f1, f2], BI);
+                const f1f3 = X.check_overlap([f1, f3], BI);
+                const f1f4 = X.check_overlap([f1, f4], BI);
+                let cons;
+                const choice = (f1f2 << 2) | (f1f3 << 1) | f1f4;
+                if (choice == 4) { continue; } // 100 no overlap
+                switch (choice) {
+                    case 0: // 000
+                        cons = [CON.T.taco_tortilla, [f3, f4, f2]]; break;
+                    case 1: // 001
+                        cons = [CON.T.tortilla_tortilla, [f1, f2, f4, f3]]; break;
+                    case 2: // 010
+                        cons = [CON.T.tortilla_tortilla, [f1, f2, f3, f4]]; break;
+                    case 3: // 011
+                        cons = [CON.T.taco_tortilla, [f3, f4, f1]]; break;
+                    case 4: // 100  no overlap
+                        break;
+                    case 5: // 101
+                        cons = [CON.T.taco_tortilla, [f1, f2, f4]]; break;
+                    case 6: // 110
+                        cons = [CON.T.taco_tortilla, [f1, f2, f3]]; break;
+                    case 7: // 111
+                        cons = [CON.T.taco_taco, [f1, f2, f3, f4]]; break;
+                    default: break;
+                }
+                X.add_constraint(cons, BI, BT);
+            }
+            E.clear();
+        }
+        ExE.length = 0;
+    },
+    ExF_fill_BT: (BT, BI, EF, SE, CF, SC) => {
+        const ExF = EF.map(() => new Set());
+        for (const [i, C] of SC.entries()) {
+            if (C.length == 2) {
+                const E = SE[i];
+                const [c1, c2] = C;
+                const F = [];
+                const F1 = new Set(CF[c1]);
+                for (const fi of CF[c2]) {
+                    if (F1.has(fi)) {
+                        F.push(fi);
+                    }
+                }
+                for (const ei of E) {
+                    for (const fi of F) {
+                        ExF[ei].add(fi);
+                    }
+                }
+            }
+        }
+        NOTE.start_check("edge", ExF);
+        for (const [e, F] of ExF.entries()) {
+            NOTE.check(e);
+            for (const f3 of F) {
+                if (EF[e].length != 2) { continue; }
+                const [f1, f2] = EF[e];
+                if ((f1 == f3) || (f2 == f3)) { continue; }
+                const f1f2 = X.check_overlap([f1, f2], BI);
+                let cons;
+                if (f1f2 == 1) {
+                    cons = [CON.T.taco_tortilla, [f1, f2, f3]];
+                } else {
+                    cons = [CON.T.tortilla_tortilla, [f1, f2, f3, f3]];
+                }
+                X.add_constraint(cons, BI, BT);
+            }
+            F.clear();
+        }
+        ExF.length = 0;
+    },
+    BF_BI_EF_SE_CF_SC_2_BT: (BF, BI, EF, SE, CF, SC) => {
+        const BT = BF.map(() => [
+            [], // taco-taco
+            [], // taco-tortilla
+            [], // tortilla-tortilla
+        ]);
         NOTE.time("Computing from edge-edge intersections");
-        NOTE.start_check("edge-edge intersection", ExE);
-        for (const [i, k] of ExE.entries()) {
-            NOTE.check(i);
-            const [e1, e2] = M.decode(k);
-            if ((EF[e1].length != 2) || (EF[e2].length != 2)) { continue; }
-            const [f1, f2] = EF[e1];
-            const [f3, f4] = EF[e2];
-            // note that all of f1, f2, f3, f4 must be unique
-            const f1f2 = X.check_overlap([f1, f2], BI);
-            const f1f3 = X.check_overlap([f1, f3], BI);
-            const f1f4 = X.check_overlap([f1, f4], BI);
-            let cons;
-            const choice = (f1f2 << 2) | (f1f3 << 1) | f1f4;
-            switch (choice) {
-                case 0: // 000
-                    cons = [CON.T.taco_tortilla, [f3, f4, f2]]; break;
-                case 1: // 001
-                    cons = [CON.T.tortilla_tortilla, [f1, f2, f4, f3]]; break;
-                case 2: // 010
-                    cons = [CON.T.tortilla_tortilla, [f1, f2, f3, f4]]; break;
-                case 3: // 011
-                    cons = [CON.T.taco_tortilla, [f3, f4, f1]]; break;
-                case 4: // 100  no overlap
-                    break;
-                case 5: // 101
-                    cons = [CON.T.taco_tortilla, [f1, f2, f4]]; break;
-                case 6: // 110
-                    cons = [CON.T.taco_tortilla, [f1, f2, f3]]; break;
-                case 7: // 111
-                    cons = [CON.T.taco_taco, [f1, f2, f3, f4]]; break;
-                default: break;
-            }
-            X.add_constraint(cons, BI, BT);
-        }
+        X.ExE_fill_BT(BT, BI, EF, SE);
         NOTE.time("Computing from edge-face intersections");
-        NOTE.start_check("edge-face intersection", ExF);
-        for (const [i, k] of ExF.entries()) {
-            NOTE.check(i);
-            const [e, f3] = M.decode(k);
-            if (EF[e].length != 2) { continue; }
-            const [f1, f2] = EF[e];
-            if ((f1 == f3) || (f2 == f3)) { continue; }
-            const f1f2 = X.check_overlap([f1, f2], BI);
-            let cons;
-            if (f1f2 == 1) {
-                cons = [CON.T.taco_tortilla, [f1, f2, f3]];
-            } else {
-                cons = [CON.T.tortilla_tortilla, [f1, f2, f3, f3]];
-            }
-            X.add_constraint(cons, BI, BT);
-        }
+        X.ExF_fill_BT(BT, BI, EF, SE, CF, SC);
         return BT;
     },
-    FC_BF_BI_BT0_BT1_2_BT3x: (FC, BF, BI, BT0, BT1) => {
-        const BT3x = BF.map(() => new Set());
-        NOTE.start_check("variable", BF);
-        for (const [i, k] of BF.entries()) {
-            NOTE.check(i);
-            const [f1, f2] = M.decode(k);
-            for (const T of [BT0[i], BT1[i]]) {
-                for (const F of T) {
-                    for (const f of F) {
-                        if ((f == f1) || (f == f2)) { continue; }
-                        BT3x[i].add(f);
-                    }
-                }
-            }
-        }
+    FC_BF_BI_BT_2_CC: (FC, BF, BI, BT) => {
         const FG = FC.map(() => new Map());
-        NOTE.start_check("taco-tortilla", BT1);
-        for (const [i, T] of BT1.entries()) {    // construct connectivity graphs
+        NOTE.start_check("taco-tortilla", BT);
+        for (const [i, T] of BT.entries()) {    // construct connectivity graphs
             NOTE.check(i);
-            for (const [a, b, c] of T) {
+            for (const k of T[CON.T.taco_tortilla]) {
+                const [a, b, c] = M.decode(k);
                 const G = FG[c];
-                if (!G.has(a)) { G.set(a, []); }
-                if (!G.has(b)) { G.set(b, []); }
-                G.get(a).push(b);
-                G.get(b).push(a);
+                if (!G.has(a)) { G.set(a, new Set()); }
+                if (!G.has(b)) { G.set(b, new Set()); }
+                G.get(a).add(b);
+                G.get(b).add(a);
             }
         }
         const CC = [];
-        const seen = new Set();
         NOTE.start_check("face", FG);
         for (const [c, G] of FG.entries()) {    // find connected components
             NOTE.check(c);
-            seen.clear();
+            const C = new Map();
+            let ci = 0;
             for (const [F, _] of G) {
-                if (seen.has(F)) { continue; }
-                seen.add(F);
-                const C = [F];
+                if (C.get(F) != undefined) { continue; }
+                const Q = [F];
+                C.set(F, ci);
                 let i = 0;
-                while (i < C.length) {
-                    for (const f of G.get(C[i])) {
-                        if (seen.has(f)) { continue; }
-                        seen.add(f);
-                        C.push(f);
+                while (i < Q.length) {
+                    for (const f of G.get(Q[i])) {
+                        if (C.get(f) != undefined) { continue; }
+                        Q.push(f);
+                        C.set(f, ci);
                     }
                     ++i;
                 }
-                CC.push([c, C]);
+                ++ci;
             }
-            G.clear();
+            CC.push(C);
         }
-        FG.length = 0;
-        NOTE.start_check("component", CC);      // find implied transitivity
-        for (const [ci, [c, C]] of CC.entries()) {
-            NOTE.check(ci);
-            const K = C.map(a => BI.get(M.encode_order_pair([a, c])));
-            for (let i = 0; i < C.length - 1; ++i) {
-                const a = C[i];
-                const kca = K[i];
-                if (kca == undefined) { continue; }
-                for (let j = i + 1; j < C.length; ++j) {
-                    const b = C[j];
-                    const kbc = K[j];
-                    if (kbc == undefined) { continue; }
-                    const kab = BI.get(M.encode_order_pair([a, b]));
-                    if (kab == undefined) { continue; }
-                    BT3x[kca].add(b);
-                    BT3x[kbc].add(a);
-                    BT3x[kab].add(c);   // possible a,b,c do not all overlap
-                }
-            }
-            C.length = 0;
-            K.length = 0;
-            CC[ci] = undefined;
-        }
-        CC.length = 0;
-        for (let i = 0; i < BT3x.length; ++i) {
-            BT3x[i] = M.encode(BT3x[i]);
-        }
-        return BT3x;
+        return CC;
     },
-    FC_BF_BI_BT0_BT1_W_2_BT3x: async (FC, BF, BI, BT0, BT1, W) => {
-        const BT3x = BF.map(() => new Set());
-        NOTE.start_check("variable", BF);
-        for (const [i, k] of BF.entries()) {
-            NOTE.check(i);
-            const [f1, f2] = M.decode(k);
-            for (const T of [BT0[i], BT1[i]]) {
-                for (const F of T) {
-                    for (const f of F) {
-                        if ((f == f1) || (f == f2)) { continue; }
-                        BT3x[i].add(f);
-                    }
-                }
-            }
-        }
-        const FG = FC.map(() => new Map());
-        NOTE.start_check("taco-tortilla", BT1);
-        for (const [i, T] of BT1.entries()) {    // construct connectivity graphs
-            NOTE.check(i);
-            for (const [a, b, c] of T) {
-                const G = FG[c];
-                if (!G.has(a)) { G.set(a, []); }
-                if (!G.has(b)) { G.set(b, []); }
-                G.get(a).push(b);
-                G.get(b).push(a);
-            }
-        }
-        const CC = [];
-        const seen = new Set();
-        NOTE.start_check("face", FG);
-        for (const [c, G] of FG.entries()) {    // find connected components
-            NOTE.check(c);
-            seen.clear();
-            for (const [F, _] of G) {
-                if (seen.has(F)) { continue; }
-                seen.add(F);
-                const C = [F];
-                let i = 0;
-                while (i < C.length) {
-                    for (const f of G.get(C[i])) {
-                        if (seen.has(f)) { continue; }
-                        seen.add(f);
-                        C.push(f);
-                    }
-                    ++i;
-                }
-                CC.push([c, C]);
-            }
-            G.clear();
-        }
-        FG.length = 0;
-        const P = W.map((_, wi) => new Promise(res => res([wi, undefined])));
-        await Promise.all(W.map(w => PAR.send_message(w, "BT3x_start", [BI])));
-        const load = 10;
-        let i = 0, j = 0;
-        NOTE.start_check("component", CC);
-        while (j < CC.length) {
-            NOTE.check(j);
-            const [wi, R] = await Promise.any(P);
-            if (R != undefined) {
-                for (const [ci, c, cB] of R) {
-                    for (const [a, b, kab, kbc, kca] of cB) {
-                        BT3x[kbc].add(a);
-                        BT3x[kca].add(b);
-                        BT3x[kab].add(c);
-                    }
-                    cB.length = 0;
-                    ++j;
-                }
-                R.length = 0;
-            }
-            const J = [];
-            for (let k = 0; (k < load) && (i < CC.length); ++k, ++i) {
-                const [c, C] = CC[i];
-                J.push([i, c, C]);
-            }
-            P[wi] = ((J.length == 0) ? (new Promise(res => { }))
-                : PAR.send_message(W[wi], "BT3x", [J]));
-            J.length = 0;
-        }
-        await Promise.all(W.map(w => PAR.send_message(w, "BT3x_stop", [])));
-        CC.length = 0;
-        for (let i = 0; i < BT3x.length; ++i) {
-            BT3x[i] = M.encode(BT3x[i]);
-        }
-        return BT3x;
-    },
-    FC_CF_BF_BT3x_2_BT3: (FC, CF, BF, BT3x) => { // O(|B|kt) <= O(|F|^5)
-        const BT3 = [];                          // k is max cells in a face,
-        const FC_sets = FC.map(C => new Set(C)); // t is max faces in a cell
-        let nx = 0;                              // k = O(|C|) <= O(|F|^2)
-        NOTE.start_check("variable", BF);        // t = O(|F|)
-        for (const [i, k] of BF.entries()) {     // |B| = O(|F|^2)
-            NOTE.check(i);
-            const [f1, f2] = M.decode(k);
-            const C = FC_sets[f1];
-            const S = new Set(M.decode(BT3x[i]));
-            delete BT3x[i];
-            const X = new Set();
-            const T = new Set();
-            for (const c of FC[f2]) {
-                if (C.has(c)) {
-                    for (const f3 of CF[c]) {
-                        if ((f3 == f1) || (f3 == f2)) { continue; }
-                        if (S.has(f3)) { X.add(f3); }
-                        else { T.add(f3); }
-                    }
-                }
-            }
-            nx += X.size;
-            BT3.push(M.encode(T));
-        }
-        return [BT3, nx / 3];     // |BT3| = O(|B||F|) <= O(|F|^3)
-    },
-    FC_CF_BF_BT3x_W_2_BT3: async (FC, CF, BF, BT3x, W) => {
-        const P = W.map((_, wi) => new Promise(res => res([wi, undefined])));
-        await Promise.all(W.map(w => PAR.send_message(w, "BT3_start", [FC, CF])));
-        const BT3 = BF.map(() => undefined);
-        const load = 100;
-        let i = 0, j = 0, nx = 0;
-        NOTE.start_check("variable", BF);
-        while (j < BF.length) {
-            NOTE.check(j);
-            const [wi, R] = await Promise.any(P);
-            if (R != undefined) {
-                for (const [bi, bF, nxi] of R) {
-                    BT3[bi] = bF;
-                    ++j;
-                    nx += nxi;
-                }
-            }
-            const J = [];
-            for (let k = 0; (k < load) && (i < BF.length); ++k, ++i) {
-                J.push([i, BF[i], BT3x[i]]);
-                delete BT3x[i];
-            }
-            P[wi] = ((J.length == 0) ? (new Promise(res => { }))
-                : PAR.send_message(W[wi], "BT3", [J]));
-            J.length = 0;
-        }
-        await Promise.all(W.map(w => PAR.send_message(w, "BT3_stop", [])));
-        return [BT3, nx / 3];
-    },
-    EF_SP_SE_CP_FC_CF_BF_BT3x_2_BT3: (EF, SP, SE, CP, FC, CF, BF, BT3x) => {
-        const FC_set = FC.map(C => new Set(C));
-        const CF_set = CF.map(F => new Set(F));
-        const SC_map = new Map();
-        for (const [i, C] of CP.entries()) {
-            let v1 = C[C.length - 1];
-            for (const v2 of C) {
-                SC_map.set(M.encode([v2, v1]), i);
-                v1 = v2;
-            }
-        }
-        const SF_map = new Map();
-        for (const [i, [v1, v2]] of SP.entries()) {
-            const F1 = [];
-            const F2 = [];
-            for (const ei of SE[i]) {
-                for (const f of EF[ei]) {
-                    const c1 = SC_map.get(M.encode([v1, v2]));
-                    const c2 = SC_map.get(M.encode([v2, v1]));
-                    if ((c1 != undefined) && CF_set[c1].has(f)) { F1.push(f); }
-                    if ((c2 != undefined) && CF_set[c2].has(f)) { F2.push(f); }
-                }
-            }
-            SF_map.set(M.encode([v1, v2]), F1);
-            SF_map.set(M.encode([v2, v1]), F2);
-        }
-        const BT3 = [];
-        let nx = 0;
-        const C = new Set();
-        const X = new Set();
+    FC_CF_CC_Bf_2_Bt3: (FC, CF, CC, [f1, f2], trans_count) => {
+        const C = new Set(FC[f1]);
         const T = new Set();
-        NOTE.start_check("variable", BF);
-        for (const [i, k] of BF.entries()) {
-            NOTE.check(i);
-            let [f1, f2] = M.decode(k);
-            if (FC[f1].length > FC[f2].length) { [f1, f2] = [f2, f1]; }
-            C.clear();
-            X.clear();
-            T.clear();
-            for (const ci of FC[f1]) {
-                if (FC_set[f2].has(ci)) {
-                    C.add(ci);
-                }
+        for (const c of FC[f2]) {
+            if (!C.has(c)) { continue; }
+            for (const f3 of CF[c]) {
+                T.add(f3);
             }
-            const S = new Set(M.decode(BT3x[i]));
-            delete BT3x[i];
-            const seen = new Set();
-            for (const ci of C) {
-                if (seen.has(ci)) { continue; }
-                for (const f3 of CF[ci]) {
-                    if ((f3 == f1) || (f3 == f2)) { continue; }
-                    if (S.has(f3)) { X.add(f3); }
-                    else { T.add(f3); }
-                }
-                const Q = [ci];
-                seen.add(ci);
-                let qi = 0;
-                while (qi < Q.length) {
-                    const cj = Q[qi++];
-                    const P = CP[cj];
-                    let v1 = P[P.length - 1];
-                    for (const v2 of P) {
-                        const cj = SC_map.get(M.encode([v1, v2]));
-                        if ((cj != undefined) && C.has(cj) && !seen.has(cj)) {
-                            Q.push(cj);
-                            seen.add(cj);
-                            const k = M.encode([v1, v2]);
-                            for (const f3 of SF_map.get(k)) {
-                                if ((f3 == f1) || (f3 == f2)) { continue; }
-                                if (S.has(f3)) { X.add(f3); }
-                                else { T.add(f3); }
-                            }
-                        }
-                        v1 = v2;
-                    }
-                }
-            }
-            nx += X.size;
-            BT3.push(M.encode(T));
+            T.delete(f1);
+            T.delete(f2);
         }
-        return [BT3, nx / 3];
+        if (trans_count != undefined) { trans_count.all += T.size; }
+        const CC1 = CC[f1], CC2 = CC[f2];
+        const c12 = CC1.get(f2);
+        const c21 = CC2.get(f1);
+        const out = Array.from(T).filter(f3 => {
+            const CC3 = CC[f3];
+            const c31 = CC3.get(f1);
+            return !(
+                ((c12 != undefined) && (c12 == CC1.get(f3))) ||
+                ((c21 != undefined) && (c21 == CC2.get(f3))) ||
+                ((c31 != undefined) && (c31 == CC3.get(f2)))
+            );
+        });
+        if (trans_count != undefined) { trans_count.reduced += out.length; }
+        return out;
     },
     BF_GB_GA_GI_2_edges: (BF, GB, GA, GI) => {
         const edges = [];

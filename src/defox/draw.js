@@ -152,6 +152,9 @@ export const DRAW = {
         SVG.draw_segments(fold_s_crease, lines, {
             id: true,
             stroke: SD.map((d, i) => {
+                if (!DRAW.uncreases) {
+                    return DRAW.color.edge["B"];
+                }
                 const [c0, c1] = SC[i];
 
                 if (color[c0] && color[c1]) {
@@ -161,6 +164,9 @@ export const DRAW = {
             }),
             filter: (i) => SD[i] == "UF" || SD[i] == "RM" || SD[i] == "RV",
             stroke_width: SD.map((d, i) => {
+                if (!DRAW.uncreases) {
+                    return DRAW.width.edge["B"];
+                }
                 return DRAW.width.edge[d];
             }),
         });
@@ -247,7 +253,7 @@ export const DRAW = {
         const g = SVG.append("g", svg, { id: `group_text_` });
         const colors = "green";
 
-        SVG.draw_points(g, P, {
+        SVG3.draw_points(g, P, {
             id: true,
             text: true,
             fill: colors,
