@@ -340,7 +340,7 @@ export const SYM = {
         const cps = PRJ.steps.map((s) => s.fold_cp);
         const i0 = cps.indexOf(cp_0);
         const i1 = cps.indexOf(cp_1);
-        const txt = `${i0 + 1}~${i1 + 1}`;
+        const txt = i0 == i1 ? `${i0 + 1}` : `${i0 + 1}~${i1 + 1}`;
         const ctx = document.createElement('canvas').getContext('2d');
         ctx.font = `${SYM.width.text}pt "${PAGE.text.font}"`;
         const w = ctx.measureText(txt).width;

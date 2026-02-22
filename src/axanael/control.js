@@ -117,7 +117,51 @@ export const CTRL = {
         reset.innerHTML = "reset";
         return div;
     },
+    set_cps: (symbol) => {
+        const cps = PRJ.steps.map((s) => s.fold_cp);
+        const i0 = cps.indexOf(symbol.params.cp_0);
+        const i1 = cps.indexOf(symbol.params.cp_1);
+        const range_cp1 = document.createElement("input");
+        range_cp1.type = "range";
+        range_cp1.min = i0 < 0 ? 1 : i0 + 1;
+        range_cp1.max = PRJ.current_idx + 1;
+        range_cp1.step = 1;
+        range_cp1.value = i1 < 0 ? range_cp1.max : i1 + 1;
 
+        const range_cp0 = document.createElement("input");
+        range_cp0.type = "range";
+        range_cp0.min = 1;
+        range_cp0.max = i1 < 0 ? range_cp1.value : i1 + 1;
+        range_cp0.step = 1;
+        range_cp0.value = i0 < 0 ? range_cp0.max : i0 + 1;
+
+        range_cp0.oninput = (e) => {
+            const j0 = parseInt(e.target.value) - 1;
+            symbol.params.cp0 = PRJ.steps[j0].fold_cp;
+            range_cp1.min = j0 + 1;
+            PAINT.redraw();
+        };
+        range_cp1.oninput = (e) => {
+            const j1 = parseInt(e.target.value) - 1;
+            symbol.params.cp1 = PRJ.steps[j1].fold_cp;
+            range_cp0.max = j1 + 1;
+            PAINT.redraw();
+        };
+        const div = document.createElement("div");
+        const div0 = document.createElement("div");
+        const div1 = document.createElement("div");
+        const lbl0 = document.createElement("label");
+        lbl0.innerHTML = "from";
+        const lbl1 = document.createElement("label");
+        lbl1.innerHTML = "to";
+        div.appendChild(div0);
+        div.appendChild(div1);
+        div0.appendChild(lbl0);
+        div0.appendChild(range_cp0);
+        div1.appendChild(lbl1);
+        div1.appendChild(range_cp1);
+        return div;
+    },
     set: (body, i, symbol, l) => {
 
         const div = document.createElement("div");
@@ -147,7 +191,10 @@ export const CTRL = {
             const offset = CTRL.set_offset(symbol);
             div.appendChild(offset);
         }
-
+        if (symbol.params.cp0 != undefined && symbol.params.cp1 != undefined) {
+            const offset = CTRL.set_cps(symbol);
+            div.appendChild(offset);
+        }
 
         const range_d = CTRL.set_range(symbol, l);
         div.appendChild(range_d);
