@@ -187,26 +187,6 @@ export const IO3 = {    // INPUT-OUTPUT
         [V_, UV_, UL_,] = X.L_2_V_EV_EL(L_);
         UA_ = IO3.EL_L_2_EA(UL_, L_);
 
-        UV = [];
-        const V_u_i = [];
-        for (const [ei_, a_] of UA_.entries()) {
-            if (a_ == "F") {
-                const [pi_, qi_] = UV_[ei_];
-                let pi, qi;
-                pi = V_u_i.indexOf(pi_);
-                if (pi < 0) {
-                    V_u_i.push(pi_);
-                    pi = V_u_i.length - 1;
-                }
-                qi = V_u_i.indexOf(qi_);
-                if (qi < 0) {
-                    V_u_i.push(qi_);
-                    qi = V_u_i.length - 1;
-                }
-                UV.push([pi, qi]);
-            }
-        }
-        const V_u = V_u_i.map((old_idx) => { return V_[old_idx] });
         L = [];
         for (const [p, q, a] of L_) {
             if (a != "F") {
@@ -233,11 +213,39 @@ export const IO3 = {    // INPUT-OUTPUT
                 EA[i] = "B";
             }
         }
-        const off = V.length;
-        UV = UV.map(([pi_, qi_]) => {
-            return [pi_ + off, qi_ + off];
-        })
-        V = V.concat(V_u);
+
+        UV = [];
+        for (const [ei_, a_] of UA_.entries()) {
+            if (a_ != "F") {
+                continue;
+            }
+            const [pi_, qi_] = UV_[ei_];
+            const [p, q] = [V_[pi_], V_[qi_]];
+            let pi = -1;
+            for (const [vi, v] of V.entries()) {
+                if (M.distsq(p, v) < 1e-16) {
+                    pi = vi
+                    break;
+                }
+            }
+            if (pi < 0) {
+                V.push(p);
+                pi = V.length - 1;
+            }
+            let qi = -1;
+            for (const [vi, v] of V.entries()) {
+                if (M.distsq(q, v) < 1e-16) {
+                    qi = vi
+                    break;
+                }
+            }
+            if (qi < 0) {
+                V.push(q);
+                qi = V.length - 1;
+            }
+            UV.push([pi, qi]);
+        }
+
         FU = FV.map(_ => []);
         for (const [ui, vv] of UV.entries()) {
             const c = M.centroid(M.expand(vv, V));
@@ -256,6 +264,13 @@ export const IO3 = {    // INPUT-OUTPUT
             }
         }
         const UA = UV.map(_ => "F");
+        for (const [ui, [p_i, q_i]] of UV.entries()) {
+            const a = UA[ui];
+            if (a != "F") {
+                Vc[p_i] = false;
+                Vc[q_i] = false;
+            }
+        }
         return [V, VV, EV, EA, EF, FV, FE, UV, FU, Vc, UA];
     },
 }

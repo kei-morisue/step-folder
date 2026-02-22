@@ -45,29 +45,75 @@ export const DIFF = {
         const U1 = F1.UV.map(vs => vs.map(i => F1.V[i]));
         const L0 = F0.EV.map(vs => vs.map(i => F0.V[i])).concat(U0);
         const L1 = F1.EV.map(vs => vs.map(i => F1.V[i])).concat(U1);
-        const L = L0.concat(L1)
+        let L = L0.concat(L1)
 
-        const [V, EV_, EL,] = X.L_2_V_EV_EL(L);
+        const [V_, UV_, UL,] = X.L_2_V_EV_EL(L);
 
-        const EA_ = EL.map(ls => DIFF.diff_a(
+        const UA_ = UL.map(ls => DIFF.diff_a(
             ls, L0, F0.EA.concat(F0.UA), F1.EA.concat(F1.UA)))
 
-        const EV = [];
-        const UV = [];
-        const EA = [];
-        const UA = [];
-        for (const [ei_, a_] of EA_.entries()) {
+        L = [];
+        for (const [ei_, a_] of UA_.entries()) {
             if (a_ == "FF" || a_ == "F" || a_ == "MM" || a_ == "VV") {
-                UV.push(EV_[ei_]);
-                UA.push(a_);
+                continue;
             }
-            else {
-                EV.push(EV_[ei_]);
-                EA.push(a_);
+            const [pi, qi] = UV_[ei_];
+            L.push([V_[pi], V_[qi], a_]);
+        }
+
+        let [V, EV, EL,] = X.L_2_V_EV_EL(L);
+        let EA = EL.map(ls => L[ls[0]][2]);
+
+        let [VV, FV] = X.V_EV_2_VV_FV(V, EV)
+        let [EF, FE] = X.EV_FV_2_EF_FE(EV, FV);
+        if (FV.length > 1) {
+            FV = FV.filter((F, i) => !FE[i].every(e => (EA[e] == "B")));
+        }
+        if (FV.length != FE.length) {           // recompute face maps
+            [EF, FE] = X.EV_FV_2_EF_FE(EV, FV);
+        }
+        for (const [i, F] of EF.entries()) {    // boundary edge assignment
+            if (F.length == 1) {
+                EA[i] = "B";
             }
         }
-        const [VV, FV] = X.V_EV_2_VV_FV(V, EV)
-        const [EF, FE] = X.EV_FV_2_EF_FE(EV, FV);
+
+        const UV = [];
+        const UA = [];
+        for (const [ei_, a_] of UA_.entries()) {
+            if (a_ == "FF" || a_ == "F" || a_ == "MM" || a_ == "VV") {
+
+
+                const [pi_, qi_] = UV_[ei_];
+                const [p, q] = [V_[pi_], V_[qi_]];
+                let pi = -1;
+                for (const [vi, v] of V.entries()) {
+                    if (M.distsq(p, v) < 1e-16) {
+                        pi = vi
+                        break;
+                    }
+                }
+                if (pi < 0) {
+                    V.push(p);
+                    pi = V.length - 1;
+                }
+                let qi = -1;
+                for (const [vi, v] of V.entries()) {
+                    if (M.distsq(q, v) < 1e-16) {
+                        qi = vi
+                        break;
+                    }
+                }
+                if (qi < 0) {
+                    V.push(q);
+                    qi = V.length - 1;
+                }
+                UV.push([pi, qi]);
+                UA.push(a_);
+            }
+        }
+
+
 
         const FU = FV.map(_ => []);
         for (const [ui, vv] of UV.entries()) {
