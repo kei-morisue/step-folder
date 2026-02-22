@@ -26,7 +26,7 @@
 }
 
 .axanael_lib {
-    height: 35%;
+    height: 25%;
     overflow: auto;
 }
 
@@ -54,4 +54,19 @@
     height: calc(var(--width)/2);
     width: calc(var(--width)/2);
     border: 1px solid #000;
+}
+
+.axanael {
+    background-color: darkgray;
+}
+
+.axanael_preview {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.axanael_preview div {
+    display: flex;
+    align-items: center;
+    justify-content: center
 }

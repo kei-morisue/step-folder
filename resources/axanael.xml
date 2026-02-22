@@ -1,6 +1,20 @@
 <button id="axanael_discard" class="discardclose">&#xe040;</button>
 <button id="axanael_close" class="discardclose"><i class="bi bi-floppy"></i></button>
+<div class="axanael_preview">
+    <div>
+        <b>Steps</b>
+        <button id="axanael_prev">Prev</button>
+        <b id="axanael_step">1</b>
+        <b>/ </b>
+        <b id="axanael_steps">1</b>
+        <button id="axanael_next">Next</button>
+    </div>
+    <div>
+        <input id="axanael_range_steps" type="range" min="1" max="2" value="2">
+    </div>
+</div>
 <div id="axanael_body" class="axanael_body">
+
     <svg id="axanael_paint" class="axanael_paint">
     </svg>
     <div id="axanael_tools" class="axanael_tools">

@@ -193,20 +193,15 @@ export const GUI_STATE = {
             return;
         }
         const i = PRJ.current_idx;
-        PRJ.record(i);
-        PRJ.restore(i - 1);
-        STEP.redraw();
+        GUI.jump_to(i - 1);
     },
     next: () => {
         if (PRJ.steps.length - 1 < PRJ.current_idx + 1) {
             return;
         }
-        else {
-            const i = PRJ.current_idx;
-            PRJ.record(i);
-            PRJ.restore(i + 1);
-            STEP.redraw();
-        }
+        const i = PRJ.current_idx;
+        GUI.jump_to(i + 1);
+
     },
     jump: (e) => {
         const j = e.target.value;

@@ -25,4 +25,8 @@
         display: flex;
     }
 
+    .axanael_lib p {
+        display: inline;
+    }
+
 }
