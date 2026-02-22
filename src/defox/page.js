@@ -12,7 +12,7 @@ export const PAGE = {
         height: 4093,
         margin_x: 50,
         margin_y: 80,
-        margin_step: 20,
+        margin_step: 10,
     },
     layout: {
         rows: 4,
@@ -59,7 +59,9 @@ export const PAGE = {
             const d = s * (1.0 - PAGE.dim.margin_step * 0.01);
             SVG.SCALE = d;
             const panel_d = PAGE.draw_panel(panel, s, s, (s - d) / 2, (s - d) / 2, "diagram_" + i);
-
+            const b = s * SVG3.MARGIN / SVG3.INI_SCALE;
+            const bb = `${-b} ${-b} ${s + 2 * b} ${s + 2 * b}`;
+            panel_d.setAttribute("viewBox", bb);
             const { flip0, rotate, scale, clip, cx, cy, depth } = steps[i].params;
 
             const T = STEP.get_T(flip0, rotate, scale, cx, cy);

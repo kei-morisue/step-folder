@@ -84,7 +84,7 @@ export const GUI_PAGE = {
                 PRJ.setup_number_options(
                     ["dim_w", "dim_h", "dim_x", "dim_y", "step_x"],
                     ["width", "height", "margin_x", "margin_y", "margin_step"],
-                    [2894, 4093, 50, 80, 20],
+                    [2894, 4093, 50, 80, 10],
                     PAGE.dim
                 );
                 GUI.open_close("option_color", "inline");

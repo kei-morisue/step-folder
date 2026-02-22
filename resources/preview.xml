@@ -80,7 +80,7 @@
         </p>
         <p>
             <label>Steps Margin (%)</label>
-            <input id="step_x" type="number" max="50" min="0" value="20" step="5">
+            <input id="step_x" type="number" max="50" min="0" value="10" step="5">
             <button id="step_x_reset">Reset</button>
         </p>
     </span>

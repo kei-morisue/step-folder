@@ -1,21 +1,20 @@
 .axanael {
-    width: 80%;
+    width: 100%;
     height: 80%;
     background-color: darkgray;
 }
 
 .axanael_control_b input[type="range"] {
-    width: 50%;
+    width: 75%;
 }
 
 .axanael_control_b {
-    height: 55%;
     overflow: auto;
 }
 
 
 .axanael_tools {
-    width: 35%;
+    width: 50%;
     background-color: lightgray;
     border: 1px solid #000;
 }
@@ -52,7 +51,7 @@
 }
 
 .axanael_paint {
-    width: 65%;
-    height: 80%;
+    height: calc(var(--width)/2);
+    width: calc(var(--width)/2);
     border: 1px solid #000;
 }
