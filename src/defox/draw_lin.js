@@ -34,6 +34,9 @@ export const DRAW_LIN = {
             stroke: DRAW.color.edge["B"],
             stroke_width: DRAW.width.edge["B"]
         });
+        if (!DRAW.uncreases) {
+            return;
+        }
         SVG.draw_segments(svg, edges, {
             filter: (e) => assigns[e] == "UF" || assigns[e] == "RM" || assigns[e] == "RV",
             stroke: assigns.map((a) => {
@@ -45,14 +48,7 @@ export const DRAW_LIN = {
             stroke_width: assigns.map((a) => {
                 const w = DRAW.width.edge[a]
                 return w;
-            }),
-            filter: (i) => {
-                if (DRAW.uncreases) {
-                    return true;
-                }
-                const a = assigns[i];
-                return a != "RM" && a != "RV" && a != "UF";
-            }
+            })
         });
     },
 

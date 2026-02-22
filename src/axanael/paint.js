@@ -30,10 +30,10 @@ export const PAINT = {
 
     svg_selection: undefined,
     type: 0,
-    segment: -1,
-    vertex: -1,
-    v0: -1,
-    v1: -1,
+    segment: undefined,
+    vertex: undefined,
+    v0: undefined,
+    v1: undefined,
 
     radius: {
         bound: 10,
@@ -224,10 +224,10 @@ export const PAINT = {
         PAINT.FOLD = FOLD;
         PAINT.S = S;
 
-        PAINT.segment = -1;
-        PAINT.vertex = -1;
-        PAINT.v0 = -1;
-        PAINT.v1 = -1;
+        PAINT.segment = undefined;
+        PAINT.vertex = undefined;
+        PAINT.v0 = undefined;
+        PAINT.v1 = undefined;
         const V_ = M.normalize_points(FOLD.Vf).map((v) => N.transform(T, v));
 
         const creases = FOLD.UV.map((vs) => M.expand(vs, V_));
@@ -238,10 +238,10 @@ export const PAINT = {
     },
 
     reset: () => {
-        PAINT.segment = -1;
-        PAINT.vertex = -1;
-        PAINT.v0 = -1;
-        PAINT.v1 = -1;
+        PAINT.segment = undefined;
+        PAINT.vertex = undefined;
+        PAINT.v0 = undefined;
+        PAINT.v1 = undefined;
     },
 
     redraw: () => {
