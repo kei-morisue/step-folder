@@ -2,6 +2,8 @@ import { SVG } from "../flatfolder/svg.js"
 import { M } from "../flatfolder/math.js";
 
 import { N } from "../defox/nath.js";
+import { PAGE } from "../defox/page.js";
+import { PRJ } from "../defox/project.js";
 
 export const SYM = {
     width: {
@@ -9,6 +11,7 @@ export const SYM = {
         reference_point: 4,
         right_angle: 4,
         angle_bisector: 4,
+        text: 80,
     },
     color: {
         arrow: "black",
@@ -16,12 +19,15 @@ export const SYM = {
         right_angle: "magenta",
         angle_bisector: "magenta",
         angle_bisector: "magenta",
+        repeatbox: "white",
+        text: "magenta",
     },
     radius: {
         reference_point: 20,
         flip: 100,
         angle_bisector: 10,
     },
+
     get_cross: (p, q, l, alpha) => {
         const d = M.sub(q, p);
         const [x, y] = d;
@@ -99,6 +105,8 @@ export const SYM = {
                 return SYM.create_right_angle(v, v1, v2, params.length, params.offset);
             case 14:
                 return SYM.create_angle_bisector(v, v1, v2, params.length, params.offset);
+            case 15:
+                return SYM.create_repeat(s, e, params.cp0, params.cp1);
             default:
                 return undefined;
         }
@@ -303,4 +311,58 @@ export const SYM = {
         return sym;
     },
 
+
+    create_repeat: (s, e, cp_0, cp_1) => {
+        const k = SVG.SCALE;
+
+        const sym = document.createElementNS(SVG.NS, "g");
+
+        const n = M.sub(M.mul(e, k), M.mul(s, k));
+        const [mx, my] = M.add(M.mul(s, k), M.mul(n, .5));
+        const [nx, ny] = M.mul(s, k);
+        const [cx, cy] = M.add([nx, ny], M.mul(n, .25));
+        const [xx, yy] = n;
+        const u = M.unit([yy, -xx]);
+        const [ax, ay] = M.add([cx, cy], M.mul(u, 50));
+        const [bx, by] = M.add([cx, cy], M.mul(u, -50));
+
+        const d = `M ${ax} ${ay} L ${bx} ${by} M ${nx} ${ny} L ${mx} ${my}`;
+        const arrow = SVG.append("path", sym, { d });
+        arrow.setAttribute("stroke", SYM.color.arrow);
+        arrow.setAttribute("stroke-width", SYM.width.arrow);
+        arrow.setAttribute("stroke-linecap", "butt");
+        const end = "url(#arrow_head_repeat)";
+        arrow.setAttribute("marker-end", end);
+        arrow.setAttribute("fill", "transparent");
+
+
+        const l = SYM.width.text;
+        const cps = PRJ.steps.map((s) => s.fold_cp);
+        const i0 = cps.indexOf(cp_0);
+        const i1 = cps.indexOf(cp_1);
+        const txt = `${i0}~${i1}`;
+        const ctx = document.createElement('canvas').getContext('2d');
+        ctx.font = `${SYM.width.text}pt "${PAGE.text.font}"`;
+        const w = ctx.measureText(txt).width;
+
+
+        const [x, y] = [nx - w * .6, ny - l * 0.6];
+        const height = l * 1.2;
+
+
+        const box = SVG.append("rect", sym, { x, y, width: w * 1.2, height });
+        box.setAttribute("fill", SYM.color.repeatbox);
+        box.setAttribute("stroke", SYM.color.arrow);
+        box.setAttribute("stroke-width", SYM.width.arrow);
+        const t = SVG.append("text", sym, {
+            x: nx - w * 0.5,
+            y: ny + l * 0.5,
+            "fill": SYM.color.text,
+            "font-size": SYM.width.text + "pt",
+            "font": PAGE.text.font,
+        });
+        t.innerHTML = txt;
+        return sym;
+
+    }
 }

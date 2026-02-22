@@ -97,18 +97,18 @@ export const PAINT = {
             case 1:
             case 2:
             case 3:
-                if (c_idx < 0) { return; }
+                if (!c_idx) { return; }
                 sym = TMP.mv(c_idx, 0, PAINT.type);
                 break;
             case 4:
-                if (c_idx < 0) { return; }
+                if (!c_idx) { return; }
                 sym = TMP.sink(c_idx, 0, false, PAINT.type);
             case 5:
-                if (c_idx < 0) { return; }
+                if (!c_idx) { return; }
                 sym = TMP.sink(c_idx, 0, true, PAINT.type);
             case 6:
             case 7:
-                if (c_idx < 0) { return; }
+                if (!c_idx) { return; }
                 sym = TMP.fold_unfold(c_idx, 0, PAINT.type);
                 break;
             case 8:
@@ -118,11 +118,11 @@ export const PAINT = {
                 sym = TMP.reference_point(v_idx, 0, PAINT.type);
                 break;
             case 10:
-                if (c_idx < 0) { return; }
+                if (!c_idx) { return; }
                 sym = TMP.pleat(c_idx, 0, PAINT.type);
                 break;
             case 11:
-                if (v_idx < 0) { return; }
+                if (!v_idx) { return; }
                 if (PAINT.v0 < 0) {
                     PAINT.v0 = v_idx;
                     return;
@@ -131,7 +131,7 @@ export const PAINT = {
                 PAINT.v0 = -1;
                 break;
             case 12:
-                if (v_idx < 0) { return; }
+                if (!v_idx) { return; }
                 if (PAINT.v0 < 0) {
                     PAINT.v0 = v_idx;
                     return;
@@ -140,7 +140,7 @@ export const PAINT = {
                 PAINT.v0 = -1;
                 break;
             case 13:
-                if (v_idx < 0) { return; }
+                if (!v_idx) { return; }
                 if (PAINT.v0 < 0) {
                     PAINT.v0 = v_idx;
                     return;
@@ -154,7 +154,7 @@ export const PAINT = {
                 PAINT.v1 = -1;
                 break;
             case 14:
-                if (v_idx < 0) { return; }
+                if (!v_idx) { return; }
                 if (PAINT.v0 < 0) {
                     PAINT.v0 = v_idx;
                     return;
@@ -167,8 +167,12 @@ export const PAINT = {
                 PAINT.v0 = -1;
                 PAINT.v1 = -1;
                 break;
-            default:
+            case 15:
+                if (!c_idx) { return; }
+                sym = TMP.repeat(c_idx, 0, PAINT.type);
                 break;
+            default:
+                return;
         }
         PAINT.symbols.push(sym);
         GUI.set_controls(PAINT.S.length);
@@ -219,7 +223,7 @@ export const PAINT = {
         PAINT.symbols = symbols;
         PAINT.FOLD = FOLD;
         PAINT.S = S;
-        PAINT.type = 0;
+
         PAINT.segment = -1;
         PAINT.vertex = -1;
         PAINT.v0 = -1;

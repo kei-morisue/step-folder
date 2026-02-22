@@ -2,6 +2,7 @@ import { SVG } from "../flatfolder/svg.js"
 import { DRAW as D } from "../defox/draw.js";
 
 import { PAINT } from "./paint.js";
+import { PRJ } from "../defox/project.js";
 
 
 export const TMP = {
@@ -63,6 +64,16 @@ export const TMP = {
         const offset = 0;
         const length = 1;
         const params = { length, vertex_index, vertex_index_1, vertex_index_2, offset };
+        return { depth, type, params };
+    },
+
+    repeat: (crease_index, depth, type) => {
+        const offset = 0;
+        const length = 1;
+        const is_rev = false;
+        const cp0 = PRJ.steps[0].fold_cp;
+        const cp1 = PRJ.steps[0].fold_cp;
+        const params = { is_rev, length, crease_index, offset, cp0, cp1 };
         return { depth, type, params };
     },
 

@@ -193,14 +193,14 @@ export const GUI_STATE = {
             return;
         }
         const i = PRJ.current_idx;
-        GUI.jump_to(i - 1);
+        GUI_STATE.jump_to(i - 1);
     },
     next: () => {
         if (PRJ.steps.length - 1 < PRJ.current_idx + 1) {
             return;
         }
         const i = PRJ.current_idx;
-        GUI.jump_to(i + 1);
+        GUI_STATE.jump_to(i + 1);
 
     },
     jump: (e) => {
