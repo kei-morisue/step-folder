@@ -258,19 +258,25 @@ export const IO3 = {    // INPUT-OUTPUT
         }
 
         const Vc = V.map(_ => false);
-        for (const vs of FV) {
-            for (const v of vs) {
-                Vc[v] = true;
+        for (const [fi, uis] of FU.entries()) {
+            for (const ui of uis) {
+                const [pi, qi] = UV[ui];
+                const [p, q] = M.expand(UV[ui], V);
+                const F = M.expand(FV[fi], V);
+                let a = F[F.length - 1];
+                for (let i = 0; i < F.length; i++) {
+                    const b = F[i];
+                    if (M.on_segment(a, b, p, 1e-8)) {
+                        Vc[pi] = true;
+                    }
+                    if (M.on_segment(a, b, q, 1e-8)) {
+                        Vc[qi] = true;
+                    }
+                    a = b;
+                }
             }
         }
         const UA = UV.map(_ => "F");
-        for (const [ui, [p_i, q_i]] of UV.entries()) {
-            const a = UA[ui];
-            if (a != "F") {
-                Vc[p_i] = false;
-                Vc[q_i] = false;
-            }
-        }
         return [V, VV, EV, EA, EF, FV, FE, UV, FU, Vc, UA];
     },
 }
