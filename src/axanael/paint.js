@@ -179,7 +179,7 @@ export const PAINT = {
         PAINT.redraw();
     },
     hilight_segment: () => {
-        if (PAINT.segment[0] < 0) { return; }
+        if (!PAINT.segment || PAINT.segment[0] < 0) { return; }
         const s = SVG.SCALE;
         const T = P.get_T();
         const [v1_, v2_] = PAINT.creases[PAINT.segment[0]];
@@ -200,7 +200,7 @@ export const PAINT = {
         seg_svg.setAttribute("stroke-width", 6);
     },
     hilight_vertex: (svg, v_idx) => {
-        if (v_idx < 0) { return; }
+        if (!v_idx) { return; }
         const s = SVG.SCALE;
         const T = P.get_T();
         const v = N.transform(T, PAINT.vertices[v_idx]);
