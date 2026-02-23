@@ -161,7 +161,9 @@ export const CTRL = {
         const p0 = PAGE.draw_panel(div2, s, s, 0, 0, "from_" + i);
         p0.setAttribute("viewBox", `0 0 ${s} ${s}`);
         p0.setAttribute("class", "axanael_repeat_svg");
-        PAGE.draw_step(p0, PRJ.steps[i0], i0);
+        if (i0 >= 0) {
+            PAGE.draw_step(p0, PRJ.steps[i0], i0);
+        }
 
         const span = document.createElement("span");
         span.innerHTML = "~~~";
@@ -169,7 +171,9 @@ export const CTRL = {
         const p1 = PAGE.draw_panel(div2, s, s, 0, 0, "to_" + i);
         p1.setAttribute("viewBox", `0 0 ${s} ${s}`);
         p1.setAttribute("class", "axanael_repeat_svg");
-        PAGE.draw_step(p1, PRJ.steps[i1], i1);
+        if (i1 >= 0) {
+            PAGE.draw_step(p1, PRJ.steps[i1], i1);
+        }
         SVG3.reset();
 
         range_cp0.oninput = (e) => {
