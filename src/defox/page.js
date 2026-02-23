@@ -62,19 +62,7 @@ export const PAGE = {
             const b = s * SVG3.MARGIN / SVG3.INI_SCALE;
             const bb = `${-b} ${-b} ${s + 2 * b} ${s + 2 * b}`;
             panel_d.setAttribute("viewBox", bb);
-            const { flip0, rotate, scale, clip, cx, cy, depth } = steps[i].params;
-
-            const T = STEP.get_T(flip0, rotate, scale, cx, cy);
-            const FOLD = steps[i].fold_d;
-            const CELL = steps[i].cell_d;
-            const symbols = steps[i].symbols ?? [];
-
-            if (CELL) {
-                const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
-                DRAW.draw_state(panel_d, FOLD, CELL, STATE, T, clip, i, symbols);
-            } else {
-                DRAW_LIN.draw_state(panel_d, FOLD, steps[i].lin.S, T, clip, depth, i, symbols);
-            }
+            PAGE.draw_step(panel_d, steps[i], i);
             const t = PAGE.text.size;
             let num = i + 1;
             const loc = [t, t];
@@ -90,7 +78,21 @@ export const PAGE = {
         }
         SVG3.reset();
     },
+    draw_step: (panel_d, step, id) => {
+        const { flip0, rotate, scale, clip, cx, cy, depth } = step.params;
 
+        const T = STEP.get_T(flip0, rotate, scale, cx, cy);
+        const FOLD = step.fold_d;
+        const CELL = step.cell_d;
+        const symbols = step.symbols ?? [];
+
+        if (CELL) {
+            const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
+            DRAW.draw_state(panel_d, FOLD, CELL, STATE, T, clip, id, symbols);
+        } else {
+            DRAW_LIN.draw_state(panel_d, FOLD, step.lin.S, T, clip, depth, id, symbols);
+        }
+    },
     get_row_col: (idx) => {
         const c = PAGE.layout.cols;
         const r = PAGE.layout.rows;

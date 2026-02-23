@@ -30,9 +30,24 @@
     overflow: auto;
 }
 
-.axanael_control_b svg {
+.axanael_control_svg {
     width: 30px;
     height: 30px;
+}
+
+.axanael_control_b {
+    margin: 0 auto;
+}
+
+.axanael_repeat_svgs {
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+.axanael_repeat_svg {
+    height: 30%;
+    width: 30%;
 }
 
 .axanael_controls {

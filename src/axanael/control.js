@@ -3,6 +3,8 @@ import { STEP } from "../defox/step.js"
 import { DRAW as D } from "../defox/draw.js"
 import { SEG } from "../defox/segment.js"
 import { PRJ } from "../defox/project.js"
+import { PAGE } from "../defox/page.js"
+import { SVG3 } from "../defox/svg.js"
 
 import { SYM } from "../defox/symbol.js"
 import { PAINT } from "./paint.js"
@@ -117,10 +119,10 @@ export const CTRL = {
         reset.innerHTML = "reset";
         return div;
     },
-    set_cps: (symbol) => {
+    set_cps: (symbol, i) => {
         const cps = PRJ.steps.map((s) => s.fold_cp);
-        const i0 = cps.indexOf(symbol.params.cp_0);
-        const i1 = cps.indexOf(symbol.params.cp_1);
+        const i0 = cps.indexOf(symbol.params.cp0);
+        const i1 = cps.indexOf(symbol.params.cp1);
         const range_cp1 = document.createElement("input");
         range_cp1.type = "range";
         range_cp1.min = i0 < 0 ? 1 : i0 + 1;
@@ -135,31 +137,59 @@ export const CTRL = {
         range_cp0.step = 1;
         range_cp0.value = i0 < 0 ? range_cp0.max : i0 + 1;
 
-        range_cp0.oninput = (e) => {
-            const j0 = parseInt(e.target.value) - 1;
-            symbol.params.cp0 = PRJ.steps[j0].fold_cp;
-            range_cp1.min = j0 + 1;
-            PAINT.redraw();
-        };
-        range_cp1.oninput = (e) => {
-            const j1 = parseInt(e.target.value) - 1;
-            symbol.params.cp1 = PRJ.steps[j1].fold_cp;
-            range_cp0.max = j1 + 1;
-            PAINT.redraw();
-        };
+
+
+
         const div = document.createElement("div");
         const div0 = document.createElement("div");
         const div1 = document.createElement("div");
+        const div2 = document.createElement("div");
+        div2.setAttribute("class", "axanael_repeat_svgs");
         const lbl0 = document.createElement("label");
         lbl0.innerHTML = "from";
         const lbl1 = document.createElement("label");
         lbl1.innerHTML = "to";
         div.appendChild(div0);
         div.appendChild(div1);
+        div.appendChild(div2);
         div0.appendChild(lbl0);
         div0.appendChild(range_cp0);
         div1.appendChild(lbl1);
         div1.appendChild(range_cp1);
+        const s = 1000;
+        SVG.SCALE = s;
+        const p0 = PAGE.draw_panel(div2, s, s, 0, 0, "from_" + i);
+        p0.setAttribute("viewBox", `0 0 ${s} ${s}`);
+        p0.setAttribute("class", "axanael_repeat_svg");
+        PAGE.draw_step(p0, PRJ.steps[i0], i0);
+
+        const span = document.createElement("span");
+        span.innerHTML = "~~~";
+        div2.appendChild(span);
+        const p1 = PAGE.draw_panel(div2, s, s, 0, 0, "to_" + i);
+        p1.setAttribute("viewBox", `0 0 ${s} ${s}`);
+        p1.setAttribute("class", "axanael_repeat_svg");
+        PAGE.draw_step(p1, PRJ.steps[i1], i1);
+        SVG3.reset();
+
+        range_cp0.oninput = (e) => {
+            const j0 = parseInt(e.target.value) - 1;
+            symbol.params.cp0 = PRJ.steps[j0].fold_cp;
+            range_cp1.min = j0 + 1;
+            SVG.SCALE = s;
+            PAGE.draw_step(SVG.clear(p0.id), PRJ.steps[j0], j0);
+            SVG3.reset();
+            PAINT.redraw();
+        };
+        range_cp1.oninput = (e) => {
+            const j1 = parseInt(e.target.value) - 1;
+            symbol.params.cp1 = PRJ.steps[j1].fold_cp;
+            range_cp0.max = j1 + 1;
+            SVG.SCALE = s;
+            PAGE.draw_step(SVG.clear(p1.id), PRJ.steps[j1], j1);
+            SVG3.reset();
+            PAINT.redraw();
+        };
         return div;
     },
     set: (body, i, symbol, l) => {
@@ -168,6 +198,7 @@ export const CTRL = {
         div.setAttribute("class", "axanael_controls");
         body.appendChild(div);
         const template = document.getElementById(`template_${symbol.type}`).cloneNode(true);
+        template.setAttribute("class", "axanael_control_svg");
         div.appendChild(template);
 
         const buttons = document.createElement("div");
@@ -192,7 +223,7 @@ export const CTRL = {
             div.appendChild(offset);
         }
         if (symbol.params.cp0 != undefined && symbol.params.cp1 != undefined) {
-            const offset = CTRL.set_cps(symbol);
+            const offset = CTRL.set_cps(symbol, i);
             div.appendChild(offset);
         }
 
