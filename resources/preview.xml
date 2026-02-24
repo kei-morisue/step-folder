@@ -58,8 +58,17 @@
         </p>
         <p>
             <label for="dim_b">Blanks</label>
-            <input id="dim_b" type="number" max="10" min="0" value="1" step="1">
+            <input id="dim_b" type="number" max="10" min="0" value="3" step="1">
             <button id="dim_b_reset">Reset</button>
+        </p>
+        <p>
+            <input type="text" id="title" value="title">
+            <input type="text" id="title_alt" value="title(alt)">
+            <input type="text" id="desc0" value="Design: ">
+            <input type="text" id="desc1" value="Diagram: ">
+            <input type="text" id="desc2" value="Sequence: ">
+            <label for="make_title">Make Title</label>
+            <input type="checkbox" id="make_title" checked>
         </p>
     </span>
     <span id="option_dim_b" class="openclose"><b>Dimension Options</b></span>

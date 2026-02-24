@@ -24,6 +24,10 @@ export const GUI_PAGE = {
                     DRAW.color.face.top = e.target.value
                     STEP.redraw()
                 }
+                document.getElementById("make_title").onclick = (e) => {
+                    PAGE.make_title = e.target.checked;
+                    PRJ.redraw_page();
+                }
 
                 document.getElementById("bottomcolor").onchange = (e) => {
                     DRAW.color.face.bottom = e.target.value
@@ -78,7 +82,7 @@ export const GUI_PAGE = {
                 PRJ.setup_number_options(
                     ["dim_r", "dim_c", "dim_b"],
                     ["rows", "cols", "blanks"],
-                    [4, 3, 1],
+                    [4, 3, 3],
                     PAGE.layout
                 );
                 PRJ.setup_number_options(

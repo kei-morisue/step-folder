@@ -4,6 +4,7 @@ import { DRAW_LIN } from "./draw_lin.js";
 import { DRAW } from "./draw.js";
 import { SVG3 } from "./svg.js";
 import { STEP } from "./step.js";
+import { PRJ } from "./project.js";
 
 
 export const PAGE = {
@@ -17,7 +18,7 @@ export const PAGE = {
     layout: {
         rows: 4,
         cols: 3,
-        blanks: 1,
+        blanks: 3,
     },
     text: {
         color: "black",
@@ -27,6 +28,7 @@ export const PAGE = {
         location: "Top",
     },
     is_river: false,
+    make_title: true,
     river_flow: 1,
     current_idx: 0,
 
@@ -35,6 +37,96 @@ export const PAGE = {
         const r = PAGE.layout.rows;
         const b = PAGE.layout.blanks;
         return Math.ceil((steps.length + b) / (r * c));
+    },
+
+    draw_title: (body, w, h, steps) => {
+        if (!PAGE.make_title || PAGE.current_idx != 0) { return; }
+        if (PAGE.layout.blanks > 0) { PAGE.draw_title_A(body, w, h, steps, .9); }
+        if (PAGE.layout.blanks > 1) { PAGE.draw_title_B(body, w, h, .9); }
+        if (PAGE.layout.blanks > 2) { PAGE.draw_title_C(body, w, h, steps, .9); }
+    },
+    draw_title_A: (body, w, h, steps, size) => {
+        const panel = PAGE.draw_panel(body, w, h, 0, 0, "title_");
+        const s = Math.min(w, h);
+        const d = s * size;
+        SVG.SCALE = d;
+        const panel_d = PAGE.draw_panel(panel, s, s, (w - d) / 2, (h * .8 - d) / 2, "diagram_A");
+        const b = s * SVG3.MARGIN / SVG3.INI_SCALE;
+        const bb = `${-b} ${-b} ${s + 2 * b} ${s + 2 * b}`;
+        panel_d.setAttribute("viewBox", bb);
+        PAGE.draw_step(panel_d, steps[steps.length - 1], steps.length - 1);
+
+        SVG.append("rect", panel, { x: 0, y: h * .8, width: w, height: h * 0.1, fill: "darkgray" });
+        SVG3.reset();
+        return panel;
+    },
+    draw_title_B: (body, w, h, size) => {
+        const panel = PAGE.draw_panel(body, w, h, w, 0, "title_");
+        const panel_d = PAGE.draw_panel(panel, w * size, h * size, w * (1 - size) / 2, h * (1 - size - 0.2) / 2, "diagram_B");
+
+        SVG.append("text", panel_d, {
+            x: 0,
+            y: h * size / 4,
+            "fill": "darkgray",
+            "font-size": h * size / 8 + "pt",
+            "font": PAGE.text.font,
+        }).innerHTML = document.getElementById("title").value;
+        SVG.append("line", panel_d, {
+            x1: 0,
+            x2: w * size,
+            y1: h * size * (.3),
+            y2: h * size * (.3),
+            stroke: "darkgray",
+            "stroke-width": 10
+        })
+
+
+        SVG.append("text", panel_d, {
+            x: 0,
+            y: h * size * (.3 + .1),
+            "fill": "darkgray",
+            "font-size": h * size * .0625 + "pt",
+            "font": PAGE.text.font,
+        }).innerHTML = document.getElementById("title_alt").value;
+        SVG.append("text", panel_d, {
+            x: 0,
+            y: h * size * (.55),
+            "fill": "black",
+            "font-size": h * size * .05 + "pt",
+            "font": PAGE.text.font,
+        }).innerHTML = document.getElementById("desc0").value;
+        SVG.append("text", panel_d, {
+            x: 0,
+            y: h * size * (.65),
+            "fill": "black",
+            "font-size": h * size * .05 + "pt",
+            "font": PAGE.text.font,
+        }).innerHTML = document.getElementById("desc1").value;
+        SVG.append("text", panel_d, {
+            x: 0,
+            y: h * size * (.75),
+            "fill": "black",
+            "font-size": h * size * .05 + "pt",
+            "font": PAGE.text.font,
+        }).innerHTML = document.getElementById("desc2").value;
+
+        SVG.append("rect", panel, { x: 0, y: h * .8, width: w, height: h * 0.1, fill: "darkgray" });
+        return panel;
+    },
+    draw_title_C: (body, w, h, steps, size = .8) => {
+        const panel = PAGE.draw_panel(body, w, h, w * 2, 0, "title_");
+        const s = Math.min(w, h);
+        const d = s * size;
+        SVG.SCALE = d;
+        const panel_d = PAGE.draw_panel(panel, s, s, (w - d) / 2, (h * .8 - d) / 2, "diagram_A");
+        const b = s * SVG3.MARGIN / SVG3.INI_SCALE;
+        const bb = `${-b} ${-b} ${s + 2 * b} ${s + 2 * b}`;
+        panel_d.setAttribute("viewBox", bb);
+        DRAW.draw_cp(steps[steps.length - 1].fold_cp, panel_d);
+
+        SVG.append("rect", panel, { x: 0, y: h * .8, width: w, height: h * 0.1, fill: "darkgray" });
+        SVG3.reset();
+        return panel;
     },
     redraw: (svg, steps) => {
         document.getElementById("pages").innerHTML = PAGE.get_pages(steps);
@@ -48,6 +140,7 @@ export const PAGE = {
         const w = body.width.baseVal.value / PAGE.layout.cols;
         const h = body.height.baseVal.value / PAGE.layout.rows;
 
+        PAGE.draw_title(body, w, h, steps);
         for (let i = 0; i < steps.length; i++) {
             const [r, c] = PAGE.get_row_col(i);
             if (r == undefined || c == undefined) {
