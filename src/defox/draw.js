@@ -90,13 +90,12 @@ export const DRAW = {
                 return d;
         }
     },
-    draw_cp: (FOLD, svg_cp) => {
+    draw_cp: (FOLD, svg_cp, draw_creases = true) => {
 
         const { V, FV, EV, EA, UA, UV } = FOLD;
 
         const faces = FV.map(F => M.expand(F, V));
         const lines = EV.map(E => M.expand(E, V));
-        const creases = UV.map(U => M.expand(U, V));
 
         const colors = EA.map(a => DRAW.color.segment[a]);
         const widths = EA.map(a => DRAW.width.segment[a]);
@@ -104,10 +103,12 @@ export const DRAW = {
         SVG.draw_polygons(g1, faces, { fill: "white", id: true });
         const g2 = SVG.append("g", svg_cp, { id: "flat_e" });
         SVG.draw_segments(g2, lines, { stroke_width: widths, stroke: colors });
-
-        const colors_c = UA.map(a => DRAW.color.segment[a]);
-        const widths_c = UA.map(a => DRAW.width.segment[a]);
-        SVG.draw_segments(g2, creases, { stroke_width: widths_c, stroke: colors_c });
+        if (draw_creases) {
+            const creases = UV.map(U => M.expand(U, V));
+            const colors_c = UA.map(a => DRAW.color.segment[a]);
+            const widths_c = UA.map(a => DRAW.width.segment[a]);
+            SVG.draw_segments(g2, creases, { stroke_width: widths_c, stroke: colors_c });
+        }
 
     },
     draw_symbol: (svg, symbol, FOLD, T) => {

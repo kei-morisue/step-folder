@@ -122,7 +122,7 @@ export const PAGE = {
         const b = s * SVG3.MARGIN / SVG3.INI_SCALE;
         const bb = `${-b} ${-b} ${s + 2 * b} ${s + 2 * b}`;
         panel_d.setAttribute("viewBox", bb);
-        DRAW.draw_cp(steps[steps.length - 1].fold_cp, panel_d);
+        DRAW.draw_cp(steps[steps.length - 1].fold_cp, panel_d, false);
 
         SVG.append("rect", panel, { x: 0, y: h * .8, width: w, height: h * 0.1, fill: "darkgray" });
         SVG3.reset();
