@@ -122,7 +122,7 @@ export const STEP = {
         SVG.clear(el_select.id)
         el_assign.max = GA[0].length
         el_assign.value = 1;
-        for (let i = 1; i < GB.length; i++) {
+        for (let i = 0; i < GB.length; i++) {
             const el = document.createElement("option");
             el.setAttribute("value", `${i}`);
             el.textContent = `${i}`;
