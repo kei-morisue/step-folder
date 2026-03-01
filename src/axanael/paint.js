@@ -122,22 +122,14 @@ export const PAINT = {
                 sym = TMP.pleat(c_idx, 0, PAINT.type);
                 break;
             case 11:
-                if (!v_idx) { return; }
-                if (PAINT.v0 < 0) {
-                    PAINT.v0 = v_idx;
-                    return;
-                }
-                sym = TMP.inside_reverse(PAINT.v0, v_idx, 0, PAINT.type);
-                PAINT.v0 = -1;
-                break;
             case 12:
                 if (!v_idx) { return; }
-                if (PAINT.v0 < 0) {
+                if (!PAINT.v0) {
                     PAINT.v0 = v_idx;
                     return;
                 }
                 sym = TMP.inside_reverse(PAINT.v0, v_idx, 0, PAINT.type);
-                PAINT.v0 = -1;
+                PAINT.v0 = undefined;
                 break;
             case 13:
                 if (!v_idx) { return; }
@@ -150,8 +142,8 @@ export const PAINT = {
                     return;
                 }
                 sym = TMP.right_angle(PAINT.v0, PAINT.v1, v_idx, 0, PAINT.type);
-                PAINT.v0 = -1;
-                PAINT.v1 = -1;
+                PAINT.v0 = undefined;
+                PAINT.v1 = undefined;
                 break;
             case 14:
                 if (!v_idx) { return; }
@@ -164,8 +156,8 @@ export const PAINT = {
                     return;
                 }
                 sym = TMP.angle_bisector(PAINT.v0, PAINT.v1, v_idx, 0, PAINT.type);
-                PAINT.v0 = -1;
-                PAINT.v1 = -1;
+                PAINT.v0 = undefined;
+                PAINT.v1 = undefined;
                 break;
             case 15:
                 if (!c_idx) { return; }
