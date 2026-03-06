@@ -1,8 +1,12 @@
+import { M } from "../flatfolder/math.js";
+
+
 import { DIST } from "../distortionfolder/distortion.js";
 
 import { STEP } from "./step.js"
 import { SEG } from "./segment.js";
 import { PAGE } from "./page.js";
+import { Y } from "./y.js";
 
 
 export const PRJ = {
@@ -64,6 +68,42 @@ export const PRJ = {
         }
         STEP.redraw();
         PRJ.redraw_page();
+    },
+    extrapolate: () => {
+        if (!confirm("All the symbols added in the following steps will be all deleted.")) { return }
+        const i = PRJ.current_idx;
+        if (i + 1 > PRJ.steps.length - 1) { return }
+        let FOLD_infer = PRJ.steps[i].fold_cp;
+        for (let j = i + 1; j < PRJ.steps.length; j++) {
+            const { EV, V, UV, EA, UA } = PRJ.steps[j].fold_cp;
+
+            const segs = EV.map((vs) => {
+                return M.expand(vs, V);
+            }).concat(UV.map((vs) => {
+                return M.expand(vs, V);
+            }));
+            const assigns = EA.concat(UA);
+            const doc = Y.segs_EA_2_CP(segs, assigns, 1.0);
+            const [FOLD, CELL] = Y.CP_2_FOLD_CELL(doc, FOLD_infer);
+
+
+            PRJ.steps[j].fold_cp = FOLD;
+            PRJ.steps[j].cell_cp = CELL;
+
+            PRJ.restore(j - 1);
+            STEP.update_states();
+            STEP.update_dist();
+            PRJ.record(j - 1);
+            FOLD_infer = FOLD;
+        }
+
+        const j = PRJ.steps.length - 1;
+        PRJ.restore(j);
+        STEP.update_states();
+        STEP.update_dist();
+        PRJ.record(j);
+        STEP.redraw();
+
     },
     restore: (i) => {
         if (i > PRJ.steps.length - 1) {

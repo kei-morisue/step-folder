@@ -48,6 +48,10 @@ export const GUI_STATE = {
             STEP.update_dist();
             STEP.redraw();
         }
+        document.getElementById("duplicate").onclick = PRJ.duplicate;
+        document.getElementById("extrapolate").onclick = PRJ.extrapolate;
+
+
         document.getElementById("infer_layer_order").onclick = (e) => {
             // const i = PRJ.current_idx;
             // if (i < 1) {
@@ -84,6 +88,7 @@ export const GUI_STATE = {
             [STEP.cx, STEP.cy] = M.add([STEP.cx, STEP.cy], N.apply(Ainv, [x0, y0]));
             STEP.redraw();
         }
+        GUI.open_close("edit_cp", "inline");
         GUI.open_close("edit_dist", "inline");
         GUI.open_close("edit_symbol", "inline");
         GUI.open_close("edit_render", "inline");

@@ -27,7 +27,6 @@ export const GUI_IO = {
         document.getElementById("import_proj").onclick = GUI_IO.import_project;
 
         document.getElementById("remove").onclick = PRJ.remove;
-        document.getElementById("duplicate").onclick = PRJ.duplicate;
 
         document.getElementById("export").onclick = (e) => {
             const ext = document.getElementById("export_ext").value;
