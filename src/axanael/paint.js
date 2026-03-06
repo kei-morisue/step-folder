@@ -88,7 +88,7 @@ export const PAINT = {
         }
     },
     onclick: (e) => {
-        const c_idx = PAINT.segment[0];
+        const c_idx = PAINT.segment ? PAINT.segment[0] : undefined;
         const v_idx = PAINT.vertex;
 
         let sym = undefined;
@@ -133,11 +133,11 @@ export const PAINT = {
                 break;
             case 13:
                 if (!v_idx) { return; }
-                if (PAINT.v0 < 0) {
+                if (!PAINT.v0) {
                     PAINT.v0 = v_idx;
                     return;
                 }
-                if (PAINT.v1 < 0) {
+                if (!PAINT.v1) {
                     PAINT.v1 = v_idx;
                     return;
                 }
@@ -147,11 +147,11 @@ export const PAINT = {
                 break;
             case 14:
                 if (!v_idx) { return; }
-                if (PAINT.v0 < 0) {
+                if (!PAINT.v0) {
                     PAINT.v0 = v_idx;
                     return;
                 }
-                if (PAINT.v1 < 0) {
+                if (!PAINT.v1) {
                     PAINT.v1 = v_idx;
                     return;
                 }
