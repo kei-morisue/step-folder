@@ -120,7 +120,7 @@ export const IO3 = {    // INPUT-OUTPUT
         const data_ = [];
         for (const d of data) {
             const d_ = {};
-            for (const key of ["fold_cp", "cell_cp", "fold", "cell_d", "params", "lin", "symbols"]) {
+            for (const key of ["id", "fold_cp", "cell_cp", "fold", "cell_d", "params", "lin", "symbols"]) {
                 d_[key] = d[key];
             }
             data_.push(d_);
@@ -140,6 +140,9 @@ export const IO3 = {    // INPUT-OUTPUT
     load: (data) => {
         const data_ = data;
         for (const d of data_) {
+            if (!d.id) {
+                d.id = Date.now();
+            }
             d.state_cp = Y.FOLD_CELL_2_STATE(d.fold_cp, d.cell_cp);
             const { Vf, FV, EV, EF, FE, Ff, EA, V, VV, Vc, FU, UV, UA, FO } = d.fold
             PRJ.restore_params(d.params);

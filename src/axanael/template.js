@@ -72,8 +72,8 @@ export const TMP = {
         const length = 1;
         const is_rev = false;
         const s = PRJ.steps[PRJ.current_idx - 1];
-        const cp0 = s.fold_cp;
-        const cp1 = s.fold_cp;
+        const cp0 = s.id;
+        const cp1 = s.id;
         const params = { is_rev, length, crease_index, offset, cp0, cp1 };
         return { depth, type, params };
     },

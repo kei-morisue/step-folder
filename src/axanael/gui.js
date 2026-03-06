@@ -146,7 +146,7 @@ export const GUI = {
         TMP.set_template(p3, 9, SYM.create_reference_point([.5, .5], SYM.radius.reference_point));
         TMP.set_template(p3, 13, SYM.create_right_angle([.5, .5], [0.50, 0.505], [.505, .5]));
         TMP.set_template(p3, 14, SYM.create_angle_bisector([.5, .5], [0.50, 0.505], [.505, .495]));
-        TMP.set_template(p3, 15, SYM.create_repeat([.5, .5], [.8, .3], PRJ.steps[0].fold_cp, PRJ.steps[0].fold_cp, .5));
+        TMP.set_template(p3, 15, SYM.create_repeat([.5, .5], [.8, .3], PRJ.steps[0].id, PRJ.steps[0].id, .5));
 
     },
 

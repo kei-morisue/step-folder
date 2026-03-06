@@ -78,13 +78,13 @@ export const GUI_IO = {
 
         if (is_new) {
             const [FOLD0, CELL0] = Y.FOLD_2_PAPER(FOLD1);
-            const step0 = { fold_cp: FOLD0, cell_cp: CELL0 };
-            const step1 = { fold_cp: FOLD1, cell_cp: CELL1 };
+            const step0 = { fold_cp: FOLD0, cell_cp: CELL0, id: Date.now() };
+            const step1 = { fold_cp: FOLD1, cell_cp: CELL1, id: Date.now() };
             PRJ.steps.push(step0);
             PRJ.steps.push(step1);
         }
         else {
-            const step = { fold_cp: FOLD1, cell_cp: CELL1 };
+            const step = { fold_cp: FOLD1, cell_cp: CELL1, id: Date.now() };
             PRJ.steps.splice(PRJ.current_idx + 1, 0, step);
         }
         PRJ.restore(PRJ.current_idx);

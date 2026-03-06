@@ -120,7 +120,7 @@ export const CTRL = {
         return div;
     },
     set_cps: (symbol, i) => {
-        const cps = PRJ.steps.map((s) => s.fold_cp);
+        const cps = PRJ.steps.map((s) => s.id);
         const i0 = cps.indexOf(symbol.params.cp0);
         const i1 = cps.indexOf(symbol.params.cp1);
         const range_cp1 = document.createElement("input");
@@ -178,7 +178,7 @@ export const CTRL = {
 
         range_cp0.oninput = (e) => {
             const j0 = parseInt(e.target.value) - 1;
-            symbol.params.cp0 = PRJ.steps[j0].fold_cp;
+            symbol.params.cp0 = PRJ.steps[j0].id;
             range_cp1.min = j0 + 1;
             SVG.SCALE = s;
             PAGE.draw_step(SVG.clear(p0.id), PRJ.steps[j0], j0);
@@ -187,7 +187,7 @@ export const CTRL = {
         };
         range_cp1.oninput = (e) => {
             const j1 = parseInt(e.target.value) - 1;
-            symbol.params.cp1 = PRJ.steps[j1].fold_cp;
+            symbol.params.cp1 = PRJ.steps[j1].id;
             range_cp0.max = j1 + 1;
             SVG.SCALE = s;
             PAGE.draw_step(SVG.clear(p1.id), PRJ.steps[j1], j1);

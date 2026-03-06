@@ -49,6 +49,7 @@ export const PRJ = {
         PRJ.record(i);
         const s = PRJ.steps[i];
         const step = {
+            id: Date.now(),
             fold_cp: s.fold_cp,
             cell_cp: s.cell_cp,
             params: s.params,

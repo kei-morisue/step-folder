@@ -337,7 +337,7 @@ export const SYM = {
 
 
         const l = SYM.width.text;
-        const cps = PRJ.steps.map((s) => s.fold_cp);
+        const cps = PRJ.steps.map((s) => s.id);
         const i0 = cps.indexOf(cp_0);
         const i1 = cps.indexOf(cp_1);
         const txt = i0 == i1 ? `${i0 + 1}` : `${i0 + 1}~${i1 + 1}`;
