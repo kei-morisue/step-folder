@@ -141,8 +141,9 @@ export const IO3 = {    // INPUT-OUTPUT
         const data_ = data;
         for (const d of data_) {
             if (!d.id) {
-                d.id = Date.now();
+                d.id = Date.now() + Math.floor(Math.random() * 100000);
             }
+
             d.state_cp = Y.FOLD_CELL_2_STATE(d.fold_cp, d.cell_cp);
             const { Vf, FV, EV, EF, FE, Ff, EA, V, VV, Vc, FU, UV, UA, FO } = d.fold
             PRJ.restore_params(d.params);
