@@ -218,6 +218,33 @@ export const Y = {     // CONVERSION
 
     FV_V_2_Ff: (FV, V) => FV.map(fV => (M.polygon_area2(fV.map(i => V[i])) < 0)),
 
+    CF_FO_Ff_2_CD: (CF, FO, Ff) => {
+        return CF.map((F, i) => {
+            const Adj = F.map(() => []);
+            FO.map(([f1, f2, o]) => {
+                if (F.indexOf(f1) < 0) { return }
+                if (F.indexOf(f2) < 0) { return }
+                const edge = ((Ff[f2] ? 1 : -1) * o >= 0) ? [f1, f2] : [f2, f1];
+                Adj[F.indexOf(edge[0])].push(edge[1]);
+            });
+            const S = [];
+            const seen = F.map(() => false);
+            const dfs = (i) => {
+                if (seen[i]) { return; }
+                seen[i] = true;
+                for (const j of Adj[i]) {
+                    dfs(F.indexOf(j));
+                }
+                S.push(F[i]);
+            };
+            for (let i = 0; i < F.length; ++i) {
+                dfs(i);
+            }
+            console.assert(S.length == F.length);
+            return S;
+        });
+    },
+
 
     FOLD_CELL_2_STATE: (FOLD, CELL) => {
         const { Ff, FO } = FOLD;
@@ -230,7 +257,7 @@ export const Y = {     // CONVERSION
         const L = LIN.serialize(edges, Ff.length);
         L.S.reverse();
 
-        const CD = X.CF_edges_2_CD(CF, edges);
+        const CD = Y.CF_FO_Ff_2_CD(CF, FO, Ff);
         const Ctop = CD.map(S => S[S.length - 1]);
         const Cbottom = CD.map(S => S[0]);
 
