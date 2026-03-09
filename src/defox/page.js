@@ -243,7 +243,6 @@ export const PAGE = {
     },
     draw_body: () => {
         const body = SVG.clear("page_body");
-        body.appendChild(document.getElementById("defs").cloneNode(true));
         body.setAttribute("xmlns", SVG.NS);
         const w = PAGE.dim.width - 2 * PAGE.dim.margin_x;
         const h = PAGE.dim.height - 2 * PAGE.dim.margin_y;
@@ -256,6 +255,7 @@ export const PAGE = {
     draw_tutorial_body: () => {
         const body = SVG.clear("tutorial");
         body.setAttribute("xmlns", SVG.NS);
+        body.appendChild(document.getElementById("defs").cloneNode(true));
 
         const b = SVG3.MARGIN;
         const s = SVG.SCALE;
