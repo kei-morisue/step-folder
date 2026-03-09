@@ -8,6 +8,7 @@ import { PRJ } from "./project.js";
 import { PAGE } from "./page.js";
 import { DIST } from "../distortionfolder/distortion.js";
 import { SVG3 } from "./svg.js";
+import { DRAW } from "./draw.js";
 
 
 export const IO3 = {    // INPUT-OUTPUT
@@ -168,6 +169,7 @@ export const IO3 = {    // INPUT-OUTPUT
             }
             data_.push(d_);
         }
+        data_[0].color = DRAW.color;
         const json = new Blob([JSON.stringify(data_, undefined, 2)], {
             type: "application/json"
         })
@@ -193,6 +195,7 @@ export const IO3 = {    // INPUT-OUTPUT
             const VD = DIST.FOLD_2_VD(Vf, V);
             d.fold_d = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA, FO };
         }
+        DRAW.color = data_[0].color;
         return data_;
     },
     normalize_L: (L) => {
