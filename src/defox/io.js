@@ -7,12 +7,16 @@ import { Y } from "./y.js";
 import { PRJ } from "./project.js";
 import { PAGE } from "./page.js";
 import { DIST } from "../distortionfolder/distortion.js";
+import { SVG3 } from "./svg.js";
 
 
 export const IO3 = {    // INPUT-OUTPUT
     write: (svg_id, name, ext, idx = undefined) => {
         if (ext == "png") {
             return IO3.write_pngs(svg_id, name, idx);
+        }
+        if (ext == "png_steps") {
+            return IO3.write_png_steps(name);
         }
         if (ext == "svg") {
             return IO3.write_svgs(svg_id, name, idx);
@@ -96,6 +100,45 @@ export const IO3 = {    // INPUT-OUTPUT
             IO3.write_png(svg_id, name + "_page_", dim, j);
         }
     },
+    write_png_steps: async (name) => {
+        const zip = new JSZip();
+        for (const [idx, step] of PRJ.steps.entries()) {
+            const height = SVG.SCALE + 2 * SVG3.MARGIN;
+            const width = 2 * height;
+            const dim = { width, height };
+            const step_after = PRJ.steps[idx + 1];
+            const svg = PAGE.get_tutorial_svg(step, step_after, idx);
+            const blob = await IO3.get_png_blob(svg, dim);
+            const num = IO3.format_num(idx);
+            const file_name = `${name}_${num}.png`;
+            zip.file(file_name, blob);
+        }
+        zip.generateAsync({ type: "blob" })
+            .then(function (content) {
+                saveAs(content, name + ".zip");
+            });
+
+    },
+
+    get_png_blob: (svg, dim) => {
+        const svgData = new XMLSerializer().serializeToString(svg);
+
+        return new Promise((resolve, reject) => {
+            var image = new Image;
+            image.onload = function () {
+                var canvas = document.createElement("canvas");
+                canvas.width = dim.width;
+                canvas.height = dim.height;
+                var ctx = canvas.getContext("2d");
+                ctx.drawImage(image, 0, 0);
+                canvas.toBlob(blob => {
+                    resolve(blob);
+                }, "image/png", 1);
+            }
+            image.src = "data:image/svg+xml;charset=utf-8;base64," + btoa(unescape(encodeURIComponent(svgData)));
+        });
+    },
+
     write_png: (svg_id, name, dim, idx) => {
         var svg = document.getElementById(svg_id);
         var svgData = new XMLSerializer().serializeToString(svg);

@@ -107,6 +107,7 @@
         <option value="png">.png</option>
         <option value="svg">.svg</option>
         <option value="cp">.cp</option>
+        <option value="png_steps">.png.zip</option>
     </select>
 </div>
 <div>

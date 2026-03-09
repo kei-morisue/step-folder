@@ -156,21 +156,25 @@ export const PAGE = {
             const bb = `${-b} ${-b} ${s + 2 * b} ${s + 2 * b}`;
             panel_d.setAttribute("viewBox", bb);
             PAGE.draw_step(panel_d, steps[i], i);
-            const t = PAGE.text.size;
-            let num = i + 1;
-            const loc = [t, t];
-            if (PAGE.text.location == "Bottom") {
-                loc[1] = h;
-                num = num + ". "
-            }
-            const l = SVG3.draw_label(panel, loc, PAGE.text.color, num, t);
-            l.setAttribute("font-family", PAGE.text.font);
-            l.setAttribute("font-weight", PAGE.text.weght);
-
+            PAGE.draw_label(panel, i);
 
         }
         SVG3.reset();
     },
+    draw_label: (panel, i) => {
+        const t = PAGE.text.size;
+        let num = i + 1;
+        const loc = [t, t];
+        if (PAGE.text.location == "Bottom") {
+            loc[1] = h;
+            num = num + ". "
+        }
+        const l = SVG3.draw_label(panel, loc, PAGE.text.color, num, t);
+        l.setAttribute("font-family", PAGE.text.font);
+        l.setAttribute("font-weight", PAGE.text.weght);
+        return l;
+    },
+
     draw_step: (panel_d, step, id) => {
         const { flip0, rotate, scale, clip, cx, cy, depth } = step.params;
 
@@ -186,6 +190,32 @@ export const PAGE = {
             DRAW_LIN.draw_state(panel_d, FOLD, step.lin.S, T, clip, depth, id, symbols);
         }
     },
+
+    draw_blank_step: (par_svg, step, id) => {
+        const { flip0, rotate, scale, clip, cx, cy, depth } = step.params;
+
+        const T = STEP.get_T(flip0, rotate, scale, cx, cy);
+        const FOLD = step.fold_cp;
+        const CELL = step.cell_cp;
+
+        const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
+        DRAW.draw_state(par_svg, FOLD, CELL, STATE, T, clip, id);
+    },
+
+    get_tutorial_svg: (step_before, step_after, idx) => {
+        const body = PAGE.draw_tutorial_body();
+        const b = SVG3.MARGIN;
+        const s = SVG.SCALE;
+        const panel_A = PAGE.draw_panel(body, s, s, b, b, idx);
+        const panel_B = PAGE.draw_panel(body, s, s, 3 * b + s, b, idx);
+        PAGE.draw_step(panel_A, step_before, idx);
+        if (step_after) {
+            PAGE.draw_blank_step(panel_B, step_after, idx);
+        }
+        PAGE.draw_label(body, idx);
+        return body;
+    },
+
     get_row_col: (idx) => {
         const c = PAGE.layout.cols;
         const r = PAGE.layout.rows;
@@ -214,14 +244,27 @@ export const PAGE = {
     draw_body: () => {
         const body = SVG.clear("page_body");
         body.setAttribute("xmlns", SVG.NS);
-
         const w = PAGE.dim.width - 2 * PAGE.dim.margin_x;
         const h = PAGE.dim.height - 2 * PAGE.dim.margin_y;
         body.setAttribute("width", w);
         body.setAttribute("height", h);
         body.setAttribute("x", PAGE.dim.margin_x);
         body.setAttribute("y", PAGE.dim.margin_y);
-        // body.setAttribute("viewBox", [0, 0, w, h].join(" "));
+        return body;
+    },
+    draw_tutorial_body: () => {
+        const body = SVG.clear("tutorial");
+        body.setAttribute("xmlns", SVG.NS);
+
+        const b = SVG3.MARGIN;
+        const s = SVG.SCALE;
+        const h = s + 2 * b;
+        const w = h * 2;
+        body.setAttribute("width", w);
+        body.setAttribute("height", h);
+        body.setAttribute("x", 0);
+        body.setAttribute("y", 0);
+        body.setAttribute("viewBox", [0, 0, w, h].join(" "));
         return body;
     },
 
