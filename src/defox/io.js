@@ -184,6 +184,9 @@ export const IO3 = {    // INPUT-OUTPUT
     },
     load: (data) => {
         const data_ = data;
+        if (data_[0].color) {
+            DRAW.color = data_[0].color;
+        }
         for (const d of data_) {
             if (!d.id) {
                 d.id = Date.now() + Math.floor(Math.random() * 100000);
@@ -195,7 +198,6 @@ export const IO3 = {    // INPUT-OUTPUT
             const VD = DIST.FOLD_2_VD(Vf, V);
             d.fold_d = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA, FO };
         }
-        DRAW.color = data_[0].color;
         return data_;
     },
     normalize_L: (L) => {
