@@ -186,6 +186,9 @@ export const IO3 = {    // INPUT-OUTPUT
         const data_ = data;
         if (data_[0].color) {
             DRAW.color = data_[0].color;
+            document.getElementById("topcolor").value = DRAW.color.face.top;
+            document.getElementById("bottomcolor").value = DRAW.color.face.bottom;
+            document.getElementById("bgcolor").value = DRAW.color.background;
         }
         for (const d of data_) {
             if (!d.id) {
