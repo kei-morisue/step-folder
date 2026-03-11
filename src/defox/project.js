@@ -70,6 +70,12 @@ export const PRJ = {
         STEP.redraw();
         PRJ.redraw_page();
     },
+    duplicate_back: () => {
+        PRJ.duplicate();
+        const i = PRJ.current_idx;
+        PRJ.restore(i - 1);
+        STEP.redraw();
+    },
     extrapolate: () => {
         if (!confirm("All the symbols added in the following steps will be all deleted.")) { return }
         const i = PRJ.current_idx;

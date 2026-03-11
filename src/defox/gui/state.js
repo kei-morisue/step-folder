@@ -49,6 +49,7 @@ export const GUI_STATE = {
             STEP.redraw();
         }
         document.getElementById("duplicate_forward").onclick = PRJ.duplicate;
+        document.getElementById("duplicate_backward").onclick = PRJ.duplicate_back;
         document.getElementById("extrapolate").onclick = PRJ.extrapolate;
 
 

@@ -83,8 +83,8 @@ export const PAINT = {
         PAINT.scale = 1;
         PAINT.saves = [];
         PAINT.save_idx = 0;
-        PAINT.trim();
-        PAINT.record();
+        const CP = Z.segs_2_CP(PAINT.segs, PAINT.EA);
+        PAINT.update_cp(CP);
     },
 
     get_FOLD_CELL: (idx, is_interp) => {
@@ -285,7 +285,8 @@ export const PAINT = {
         const EA = PAINT.EA;
         const segs = PAINT.segs;
         const EV = PAINT.EV;
-        const data = { V, segs, EA, EV };
+        const VK = PAINT.VK;
+        const data = { V, segs, EA, EV, VK };
         if (PAINT.save_idx < PAINT.saves.length) {
             PAINT.saves.length = PAINT.save_idx;
         }
@@ -306,12 +307,13 @@ export const PAINT = {
     },
 
     recall: (i) => {
-        const { V, segs, EA, EV } = PAINT.saves[i];
+        const { V, segs, EA, EV, VK } = PAINT.saves[i];
         PAINT.save_idx = i + 1;
         PAINT.V = V;
         PAINT.EA = EA;
         PAINT.segs = segs;
         PAINT.EV = EV;
+        PAINT.VK = VK;
     },
 
     undo: () => {
