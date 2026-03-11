@@ -6,7 +6,7 @@
         <label for="bottomcolor">Bottom Color</label>
         <input type="color" id="bottomcolor" value="#53d8f9">
         <label for="bottomcolor">BG Color</label>
-        <input type="color" id="bgcolor" value="#00FF00">
+        <input type="color" id="bgcolor" value="#FFF">
     </span>
     <span id="option_width_b" class="openclose"><b>Segment Options</b></span>
     <span id="option_width" style="display: none;">
@@ -96,13 +96,13 @@
 </div>
 
 <div>
-    <button id="page_reload">Reload</button>
-    <button id="page_prev">Prev</button>
+    <button id="page_reload"><i class="bi bi-arrow-counterclockwise"></i></button>
+    <button id="page_prev"><i class="bi bi-caret-left-square"></i></button>
     <b id="page_idx">1</b>
     <b>/ </b>
     <b id="pages">1</b>
-    <button id="page_next">Next</button>
-    <button id="page_export">Export</button>
+    <button id="page_next"><i class="bi bi-caret-right-square"></i></button>
+    <button id="page_export"><i class="bi bi-download"></i></button>
     <select id="page_export_ext">
         <option value="png">.png</option>
         <option value="svg">.svg</option>

@@ -3,11 +3,11 @@
 <div class="axanael_preview">
     <div>
         <b>Steps</b>
-        <button id="axanael_prev">Prev</button>
+        <button id="axanael_prev"><i class="bi bi-caret-left-square"></i></button>
         <b id="axanael_step">1</b>
         <b>/ </b>
         <b id="axanael_steps">1</b>
-        <button id="axanael_next">Next</button>
+        <button id="axanael_next"><i class="bi bi-caret-right-square"></i></button>
     </div>
     <div>
         <input id="axanael_range_steps" type="range" min="1" max="2" value="2">

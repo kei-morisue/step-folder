@@ -20,13 +20,13 @@
         <span>
             <img src="./icon-512x512.png" alt="DEFOX_icon" style="width: 15px;">
             <b>DEFOX&nbsp;&nbsp;</b>
-            <button id="new">New Project</button>
-            <button id="save_proj">Save Project</button>
+            <button id="new"><i class="bi bi-file-earmark-plus"></i></button>
+            <button id="save_proj"><i class="bi bi-floppy"></i></button>
             <input type="text" id="proj_name" value="NewProject">
-            <button id="import_proj">Import Project</button>
-            <button id="import0">Insert Steps</button>
-            <button id="remove">Remove Step</button>
-            <button id="export">Export Step</button>
+            <button id="import_proj"><i class="bi bi-upload"></i></button>
+            <button id="import0"><i class="bi bi-plus-square"></i></i></button>
+            <button id="remove"><i class="bi bi-x-square"></i></button>
+            <button id="export"><i class="bi bi-download"></i></button>
             <select id="export_ext">
                 <option value="cp">.cp</option>
                 <option value="svg">.svg</option>
@@ -43,11 +43,11 @@
     <span class="step_preview">
         <div>
             <b>Steps</b>
-            <button id="prev">Prev</button>
+            <button id="prev"><i class="bi bi-caret-left-square"></i></button>
             <b id="step">1</b>
             <b>/ </b>
             <b id="steps">1</b>
-            <button id="next">Next</button>
+            <button id="next"><i class="bi bi-caret-right-square"></i></button>
         </div>
         <div>
             <input id="range_steps" type="range" min="1" max="2" value="2">
@@ -66,19 +66,26 @@
                 <span id="edit_cp_b" class="openclose"><b>Crease Pattern</b></span>
                 <span id="edit_cp">
                     <p>
-                        <button id="opencpeditor" class="opendialog">&#xe029;</button>
-                        <button id="duplicate">Duplicate Step</button>
+                        <button id="opencpeditor" class="opendialog"><i class="bi bi-pencil-square"></i></button>
+                    </p>
+                    <p>
+                        <button id="duplicate_backward"><i class="bi bi-arrow-bar-left"></i><i
+                                class="bi bi-copy"></i></button>
+                        <button id="duplicate_forward"><i class="bi bi-copy"></i><i
+                                class="bi bi-arrow-bar-right"></i></button>
+                    </p>
+                    <p>
                         <button id="extrapolate">Extrapolate Creases </button>
                     </p>
                 </span>
                 <span id="edit_render_b" class="openclose"><b>Render</b></span>
                 <span id="edit_render">
                     <p>
-                        <button id="cp_layers">Show CP/ Show Dia</button>
-                        <button id="flip">Flip</button>
+                        <button id="cp_layers">CP / Dia</button>
+                        <button id="flip"><i class="bi bi-arrow-down-up"></i></button>
                         <button id="render_reset">Reset</button>
-                        <button id="infer_prev">Infer(Prev)</button>
-                        <button id="infer_next">Infer(Next)</button>
+                        <button id="infer_prev"><i class="bi bi-box-arrow-in-right"></i></button>
+                        <button id="infer_next"><i class="bi bi-box-arrow-in-left"></i></button>
                     </p>
                     <p>
                         <label for="rotate">Angle</label>
@@ -142,7 +149,7 @@
                 <span id="edit_symbol_b" class="openclose"><b>Add Symbols</b></span>
                 <span id="edit_symbol">
                     <p class="tool_buttons">
-                        <button id="axanael_open">&#xe029;</button>
+                        <button id="axanael_open"><i class="bi bi-pencil-square"></i></button>
                     </p>
                 </span>
             </div>

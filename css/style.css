@@ -10,6 +10,10 @@ svg text {
     user-select: none;
 }
 
+i {
+    font-size: large;
+}
+
 .mainpanel {
     width: 100%;
 
