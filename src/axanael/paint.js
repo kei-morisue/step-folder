@@ -88,7 +88,7 @@ export const PAINT = {
         }
     },
     onclick: (e) => {
-        const c_idx = PAINT.segment ? PAINT.segment[0] : undefined;
+        const c_idx = PAINT.segment != undefined ? PAINT.segment[0] : undefined;
         const v_idx = PAINT.vertex;
 
         let sym = undefined;
@@ -97,18 +97,18 @@ export const PAINT = {
             case 1:
             case 2:
             case 3:
-                if (!c_idx) { return; }
+                if (c_idx == undefined) { return; }
                 sym = TMP.mv(c_idx, 0, PAINT.type);
                 break;
             case 4:
-                if (!c_idx) { return; }
+                if (c_idx == undefined) { return; }
                 sym = TMP.sink(c_idx, 0, false, PAINT.type);
             case 5:
-                if (!c_idx) { return; }
+                if (c_idx == undefined) { return; }
                 sym = TMP.sink(c_idx, 0, true, PAINT.type);
             case 6:
             case 7:
-                if (!c_idx) { return; }
+                if (c_idx == undefined) { return; }
                 sym = TMP.fold_unfold(c_idx, 0, PAINT.type);
                 break;
             case 8:
@@ -118,13 +118,13 @@ export const PAINT = {
                 sym = TMP.reference_point(v_idx, 0, PAINT.type);
                 break;
             case 10:
-                if (!c_idx) { return; }
+                if (c_idx == undefined) { return; }
                 sym = TMP.pleat(c_idx, 0, PAINT.type);
                 break;
             case 11:
             case 12:
-                if (!v_idx) { return; }
-                if (!PAINT.v0) {
+                if (v_idx == undefined) { return; }
+                if (PAINT.v0 == undefined) {
                     PAINT.v0 = v_idx;
                     return;
                 }
@@ -132,12 +132,12 @@ export const PAINT = {
                 PAINT.v0 = undefined;
                 break;
             case 13:
-                if (!v_idx) { return; }
-                if (!PAINT.v0) {
+                if (v_idx == undefined) { return; }
+                if (PAINT.v0 == undefined) {
                     PAINT.v0 = v_idx;
                     return;
                 }
-                if (!PAINT.v1) {
+                if (PAINT.v1 == undefined) {
                     PAINT.v1 = v_idx;
                     return;
                 }
@@ -146,12 +146,12 @@ export const PAINT = {
                 PAINT.v1 = undefined;
                 break;
             case 14:
-                if (!v_idx) { return; }
-                if (!PAINT.v0) {
+                if (v_idx == undefined) { return; }
+                if (PAINT.v == undefined) {
                     PAINT.v0 = v_idx;
                     return;
                 }
-                if (!PAINT.v1) {
+                if (PAINT.v1 == undefined) {
                     PAINT.v1 = v_idx;
                     return;
                 }
@@ -160,7 +160,7 @@ export const PAINT = {
                 PAINT.v1 = undefined;
                 break;
             case 15:
-                if (!c_idx) { return; }
+                if (c_idx == undefined) { return; }
                 sym = TMP.repeat(c_idx, 0, PAINT.type);
                 break;
             default:
