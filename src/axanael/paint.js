@@ -147,7 +147,7 @@ export const PAINT = {
                 break;
             case 14:
                 if (v_idx == undefined) { return; }
-                if (PAINT.v == undefined) {
+                if (PAINT.v0 == undefined) {
                     PAINT.v0 = v_idx;
                     return;
                 }
