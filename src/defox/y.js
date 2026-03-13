@@ -125,7 +125,7 @@ export const Y = {     // CONVERSION
 
         const GB = SOLVER.get_components(BI, BF, BT, BA, FC, CF, CC, trans_count);
 
-        const GA = SOLVER.solve(BI, BF, BT, BA.map(a => a), GB, FC, CF, CC, Infinity);
+        const GA = SOLVER.solve(BI, BF, BT, BA.map(a => a), GB, FC, CF, CC, 20);
 
         const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {
             return s * BigInt(A.length);
