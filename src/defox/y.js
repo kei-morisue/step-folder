@@ -281,23 +281,15 @@ export const Y = {     // CONVERSION
             const F = C.map(ci => Ctop[ci]);
             if (F[0] == F[1]) { return "N"; }
             // borders of a state
-            if ((F[0] != undefined)) {
-                for (const e0 of FE[F[0]]) {
-                    if (SE[si].indexOf(e0) >= 0) {
-                        const a = EA[e0]
-                        if (a == "RM" || a == "RV" || a == "UF") {
-                            return a;
-                        };
-                    }
-                }
-            }
-            if ((F[1] != undefined)) {
-                for (const e1 of FE[F[1]]) {
-                    if (SE[si].indexOf(e1) >= 0) {
-                        const a = EA[e1]
-                        if (a == "RM" || a == "RV" || a == "UF") {
-                            return a;
-                        };
+            for (const fi of [F[0], F[1]]) {
+                if ((fi != undefined)) {
+                    for (const e0 of FE[fi]) {
+                        if (SE[si].indexOf(e0) >= 0) {
+                            const a = EA[e0]
+                            if (a == "RM" || a == "RV" || a == "UF") {
+                                return a;
+                            };
+                        }
                     }
                 }
             }

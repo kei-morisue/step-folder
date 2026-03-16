@@ -249,9 +249,10 @@ export const PAINT = {
             const CELL = STEP.CELL_D;
             const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
             DRAW.draw_state(svg, FOLD, CELL, STATE, T, SEG.clip, STEP.id, symbols ?? []);
-            return;
         }
-        DRAW_LIN.draw_state(svg, FOLD, S, T, c, d, i, symbols);
+        else {
+            DRAW_LIN.draw_state(svg, FOLD, S, T, c, d, i, symbols);
+        }
         PAINT.svg_selection = SVG.append("g", PAINT.svg, { id: "axanael_selection" });
     }
 

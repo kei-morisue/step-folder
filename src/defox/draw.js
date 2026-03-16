@@ -128,7 +128,8 @@ export const DRAW = {
         const { P, PP, CP, CF, SP, SC, SE } = CELL;
         const { Q, Ctop, Cbottom, L, Ccolor, Ccolor_bottom } = STATE;
         const color = is_flip ? Ccolor_bottom : Ccolor;
-        const SD = Y.Ctop_SC_SE_EF_Ff_EA_FE_2_SD(is_flip ? Cbottom : Ctop, SC, SE, EF, Ff, EA, FE);
+        const CFD = is_flip ? Cbottom : Ctop;
+        const SD = Y.Ctop_SC_SE_EF_Ff_EA_FE_2_SD(CFD, SC, SE, EF, Ff, EA, FE);
         const Q_ = M.normalize_points(Q).map((v) => N.transform(T, v));
         const cells = CP.map(V => M.expand(V, Q_));
 
@@ -147,7 +148,6 @@ export const DRAW = {
             id: true,
             fill: color.map(b => b ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom),
             stroke: color.map(b => b ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom),
-            stroke_width: 3
         });
         const lines = SP.map((ps) => M.expand(ps, Q_));
         SVG.draw_segments(fold_s_crease, lines, {
@@ -156,10 +156,19 @@ export const DRAW = {
                 if (!DRAW.uncreases) {
                     return DRAW.color.edge["B"];
                 }
+                if (d == "UF") {
+                    return DRAW.color.edge["UF"];
+                }
                 const [c0, c1] = SC[i];
-
-                if (color[c0] && color[c1]) {
-                    return DRAW.color.edge[DRAW.pair(d)];
+                const [f0, f1] = [CFD[c0], CFD[c1]];
+                for (const f of [f0, f1]) {
+                    for (const e of FE[f]) {
+                        if (SE[i].indexOf(e) >= 0) {
+                            return Ff[f] ?
+                                DRAW.color.edge[DRAW.pair(d)]
+                                : DRAW.color.edge[d];
+                        }
+                    }
                 }
                 return DRAW.color.edge[d];
             }),
@@ -180,9 +189,8 @@ export const DRAW = {
         });
 
         const Vf_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
-        const FD = is_flip ? Cbottom : Ctop;
         const FC_map = new Map();
-        for (const [ci, fi] of FD.entries()) {
+        for (const [ci, fi] of CFD.entries()) {
             const cis = FC_map.get(fi);
             if (cis) {
                 cis.push(ci);
