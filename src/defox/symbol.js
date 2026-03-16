@@ -128,7 +128,7 @@ export const SYM = {
         sym.setAttribute("stroke-linecap", "butt");
         const end = is_m ? "url(#arrow_head_m)" : "url(#arrow_head_v)";
         sym.setAttribute("marker-end", end);
-        sym.setAttribute("fill", "transparent");
+        sym.setAttribute("fill", "none");
         return sym;
     },
 
@@ -152,7 +152,7 @@ export const SYM = {
         sym.setAttribute("stroke-linecap", "butt");
         const end = "url(#arrow_head_inside_reverse)";
         sym.setAttribute("marker-end", end);
-        sym.setAttribute("fill", "transparent");
+        sym.setAttribute("fill", "none");
         return sym;
     },
 
@@ -171,7 +171,7 @@ export const SYM = {
 
         const end = is_closed ? "url(#arrow_head_closed_sink)" : "url(#arrow_head_open_sink)";
         sym.setAttribute("marker-end", end);
-        sym.setAttribute("fill", "transparent");
+        sym.setAttribute("fill", "none");
         return sym;
     },
 
@@ -199,7 +199,7 @@ export const SYM = {
         sym.setAttribute("stroke-linecap", "butt");
         const end = "url(#arrow_head_fold_unfold)";
         sym.setAttribute("marker-end", end);
-        sym.setAttribute("fill", "transparent");
+        sym.setAttribute("fill", "none");
         return sym;
 
     },
@@ -224,7 +224,7 @@ export const SYM = {
         sym.setAttribute("stroke-linecap", "butt");
         const end = "url(#arrow_head_pleat)";
         sym.setAttribute("marker-end", end);
-        sym.setAttribute("fill", "transparent");
+        sym.setAttribute("fill", "none");
         return sym;
 
     },
@@ -252,7 +252,7 @@ export const SYM = {
         else {
             sym.setAttribute("marker-end", end);
         }
-        sym.setAttribute("fill", "transparent");
+        sym.setAttribute("fill", "none");
         return sym;
     },
 
@@ -264,7 +264,7 @@ export const SYM = {
         sym.setAttribute("r", r);
         sym.setAttribute("stroke", SYM.color.reference_point);
         sym.setAttribute("stroke-width", SYM.width.reference_point);
-        sym.setAttribute("fill", "transparent");
+        sym.setAttribute("fill", "none");
         return sym;
     },
 
@@ -285,7 +285,7 @@ export const SYM = {
         sym.setAttribute("d", `M ${sx} ${sy} L ${mx} ${my} L ${ex} ${ey} M ${ax} ${ay} L ${bx} ${by} L ${cx} ${cy}`);
         sym.setAttribute("stroke", SYM.color.right_angle);
         sym.setAttribute("stroke-width", SYM.width.right_angle);
-        sym.setAttribute("fill", "transparent");
+        sym.setAttribute("fill", "none");
         return sym;
     },
 
@@ -333,7 +333,7 @@ export const SYM = {
         arrow.setAttribute("stroke-linecap", "butt");
         const end = "url(#arrow_head_repeat)";
         arrow.setAttribute("marker-end", end);
-        arrow.setAttribute("fill", "transparent");
+        arrow.setAttribute("fill", "none");
 
 
         const l = SYM.width.text;
