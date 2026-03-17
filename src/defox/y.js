@@ -122,9 +122,7 @@ export const Y = {     // CONVERSION
         const BA0 = SOLVER.EF_EA_Ff_BF_BI_2_BA0(EF, EA, Ff, BF, BI);
         const trans_count = { all: 0, reduced: 0 };
         const BA = SOLVER.initial_assignment(BA0, BF, BT, BI, FC, CF, CC, trans_count);
-
         const GB = SOLVER.get_components(BI, BF, BT, BA, FC, CF, CC, trans_count);
-
         const GA = SOLVER.solve(BI, BF, BT, BA.map(a => a), GB, FC, CF, CC, 20);
 
         const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {

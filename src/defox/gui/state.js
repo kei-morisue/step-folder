@@ -53,19 +53,30 @@ export const GUI_STATE = {
         document.getElementById("extrapolate").onclick = PRJ.extrapolate;
 
 
-        document.getElementById("infer_layer_order").onclick = (e) => {
-            // const i = PRJ.current_idx;
-            // if (i < 1) {
-            //     return;
-            // }
-            // const F_origin = PRJ.steps[i - 1].fold_cp;
-            // const F_apply = STEP.FOLD0;
-            // DIFF.infer_FO(F_origin, F_apply);
-            // STEP.update_states();
-            // STEP.update_dist();
-            // STEP.redraw();
+        document.getElementById("infer_layer_order_forward").onclick = (e) => {
+            const i = PRJ.current_idx;
+            if (i < 1) {
+                return;
+            }
+            const FOLD_from = PRJ.steps[i - 1].fold_cp;
+            const FOLD_to = STEP.FOLD0;
+            DIFF.infer_FO(FOLD_from, FOLD_to, STEP.CELL0);
+            STEP.update_states();
+            STEP.update_dist();
+            STEP.redraw();
         }
-
+        document.getElementById("infer_layer_order_backward").onclick = (e) => {
+            const i = PRJ.current_idx;
+            if (i + 1 > PRJ.steps.length - 1) {
+                return;
+            }
+            const FOLD_from = PRJ.steps[i + 1].fold_cp;
+            const FOLD_to = STEP.FOLD0;
+            DIFF.infer_FO(FOLD_from, FOLD_to, STEP.CELL0);
+            STEP.update_states();
+            STEP.update_dist();
+            STEP.redraw();
+        }
         document.getElementById("state3").onwheel = (e) => {
             e.preventDefault();
             const lvl = STEP.scale - Math.sign(e.deltaY);
@@ -106,6 +117,13 @@ export const GUI_STATE = {
             STEP.update_states()
             STEP.update_dist();
         }
+        document.getElementById("selectG").onchange = (e) => {
+            const { GA, GI } = STEP.CELL0
+            const g = e.target.value
+            document.getElementById("assign").max = GA[g].length
+            document.getElementById("assign").value = GI[g] + 1
+            document.getElementById("assigns").innerHTML = "/" + GA[g].length
+        }
 
         document.getElementById("reset_tt").onclick = (e) => {
             for (const [i, id] of ["T0", "T1", "T2", "T3"].entries()) {
@@ -116,13 +134,6 @@ export const GUI_STATE = {
             PRJ.record(PRJ.current_idx);
         }
 
-        document.getElementById("selectG").onchange = (e) => {
-            const { GA, GI } = STEP.CELL0
-            const g = e.target.value
-            document.getElementById("assign").max = GA[g].length
-            document.getElementById("assign").value = GI[g] + 1
-            document.getElementById("assigns").innerHTML = "/" + GA[g].length
-        }
 
         document.getElementById("range_steps").oninput = GUI_STATE.jump;
         document.getElementById("next").onclick = GUI_STATE.next;

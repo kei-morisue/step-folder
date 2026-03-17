@@ -190,26 +190,89 @@ export const DIFF = {
         return [FOLD, { S, cycle }];
     },
 
-
-    infer_FO: (F_origin, F_apply) => {
-        const { V, FV } = F_apply;
-        const FF_map = F_origin.FV.map((vs) => [])
-        for (const [i, vs] of FV.entries()) {
-            const c = M.interior_point(M.expand(vs, V))
-            for (const [j, ws] of F_origin.FV.entries()) {
-                if (N.is_inside(c, M.expand(ws, F_origin.V))
-                ) {
-                    FF_map[j].push(i);
-                    break;
+    get_VV_map: (V_from, V_to) => {
+        const VV_map = V_from.map(() => undefined);
+        V_to.map((v, i) => {
+            for (const [w_i, w] of V_from.entries()) {
+                const d = M.distsq(v, w);
+                if (d < 1e-10) {
+                    VV_map[w_i] = i;
+                    return;
                 }
             }
+        });
+        return VV_map;
+    },
+
+    get_FF_map: (VV_map, FV_from, FV_to) => {
+        const FF_map = FV_from.map(() => undefined);
+        const FV_set = FV_from.map((vs) => { return new Set(vs.map((vi) => VV_map[vi])) });
+
+        FV_to.map((vs, fi) => {
+            const v_set = new Set(vs);
+            for (const [g_i, w_set] of FV_set.entries()) {
+                const d = w_set.difference(v_set);
+                if (d.size == 0) {
+                    FF_map[g_i] = fi;
+                    return;
+                }
+            }
+        });
+        return FF_map;
+    },
+    overwrite_FO: (FF_map, FO_from, FO_to, Ff_from, Ff_to) => {
+
+        const FO_map = new Map();
+        FO_to.map(([f1, f2, o], i) => {
+            FO_map.set(M.encode_order_pair([f1, f2]), i);
+        });
+
+        for (const [, [f1, f2, o]] of FO_from.entries()) {
+            const g1 = FF_map[f1];
+            const g2 = FF_map[f2];
+            if (g1 == undefined || g2 == undefined) {
+                continue;
+            }
+            const i_to = FO_map.get(M.encode_order_pair([g1, g2]));
+            if (i_to == undefined) {
+                continue;
+            }
+            const [Ff1_to, Ff2_to] = [Ff_to[g1], Ff_to[g2]];
+            if (Ff1_to ^ Ff2_to != Ff_from[f1] ^ Ff_from[f2]) {
+                continue;
+            }
+            FO_to[i_to] = [g1, g2, Ff2_to];
         }
-        const FO = []
-        for (const [, [f1, f2, o]] of F_origin.FO.entries()) {
-            const gi = FF_map[f1][0];
-            const hi = FF_map[f2][0];
-            FO.push([gi, hi, o])
+    },
+
+    FO_GB_GA_BF_2_GI: (FO, GB, GA, BF, GI) => {
+        const FO_map = new Map();
+        FO.map(([f1, f2, o], i) => {
+            FO_map.set(M.encode_order_pair([f1, f2]), i);
+        });
+        for (const [i, B] of GB.entries()) {
+            const orders = [];
+            for (const [j, F] of B.entries()) {
+                const [f1, f2] = M.decode(BF[F]);
+                const [g1, g2] = FO[FO_map.get(BF[F])];
+
+                const o = f1 == g1 ? 1 : 2;
+                orders.push(o);
+            }
+            const enc = M.bit_encode(orders);
+            for (const [ai, a] of GA[i]) {
+                if (a == enc) {
+                    GI[i] = ai;
+                }
+            }
+
         }
-        F_apply.FO = FO;
+    },
+    infer_FO: (FOLD_from, FOLD_to, CELL_to) => {
+        const VV_map = DIFF.get_VV_map(FOLD_from.V, FOLD_to.V);
+        const FF_map = DIFF.get_FF_map(VV_map, FOLD_from.FV, FOLD_to.FV);
+        DIFF.overwrite_FO(FF_map, FOLD_from.FO, FOLD_to.FO, FOLD_from.Ff, FOLD_to.Ff);
+        const { GB, GA, BF, GI } = CELL_to;
+        DIFF.FO_GB_GA_BF_2_GI(FOLD_to.FO, GB, GA, BF, GI);
     }
 }
