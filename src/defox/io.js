@@ -22,6 +22,10 @@ export const IO3 = {    // INPUT-OUTPUT
         if (ext == "svg") {
             return IO3.write_svgs(svg_id, name, idx);
         }
+        if (ext == "cell_svg") {
+            return IO3.write_svgs(svg_id, name, idx, true);
+        }
+
         if (ext == "cp") {
             return IO3.write_cps(name, idx);
         }
@@ -61,7 +65,7 @@ export const IO3 = {    // INPUT-OUTPUT
 
     },
 
-    write_svgs: (svg_id, name, idx = undefined) => {
+    write_svgs: (svg_id, name, idx = undefined, to_cell = false) => {
         if (idx) {
             PRJ.restore(idx);
             IO3.write_svg(document.getElementById(svg_id), name, idx);
@@ -84,7 +88,7 @@ export const IO3 = {    // INPUT-OUTPUT
             PAGE.current_idx = j;
             const x = j * w;
             const svg_page = PAGE.draw_panel(book, w, h, x, 0, j);
-            PAGE.redraw(svg_page, PRJ.steps, undefined);
+            PAGE.redraw(svg_page, PRJ.steps, undefined, to_cell);
         }
         IO3.write_svg(book, name, 0);
     },

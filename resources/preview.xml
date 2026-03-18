@@ -105,7 +105,8 @@
     <button id="page_export"><i class="bi bi-download"></i></button>
     <select id="page_export_ext">
         <option value="png">.png</option>
-        <option value="svg">.svg</option>
+        <option value="svg">.svg</option>        
+        <option value="cell_svg">cell.svg</option>
         <option value="cp">.cp</option>
         <option value="png_steps">.png.zip</option>
     </select>

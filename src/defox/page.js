@@ -128,7 +128,7 @@ export const PAGE = {
         SVG3.reset();
         return panel;
     },
-    redraw: (svg, steps, defs = undefined) => {
+    redraw: (svg, steps, defs = undefined, to_cell = false) => {
         document.getElementById("pages").innerHTML = PAGE.get_pages(steps);
         document.getElementById("page_idx").innerHTML = PAGE.current_idx + 1;
 
@@ -157,7 +157,7 @@ export const PAGE = {
             const b = s * SVG3.MARGIN / SVG3.INI_SCALE;
             const bb = `${-b} ${-b} ${s + 2 * b} ${s + 2 * b}`;
             panel_d.setAttribute("viewBox", bb);
-            PAGE.draw_step(panel_d, steps[i], i);
+            PAGE.draw_step(panel_d, steps[i], i, to_cell);
             PAGE.draw_label(panel, i);
 
         }
@@ -178,7 +178,7 @@ export const PAGE = {
         return l;
     },
 
-    draw_step: (panel_d, step, id) => {
+    draw_step: (panel_d, step, id, to_cell) => {
         const { flip0, rotate, scale, clip, cx, cy, depth } = step.params;
 
         const T = STEP.get_T(flip0, rotate, scale, cx, cy);
@@ -186,9 +186,16 @@ export const PAGE = {
         const CELL = step.cell_d;
         const symbols = step.symbols ?? [];
 
-        if (CELL) {
-            const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
-            DRAW.draw_state(panel_d, FOLD, CELL, STATE, T, clip, id, symbols);
+        if (to_cell) {
+            if (CELL) {
+                const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
+                DRAW.draw_state(panel_d, FOLD, CELL, STATE, T, clip, id, symbols);
+            }
+            else {
+                const CELL_d = Y.FOLD_2_CELL(FOLD);
+                const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL_d);
+                DRAW.draw_state(panel_d, FOLD, CELL_d, STATE, T, clip, id, symbols);
+            }
         } else {
             DRAW_LIN.draw_state(panel_d, FOLD, step.lin.S, T, clip, depth, id, symbols);
         }
