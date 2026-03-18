@@ -80,7 +80,7 @@ export const GUI_STATE = {
         document.getElementById("state3").onwheel = (e) => {
             e.preventDefault();
             const lvl = STEP.scale - Math.sign(e.deltaY);
-            STEP.scale = Math.max(1, lvl);
+            STEP.scale = Math.max(0, lvl);
             STEP.redraw();
         }
         document.getElementById("state3").onclick = (e) => {
