@@ -225,7 +225,7 @@ export const PAGE = {
         const b = PAGE.layout.blanks;
 
         if (PAGE.current_idx == 0) {
-            if (idx + b <= r * c) {
+            if (idx + b < r * c) {
                 const c_ = (idx + b) % c;
                 const r_ = (idx + b - c_) / c;
                 return [r_, c_];
@@ -244,6 +244,7 @@ export const PAGE = {
     get_river_row_col: (idx) => {
 
     },
+
     draw_body: (svg_page) => {
         const body = SVG.append("svg", svg_page);
         body.setAttribute("xmlns", SVG.NS);
@@ -255,6 +256,7 @@ export const PAGE = {
         body.setAttribute("y", PAGE.dim.margin_y);
         return body;
     },
+
     draw_tutorial_body: () => {
         const body = SVG.clear("tutorial");
         body.setAttribute("xmlns", SVG.NS);

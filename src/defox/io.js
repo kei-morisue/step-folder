@@ -67,13 +67,26 @@ export const IO3 = {    // INPUT-OUTPUT
             IO3.write_svg(document.getElementById(svg_id), name, idx);
             return;
         }
+        const defs = document.getElementById("defs");
+        const w = PAGE.dim.width;
+        const h = PAGE.dim.height;
+        const pages = PAGE.get_pages(PRJ.steps);
+        const book = document.createElement("svg");
+        book.setAttribute("xmlns", SVG.NS);
+        book.appendChild(defs.cloneNode(true));
+        book.setAttribute("width", w * pages);
+        book.setAttribute("height", h);
+        book.setAttribute("x", 0);
+        book.setAttribute("y", 0);
+        book.setAttribute("viewBox", [0, 0, w * pages, h].join(" "));
+
         for (let j = 0; j < PAGE.get_pages(PRJ.steps); j++) {
             PAGE.current_idx = j;
-            const svg_page = document.createElement("svg");
-            const defs = document.getElementById("defs");
+            const x = j * w;
+            const svg_page = PAGE.draw_panel(book, w, h, x, 0, j);
             PAGE.redraw(svg_page, PRJ.steps, defs);
-            IO3.write_svg(svg_page, name + "_page_", j);
         }
+        IO3.write_svg(book, name, 0);
     },
     write_svg: (svg, name, idx) => {
         const img = new Blob([svg.outerHTML], {
