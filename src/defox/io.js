@@ -84,7 +84,7 @@ export const IO3 = {    // INPUT-OUTPUT
             PAGE.current_idx = j;
             const x = j * w;
             const svg_page = PAGE.draw_panel(book, w, h, x, 0, j);
-            PAGE.redraw(svg_page, PRJ.steps, defs);
+            PAGE.redraw(svg_page, PRJ.steps, undefined);
         }
         IO3.write_svg(book, name, 0);
     },
