@@ -128,15 +128,17 @@ export const PAGE = {
         SVG3.reset();
         return panel;
     },
-    redraw: (svg, steps) => {
+    redraw: (svg, steps, defs = undefined) => {
         document.getElementById("pages").innerHTML = PAGE.get_pages(steps);
         document.getElementById("page_idx").innerHTML = PAGE.current_idx + 1;
 
         svg.setAttribute("xmlns", SVG.NS);
         svg.setAttribute("style", "background: " + DRAW.color.background);
         svg.setAttribute("viewBox", [0, 0, PAGE.dim.width, PAGE.dim.height].join(" "));
-        const body = PAGE.draw_body();
-        body.appendChild(document.getElementById("defs").cloneNode(true));
+        const body = PAGE.draw_body(svg);
+        if (defs != undefined) {
+            body.appendChild(defs.cloneNode(true));
+        }
         const w = body.width.baseVal.value / PAGE.layout.cols;
         const h = body.height.baseVal.value / PAGE.layout.rows;
 
@@ -160,6 +162,7 @@ export const PAGE = {
 
         }
         SVG3.reset();
+        return svg;
     },
     draw_label: (panel, i) => {
         const t = PAGE.text.size;
@@ -241,8 +244,8 @@ export const PAGE = {
     get_river_row_col: (idx) => {
 
     },
-    draw_body: () => {
-        const body = SVG.clear("page_body");
+    draw_body: (svg_page) => {
+        const body = SVG.append("svg", svg_page);
         body.setAttribute("xmlns", SVG.NS);
         const w = PAGE.dim.width - 2 * PAGE.dim.margin_x;
         const h = PAGE.dim.height - 2 * PAGE.dim.margin_y;

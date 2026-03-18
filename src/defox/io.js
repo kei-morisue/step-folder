@@ -64,17 +64,19 @@ export const IO3 = {    // INPUT-OUTPUT
     write_svgs: (svg_id, name, idx = undefined) => {
         if (idx) {
             PRJ.restore(idx);
-            IO3.write_svg(svg_id, name, idx);
+            IO3.write_svg(document.getElementById(svg_id), name, idx);
             return;
         }
         for (let j = 0; j < PAGE.get_pages(PRJ.steps); j++) {
             PAGE.current_idx = j;
-            PRJ.redraw_page();
-            IO3.write_svg(svg_id, name + "_page_", j);
+            const svg_page = document.createElement("svg");
+            const defs = document.getElementById("defs");
+            PAGE.redraw(svg_page, PRJ.steps, defs);
+            IO3.write_svg(svg_page, name + "_page_", j);
         }
     },
-    write_svg: (svg_id, name, idx) => {
-        const img = new Blob([document.getElementById(svg_id).outerHTML], {
+    write_svg: (svg, name, idx) => {
+        const img = new Blob([svg.outerHTML], {
             type: "image/svg+xml"
         });
         const link = document.createElement("a");
@@ -89,17 +91,22 @@ export const IO3 = {    // INPUT-OUTPUT
             const width = SVG.SCALE;
             const height = SVG.SCALE;
             const dim = { width, height };
-            IO3.write_png(svg_id, name, dim, idx);
+            IO3.write_png(document.getElementById(svg_id), name, dim, idx);
             return;
         }
         for (let j = 0; j < PAGE.get_pages(PRJ.steps); j++) {
             PAGE.current_idx = j;
-            PRJ.redraw_page();
+
+            const svg_page = SVG.clear("png");
+            const defs = document.getElementById("defs");
+            const svg = PAGE.redraw(svg_page, PRJ.steps, defs);
+
             const width = PAGE.dim.width;
             const height = PAGE.dim.height;
             const dim = { width, height };
-            IO3.write_png(svg_id, name + "_page_", dim, j);
+            IO3.write_png(svg, name + "_page_", dim, j);
         }
+        document.getElementById("png").setAttribute("style", "display:none");
     },
     write_png_steps: async (name) => {
         const zip = new JSZip();
@@ -118,7 +125,6 @@ export const IO3 = {    // INPUT-OUTPUT
             .then(function (content) {
                 saveAs(content, name + ".zip");
             });
-
     },
 
     get_png_blob: (svg, dim) => {
@@ -140,13 +146,11 @@ export const IO3 = {    // INPUT-OUTPUT
         });
     },
 
-    write_png: (svg_id, name, dim, idx) => {
-        var svg = document.getElementById(svg_id);
+    write_png: (svg, name, dim, idx) => {
         var svgData = new XMLSerializer().serializeToString(svg);
         var canvas = document.createElement("canvas");
         canvas.width = dim.width;
         canvas.height = dim.height;
-
         var ctx = canvas.getContext("2d");
         var image = new Image;
         image.onload = function () {

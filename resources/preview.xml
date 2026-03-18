@@ -110,9 +110,5 @@
         <option value="png_steps">.png.zip</option>
     </select>
 </div>
-<div>
-    <svg id="page" class="page">
-        <svg id="page_body">
-        </svg>
-    </svg>
+<div id="page">
 </div>

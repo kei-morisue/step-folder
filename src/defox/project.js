@@ -1,4 +1,5 @@
 import { M } from "../flatfolder/math.js";
+import { SVG } from "../flatfolder/svg.js";
 
 
 import { DIST } from "../distortionfolder/distortion.js";
@@ -19,7 +20,9 @@ export const PRJ = {
     },
 
     redraw_page: () => {
-        PAGE.redraw(document.getElementById("page"), PRJ.steps);
+        const svg_page = SVG.append("svg", SVG.clear("page"));
+        const defs = document.getElementById("defs");
+        PAGE.redraw(svg_page, PRJ.steps, defs);
     },
 
     remove: () => {
