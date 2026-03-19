@@ -213,7 +213,6 @@ export const DRAW = {
                     .filter(([[c0, c1], _]) => c0 != c1);
                 const as = clipped.map(([_, a]) => a);
                 const creases_clipped = clipped.map(([c, _]) => c);
-                console.log(creases_clipped);
                 DRAW.draw_creases(gg, creases_clipped, as, is_flip ^ Ff[fi]);
             }
         }
