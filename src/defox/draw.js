@@ -207,8 +207,13 @@ export const DRAW = {
                 SVG.draw_polygons(cp, cells, { filter: (ci) => cis.indexOf(ci) != -1 });
                 cp.setAttribute("id", svg.id + "_cpath_" + id + "_" + fi);
                 gg.setAttribute("clip-path", "url(#" + svg.id + "_cpath_" + id + "_" + fi + ")");
-                const as = FU[fi].map((ui) => UA[ui]);
-                const creases_clipped = SEG.clip_edges(FU[fi], UV, Vf_, Vc, clip_c);
+                // Don't draw creases that got clipped to nothing
+                const clipped = FU[fi]
+                    .map((ui) => [SEG.clip_edge(ui, UV, Vf_, Vc, clip_c), UA[ui]])
+                    .filter(([[c0, c1], _]) => c0 != c1);
+                const as = clipped.map(([_, a]) => a);
+                const creases_clipped = clipped.map(([c, _]) => c);
+                console.log(creases_clipped);
                 DRAW.draw_creases(gg, creases_clipped, as, is_flip ^ Ff[fi]);
             }
         }
