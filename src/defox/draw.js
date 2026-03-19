@@ -210,7 +210,7 @@ export const DRAW = {
                 // Don't draw creases that got clipped to nothing
                 const clipped = FU[fi]
                     .map((ui) => [SEG.clip_edge(ui, UV, Vf_, Vc, clip_c), UA[ui]])
-                    .filter(([[c0, c1], _]) => c0 != c1);
+                    .filter(([[[c0x, c0y], [c1x, c1y]], _]) => c0x !== c1x || c0y !== c1y);
                 const as = clipped.map(([_, a]) => a);
                 const creases_clipped = clipped.map(([c, _]) => c);
                 DRAW.draw_creases(gg, creases_clipped, as, is_flip ^ Ff[fi]);

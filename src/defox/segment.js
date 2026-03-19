@@ -15,8 +15,12 @@ export const SEG = {
         const [q1, q2] = M.expand(EV[E], V_);
         const c = M.centroid([q1, q2]);
         const l = M.dist(q1, q2);
-        const s1 = c1 ? Math.max(0.0, 1.0 - clip * .1 / l) : 1;
-        const s2 = c2 ? Math.max(0.0, 1.0 - clip * .1 / l) : 1;
+        let s1 = c1 ? 1.0 - clip * .1 / l : 1;
+        let s2 = c2 ? 1.0 - clip * .1 / l : 1;
+        if (s1 + s2 <= 0.0) { // segment would flip
+            s1 = 0.0;
+            s2 = 0.0;
+        }
 
         const r1 = M.add(c, M.mul(M.sub(q1, c), s1));
         const r2 = M.add(c, M.mul(M.sub(q2, c), s2));

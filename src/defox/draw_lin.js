@@ -94,9 +94,12 @@ export const DRAW_LIN = {
 
             DRAW_LIN.draw_face(g, face, edges, assigns, is_pair);
 
-            const a = FU[face_idx].map((ui) => UA[ui]);
-            const creases = SEG.clip_edges(FU[face_idx], UV, V_, Vc, clip_c);
-            DRAW_LIN.draw_creases(g, creases, a, is_pair);
+            const clipped = FU[face_idx]
+                .map((ui) => [SEG.clip_edge(ui, UV, V_, Vc, clip_c), UA[ui]])
+                .filter(([[[c0x, c0y], [c1x, c1y]], _]) => c0x !== c1x || c0y !== c1y);
+            const as = clipped.map(([_, a]) => a);
+            const creases_clipped = clipped.map(([c, _]) => c);
+            DRAW_LIN.draw_creases(g, creases_clipped, as, is_pair);
 
             const ss = F_sym[i];
             if (ss) {
