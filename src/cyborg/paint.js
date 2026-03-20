@@ -91,7 +91,8 @@ export const PAINT = {
         const FOLD_infer = is_interp ? PRJ.steps[idx - 1].fold_cp : undefined;
         const segs = PAINT.segs;
         const assigns = PAINT.EA;
-        const [FOLD, CELL] = Z.segs_assings_2_FOLD_CELL(segs, assigns, FOLD_infer);
+        const limit = parseInt(document.getElementById("assign_limit").value);
+        const [FOLD, CELL] = Z.segs_assings_2_FOLD_CELL(segs, assigns, limit, FOLD_infer);
         return { FOLD, CELL };
     },
 

@@ -6,7 +6,7 @@
         <label for="bottomcolor">Bottom Color</label>
         <input type="color" id="bottomcolor" value="#53d8f9">
         <label for="bottomcolor">BG Color</label>
-        <input type="color" id="bgcolor" value="#FFF">
+        <input type="color" id="bgcolor" value="#ffffff">
     </span>
     <span id="option_width_b" class="openclose"><b>Segment Options</b></span>
     <span id="option_width" style="display: none;">

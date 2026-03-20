@@ -10,7 +10,6 @@ import { DRAW_LIN } from "./draw_lin.js";
 import { DRAW } from "./draw.js";
 import { DIFF } from "./diff.js";
 import { SEG } from "./segment.js";
-import { NOTE } from "../flatfolder/note.js";
 
 export const STEP = {
     id: 0,
@@ -61,8 +60,6 @@ export const STEP = {
         } else {
             STEP.update_serial_state(STEP.FOLD_D, STEP.LIN.S, "state3", T);
             if (STEP.LIN.cycle.length != 0) {
-                NOTE.annotate(STEP.LIN.S, "serials");
-                NOTE.annotate(STEP.LIN.cycle, "cycles");
                 document.getElementById("apply_tt").style.background = "red";
             } else {
                 document.getElementById("apply_tt").style.background = "";
@@ -87,11 +84,9 @@ export const STEP = {
     },
 
     recalculate: () => {
-        const FOLD = STEP.FOLD;
         const CELL = Y.FOLD_2_CELL(STEP.FOLD_D);
         STEP.CELL_D = CELL;
-        STEP.FOLD_D.FO = FOLD.FO;
-        // STEP.FOLD.FO = FO;
+        STEP.FOLD_D.FO = STEP.FOLD.FO;
         const T = STEP.get_transform();
         const STATE = STEP.update_state(STEP.FOLD_D, CELL, "state3", T)
         if (STATE) {
@@ -107,15 +102,15 @@ export const STEP = {
         STEP.FOLD_D = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA, FO };
 
         if (STEP.LIN.cycle.length != 0) {
-            NOTE.annotate(STEP.LIN.S, "serials");
-            NOTE.annotate(STEP.LIN.cycle, "cycles");
+
             document.getElementById("apply_tt").setAttribute("style", "background: red")
         } else {
             document.getElementById("apply_tt").setAttribute("style", "background: default");
             document.getElementById("depth").max = STEP.LIN.S.length;
         }
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
-        return STEP.update_serial_state(STEP.FOLD_D, STEP.LIN.S, "state3", STEP.get_transform());
+        const T = STEP.get_transform();
+        return STEP.update_serial_state(STEP.FOLD_D, STEP.LIN.S, "state3", T);
     },
     update_component: (CELL, el_select, el_assign) => {
         const { GB, GA } = CELL

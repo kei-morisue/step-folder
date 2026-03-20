@@ -207,9 +207,6 @@ export const GUI = {
         STEP.update_dist();
         PRJ.record(i - 1);
         PRJ.restore(i);
-        // const F_origin = PRJ.steps[i - 1].fold_cp;
-        // const F_apply = STEP.FOLD0;
-        // DIFF.infer_FO(F_origin, F_apply);
 
         STEP.update_states();
         STEP.update_dist();

@@ -79,7 +79,7 @@ export const PRJ = {
         PRJ.restore(i - 1);
         STEP.redraw();
     },
-    extrapolate: () => {
+    extrapolate: (limit) => {
         if (!confirm("All the symbols added in the following steps will be all deleted.")) { return }
         const i = PRJ.current_idx;
         if (i + 1 > PRJ.steps.length - 1) { return }
@@ -94,7 +94,7 @@ export const PRJ = {
             }));
             const assigns = EA.concat(UA);
             const doc = Y.segs_EA_2_CP(segs, assigns, 1.0);
-            const [FOLD, CELL] = Y.CP_2_FOLD_CELL(doc, FOLD_infer);
+            const [FOLD, CELL] = Y.CP_2_FOLD_CELL(doc, limit, FOLD_infer);
 
 
             PRJ.steps[j].fold_cp = FOLD;

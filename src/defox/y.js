@@ -104,7 +104,7 @@ export const Y = {     // CONVERSION
 
 
 
-    CP_2_FOLD_CELL: (doc, FOLD_infer) => {
+    CP_2_FOLD_CELL: (doc, limit, FOLD_infer) => {
         const L_add = FOLD_infer ? Y.FOLD_2_L(FOLD_infer) : undefined;
         const [V, VV, EV, EA, EF, FV, FE, UV, FU, Vc, UA] =
             IO3.cp_2_V_VV_EV_EA_EF_FV_FE(doc, L_add);
@@ -113,7 +113,10 @@ export const Y = {     // CONVERSION
         const Vf = M.normalize_points(W);
 
         const FOLD = { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA };
-        const { P, CP, SP, PP, SC, CS, SE, BF, BI, FC, CF } = Y.FOLD_2_CELL(FOLD);
+        const { P, CP, SP, PP, SC, CS, SE, FC, CF } = Y.FOLD_2_CELL(FOLD);
+        const BF = X.EF_SP_SE_CP_CF_2_BF(EF, SP, SE, CP, CF);
+        const BI = new Map();
+        for (const [i, F] of BF.entries()) { BI.set(F, i); }
 
 
         const BT = X.BF_BI_EF_SE_CF_SC_2_BT(BF, BI, EF, SE, CF, SC);
@@ -123,7 +126,7 @@ export const Y = {     // CONVERSION
         const trans_count = { all: 0, reduced: 0 };
         const BA = SOLVER.initial_assignment(BA0, BF, BT, BI, FC, CF, CC, trans_count);
         const GB = SOLVER.get_components(BI, BF, BT, BA, FC, CF, CC, trans_count);
-        const GA = SOLVER.solve(BI, BF, BT, BA.map(a => a), GB, FC, CF, CC, 20);
+        const GA = SOLVER.solve(BI, BF, BT, BA.map(a => a), GB, FC, CF, CC, limit);
 
         const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {
             return s * BigInt(A.length);
@@ -147,12 +150,7 @@ export const Y = {     // CONVERSION
         const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
         let [CF, FC] = X.EF_FV_P_SP_SE_CP_SC_2_CF_FC(EF, FV, P, SP, SE, CP, SC);
 
-
-        const BF = X.EF_SP_SE_CP_CF_2_BF(EF, SP, SE, CP, CF);
-        const BI = new Map();
-        for (const [i, F] of BF.entries()) { BI.set(F, i); }
-
-        return { P, CP, SP, PP, SC, CS, SE, BF, BI, FC, CF }
+        return { P, CP, SP, PP, SC, CS, SE, FC, CF }
     },
 
 
@@ -203,7 +201,7 @@ export const Y = {     // CONVERSION
         for (const [_, [p, q]] of L.entries()) {
             doc = doc + "1 " + p[0] + " " + p[1] + " " + q[0] + " " + q[1] + "\r\n"
         }
-        return Y.CP_2_FOLD_CELL(doc)
+        return Y.CP_2_FOLD_CELL(doc, 1)
     },
 
 

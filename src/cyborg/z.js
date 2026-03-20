@@ -6,12 +6,12 @@ import { N } from "../defox/nath.js";
 
 import { IO } from "../flatfolder/io.js";
 
-
 export const Z = {
 
-    segs_assings_2_FOLD_CELL: (segs, assigns, FOLD_infer = undefined) => {
+
+    segs_assings_2_FOLD_CELL: (segs, assigns, limit, FOLD_infer = undefined) => {
         const doc = Y.segs_EA_2_CP(segs, assigns, 1.0);
-        return Y.CP_2_FOLD_CELL(doc, FOLD_infer);
+        return Y.CP_2_FOLD_CELL(doc, limit, FOLD_infer);
     },
 
     segs_2_CP: (segs, assigns) => {
