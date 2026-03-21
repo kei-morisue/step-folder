@@ -122,13 +122,19 @@ export const Y = {     // CONVERSION
         const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI, GB, GA, GI };
         return [FOLD, CELL];
     },
-
-    FOLD_CELL_2_BF_BI_GB_GA: (FOLD, CELL, limit) => {
-        const { EF, Ff, EA } = FOLD;
+    FOLD_CELL_2_BF_BI: (FOLD, CELL) => {
+        const { EF } = FOLD;
         const { P, CP, SP, PP, SC, CS, SE, FC, CF } = CELL;
         const BF = X.EF_SP_SE_CP_CF_2_BF(EF, SP, SE, CP, CF);
         const BI = new Map();
         for (const [i, F] of BF.entries()) { BI.set(F, i); }
+        return { BF, BI };
+    },
+
+    FOLD_CELL_2_BF_BI_GB_GA: (FOLD, CELL, limit) => {
+        const { EF, Ff, EA } = FOLD;
+        const { P, CP, SP, PP, SC, CS, SE, FC, CF } = CELL;
+        const { BF, BI } = Y.FOLD_CELL_2_BF_BI(FOLD, CELL);
         const BT = X.BF_BI_EF_SE_CF_SC_2_BT(BF, BI, EF, SE, CF, SC);
         const CC = X.FC_BF_BI_BT_2_CC(FC, BF, BI, BT);
         const BA0 = SOLVER.EF_EA_Ff_BF_BI_2_BA0(EF, EA, Ff, BF, BI);
