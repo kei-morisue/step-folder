@@ -2,6 +2,7 @@ import { IO } from "../flatfolder/io.js";
 import { M } from "../flatfolder/math.js";
 import { X } from "../flatfolder/conversion.js";
 import { SVG } from "../flatfolder/svg.js";
+import { NOTE } from "../flatfolder/note.js";
 import { N } from "./nath.js";
 import { Y } from "./y.js";
 import { PRJ } from "./project.js";
@@ -207,15 +208,17 @@ export const IO3 = {    // INPUT-OUTPUT
         button.setAttribute("type", "button");
         button.click();
     },
-    load: (data) => {
-        const data_ = data;
+    load: (data_) => {
+        NOTE.log(`   - ${data_.length} steps found:`)
         if (data_[0].color) {
             DRAW.color = data_[0].color;
             document.getElementById("topcolor").value = DRAW.color.face.top;
             document.getElementById("bottomcolor").value = DRAW.color.face.bottom;
             document.getElementById("bgcolor").value = DRAW.color.background;
         }
-        for (const d of data_) {
+        NOTE.start_check("recovered steps", data_);
+        for (const [i, d] of data_.entries()) {
+            NOTE.check(i);
             if (!d.id) {
                 d.id = Date.now() + Math.floor(Math.random() * 100000);
             }
