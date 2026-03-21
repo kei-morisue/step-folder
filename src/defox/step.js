@@ -55,10 +55,10 @@ export const STEP = {
         if (STEP.CELL_D) {
             const FOLD = STEP.FOLD_D;
             const CELL = STEP.CELL_D;
-            STEP.update_state(FOLD, CELL, "state3", T);
+            STEP.update_celled_state(FOLD, CELL, "state3", T);
             document.getElementById("apply_tt").style.background = "";
         } else {
-            STEP.update_serial_state(STEP.FOLD_D, STEP.LIN.S, "state3", T);
+            STEP.update_linear_state(STEP.FOLD_D, STEP.LIN.S, "state3", T);
             if (STEP.LIN.cycle.length != 0) {
                 document.getElementById("apply_tt").style.background = "red";
             } else {
@@ -88,7 +88,7 @@ export const STEP = {
         STEP.CELL_D = CELL;
         STEP.FOLD_D.FO = STEP.FOLD.FO;
         const T = STEP.get_transform();
-        const STATE = STEP.update_state(STEP.FOLD_D, CELL, "state3", T)
+        const STATE = STEP.update_celled_state(STEP.FOLD_D, CELL, "state3", T)
         if (STATE) {
             STEP.LIN = STATE.L;
         }
@@ -110,7 +110,7 @@ export const STEP = {
         }
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
         const T = STEP.get_transform();
-        return STEP.update_serial_state(STEP.FOLD_D, STEP.LIN.S, "state3", T);
+        return STEP.update_linear_state(STEP.FOLD_D, STEP.LIN.S, "state3", T);
     },
     update_component: (CELL, el_select, el_assign) => {
         const { GB, GA } = CELL
@@ -129,7 +129,7 @@ export const STEP = {
     update_states: () => {
         const T = STEP.get_transform();
         STEP.SYMBOLS = [];
-        STEP.STATE0 = STEP.update_state(STEP.FOLD0, STEP.CELL0, "state0", T);
+        STEP.STATE0 = STEP.update_celled_state(STEP.FOLD0, STEP.CELL0, "state0", T);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
         if (STEP.FOLD1) {
             [STEP.FOLD, STEP.LIN] = DIFF.diff(STEP.FOLD0, STEP.FOLD1, STEP.STATE0.L);
@@ -140,7 +140,7 @@ export const STEP = {
         DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"));
     },
 
-    update_state: (FOLD, CELL, svg_state, T) => {
+    update_celled_state: (FOLD, CELL, svg_state, T) => {
         if (!FOLD) {
             return;
         }
@@ -148,7 +148,7 @@ export const STEP = {
         DRAW.draw_state(SVG.clear(svg_state), FOLD, CELL, STATE, T, SEG.clip, STEP.id, STEP.SYMBOLS);
         return STATE
     },
-    update_serial_state: (FOLD, S, svg_state, T) => {
+    update_linear_state: (FOLD, S, svg_state, T) => {
         if (!FOLD) {
             return;
         }

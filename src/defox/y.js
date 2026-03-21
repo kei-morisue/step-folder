@@ -111,35 +111,37 @@ export const Y = {     // CONVERSION
         if (V == undefined) { return; }
         const [W, Ff] = Y.V_FV_EV_EA_FU_UV_2_Vf_Ff(V, FV, EV, EA, FU, UV);
         const Vf = M.normalize_points(W);
-
         const FOLD = { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA };
-        const { P, CP, SP, PP, SC, CS, SE, FC, CF } = Y.FOLD_2_CELL(FOLD);
+        const CELL_ = Y.FOLD_2_CELL(FOLD);
+        const B = Y.FOLD_CELL_2_BF_BI_GB_GA(FOLD, CELL_, limit);
+        if (B == undefined) { return [undefined, undefined]; }
+        const { BF, BI, GB, GA } = B;
+        const GI = GB.map(() => 0);
+        FOLD.FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff);
+        const { P, CP, SP, PP, SC, CS, SE, FC, CF } = CELL_;
+        const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI, GB, GA, GI };
+        return [FOLD, CELL];
+    },
+
+    FOLD_CELL_2_BF_BI_GB_GA: (FOLD, CELL, limit) => {
+        const { EF, Ff, EA } = FOLD;
+        const { P, CP, SP, PP, SC, CS, SE, FC, CF } = CELL;
         const BF = X.EF_SP_SE_CP_CF_2_BF(EF, SP, SE, CP, CF);
         const BI = new Map();
         for (const [i, F] of BF.entries()) { BI.set(F, i); }
-
-
         const BT = X.BF_BI_EF_SE_CF_SC_2_BT(BF, BI, EF, SE, CF, SC);
-
         const CC = X.FC_BF_BI_BT_2_CC(FC, BF, BI, BT);
         const BA0 = SOLVER.EF_EA_Ff_BF_BI_2_BA0(EF, EA, Ff, BF, BI);
         const trans_count = { all: 0, reduced: 0 };
         const BA = SOLVER.initial_assignment(BA0, BF, BT, BI, FC, CF, CC, trans_count);
         const GB = SOLVER.get_components(BI, BF, BT, BA, FC, CF, CC, trans_count);
         const GA = SOLVER.solve(BI, BF, BT, BA.map(a => a), GB, FC, CF, CC, limit);
-
         const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {
             return s * BigInt(A.length);
         }, BigInt(1));
+        if (n == 0) { return undefined; }
 
-        const GI = GB.map(() => 0);
-        if (n > 0) {
-            FOLD.FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff);
-        }
-        else { return [undefined, undefined]; }
-
-        const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI, GB, GA, GI };
-        return [FOLD, CELL];
+        return { BF, BI, GB, GA };
     },
 
     FOLD_2_CELL: (FOLD) => {
