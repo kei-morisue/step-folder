@@ -222,11 +222,12 @@ export const IO3 = {    // INPUT-OUTPUT
             const { BF, BI } = Y.FOLD_CELL_2_BF_BI(d.fold_cp, d.cell_cp);
             d.cell_cp.BF = BF;
             d.cell_cp.BI = BI;
+
             d.state_cp = Y.FOLD_CELL_2_STATE(d.fold_cp, d.cell_cp);
-            const { Vf, FV, EV, EF, FE, Ff, EA, V, VV, Vc, FU, UV, UA, FO } = d.fold
+            const { Vf, FV, EV, EF, FE, Ff, EA, V, VV, Vc, FU, UV, UA } = d.fold
             PRJ.restore_params(d.params);
             const VD = DIST.FOLD_2_VD(Vf, V);
-            d.fold_d = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA, FO };
+            d.fold_d = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA };
         }
         return data_;
     },

@@ -163,13 +163,8 @@ export const DIFF = {
                 }
             }
         }
-        const FO = []
-        for (const [, [f1, f2, o]] of F0.FO.entries()) {
-            const gi = FF_map[f1][0];
-            const hi = FF_map[f2][0];
-            FO.push([gi, hi, o])
-        }
-        const FOLD = { V, Vf, EV, EA, EF, FV, FE, Ff, VV, FU, UV, Vc, UA, FO }
+
+        const FOLD = { V, Vf, EV, EA, EF, FV, FE, Ff, VV, FU, UV, Vc, UA }
         for (const [i, Fs] of FF_map.entries()) {
             if (Fs.length == 1) {
                 if (F0.Ff[i] != Ff[Fs[0]]) {

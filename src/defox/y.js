@@ -117,7 +117,6 @@ export const Y = {     // CONVERSION
         if (B == undefined) { return [undefined, undefined]; }
         const { BF, BI, GB, GA } = B;
         const GI = GB.map(() => 0);
-        FOLD.FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff);
         const { P, CP, SP, PP, SC, CS, SE, FC, CF } = CELL_;
         const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI, GB, GA, GI };
         return [FOLD, CELL];
@@ -251,9 +250,9 @@ export const Y = {     // CONVERSION
 
 
     FOLD_CELL_2_STATE: (FOLD, CELL) => {
-        const { Ff, FO } = FOLD;
-        if (FO == undefined) { return undefined }
-        const { P, CF } = CELL;
+        const { Ff } = FOLD;
+        const { P, CF, BF, GB, GA, GI } = CELL;
+        const FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff);
         const Q = P;
         const edges = FO.map(([f1, f2, o]) => {
             return M.encode(((Ff[f2] ? 1 : -1) * o >= 0) ? [f1, f2] : [f2, f1]);
