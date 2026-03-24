@@ -84,11 +84,16 @@ export const STEP = {
     },
 
     recalculate: () => {
-        const CELL = Y.FOLD_2_CELL(STEP.FOLD_D);
+        const FOLD = STEP.FOLD_D;
+        const CELL = Y.FOLD_2_CELL(FOLD);
+        CELL.BF = STEP.CELL0.BF;
+        CELL.BI = STEP.CELL0.BI;
+        CELL.GB = STEP.CELL0.GB;
+        CELL.GA = STEP.CELL0.GA;
+        CELL.GI = STEP.CELL0.GI;
         STEP.CELL_D = CELL;
-        STEP.FOLD_D.FO = STEP.FOLD.FO;
         const T = STEP.get_transform();
-        const STATE = STEP.update_celled_state(STEP.FOLD_D, CELL, "state3", T)
+        const STATE = STEP.update_celled_state(FOLD, CELL, "state3", T)
         if (STATE) {
             STEP.LIN = STATE.L;
         }
