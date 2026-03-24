@@ -211,6 +211,11 @@ export const Y = {     // CONVERSION
         return Y.CP_2_FOLD_CELL(doc, 1)
     },
 
+    FOLD_CELL_2_FO: (FOLD, CELL) => {
+        const { Ff } = FOLD;
+        const { BF, GB, GA, GI } = CELL;
+        return Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff);
+    },
 
     BF_GB_GA_GI_Ff_2_FO: (BF, GB, GA, GI, Ff) => {
 

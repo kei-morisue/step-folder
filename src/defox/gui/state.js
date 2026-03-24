@@ -62,8 +62,9 @@ export const GUI_STATE = {
                 return;
             }
             const FOLD_from = PRJ.steps[i - 1].fold_cp;
+            const CELL_from = PRJ.steps[i - 1].cell_cp;
             const FOLD_to = STEP.FOLD0;
-            DIFF.infer_FO(FOLD_from, FOLD_to, STEP.CELL0);
+            DIFF.infer_GI(FOLD_from, FOLD_to, CELL_from, STEP.CELL0);
             STEP.update_states();
             STEP.update_dist();
             STEP.redraw();
@@ -74,8 +75,9 @@ export const GUI_STATE = {
                 return;
             }
             const FOLD_from = PRJ.steps[i + 1].fold_cp;
+            const CELL_from = PRJ.steps[i + 1].cell_cp;
             const FOLD_to = STEP.FOLD0;
-            DIFF.infer_FO(FOLD_from, FOLD_to, STEP.CELL0);
+            DIFF.infer_GI(FOLD_from, FOLD_to, CELL_from, STEP.CELL0);
             STEP.update_states();
             STEP.update_dist();
             STEP.redraw();

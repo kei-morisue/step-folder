@@ -263,11 +263,14 @@ export const DIFF = {
 
         }
     },
-    infer_FO: (FOLD_from, FOLD_to, CELL_to) => {
+    infer_GI: (FOLD_from, FOLD_to, CELL_from, CELL_to) => {
         const VV_map = DIFF.get_VV_map(FOLD_from.V, FOLD_to.V);
         const FF_map = DIFF.get_FF_map(VV_map, FOLD_from.FV, FOLD_to.FV);
-        DIFF.overwrite_FO(FF_map, FOLD_from.FO, FOLD_to.FO, FOLD_from.Ff, FOLD_to.Ff);
+
+        const FO_from = Y.FOLD_CELL_2_FO(FOLD_from, CELL_from);
+        const FO_to = Y.FOLD_CELL_2_FO(FOLD_to, CELL_to);
+        DIFF.overwrite_FO(FF_map, FO_from, FO_to, FOLD_from.Ff, FOLD_to.Ff);
         const { GB, GA, BF, GI } = CELL_to;
-        DIFF.FO_GB_GA_BF_2_GI(FOLD_to.FO, GB, GA, BF, GI);
+        DIFF.FO_GB_GA_BF_2_GI(FO_to, GB, GA, BF, GI);
     }
 }
