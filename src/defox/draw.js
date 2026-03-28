@@ -163,6 +163,7 @@ export const DRAW = {
                 const [c0, c1] = SC[i];
                 const [f0, f1] = [CFD[c0], CFD[c1]];
                 for (const f of [f0, f1]) {
+                    if (!f) { continue; }
                     for (const e of FE[f]) {
                         if (SE[i].indexOf(e) >= 0) {
                             return Ff[f] ?
