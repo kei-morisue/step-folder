@@ -268,7 +268,7 @@ export const Y = {     // CONVERSION
         const Ctop = CD.map(S => S[S.length - 1]);
         const Cbottom = CD.map(S => S[0]);
 
-        return { CD, Ctop, Cbottom, L, edges };
+        return { CD, Ctop, Cbottom, L };
     },
 
     Ctop_SC_SE_EF_Ff_EA_FE_2_SD: (Ctop, SC, SE, EF, Ff, EA, FE) => {
