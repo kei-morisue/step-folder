@@ -279,13 +279,12 @@ export const DRAW = {
         P.map((p, g) => {
             const el = document.getElementById("group_text_" + g);
             el.onclick = (e) => {
-                const { GB, BF, GA, GI } = STEP.CELL0
-                const { Ff } = STEP.FOLD0
+                const { GA, GI } = STEP.CELL0
                 const a = (GI[g] + 1) % GA[g].length;
                 STEP.CELL0.GI[g] = a
-                STEP.FOLD0.FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff)
                 STEP.update_states()
                 STEP.update_dist();
+                STEP.update_component(STEP.CELL0, g, a);
             };
         });
     },

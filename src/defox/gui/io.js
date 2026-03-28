@@ -70,7 +70,8 @@ export const GUI_IO = {
             return false;
         }
         const FOLD_infer = !is_new && is_interp ? PRJ.steps[PRJ.current_idx].fold_cp : undefined;
-        const limit = parseInt(document.getElementById("assign_limit").value);
+        let limit = parseInt(document.getElementById("assign_limit").value);
+        if (limit == 0) { limit = Infinity };
         const [FOLD1, CELL1] = Y.CP_2_FOLD_CELL(doc, limit, FOLD_infer);
         if (FOLD1 == undefined) {
             alert("unfoldable Crease Pattern: " + path)

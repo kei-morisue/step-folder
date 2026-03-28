@@ -8,7 +8,6 @@ import { Y } from "../y.js";
 import { SEG } from "../segment.js";
 import { PRJ } from "../project.js";
 import { GUI } from "./gui.js";
-import { PAGE } from "../page.js";
 import { DIFF } from "../diff.js";
 import { SVG3 } from "../svg.js";
 
@@ -51,7 +50,8 @@ export const GUI_STATE = {
         document.getElementById("duplicate_forward").onclick = PRJ.duplicate;
         document.getElementById("duplicate_backward").onclick = PRJ.duplicate_back;
         document.getElementById("extrapolate").onclick = () => {
-            const limit = parseInt(document.getElementById("assign_limit").value);
+            let limit = parseInt(document.getElementById("assign_limit").value);
+            if (limit == 0) { limit = Infinity }
             PRJ.extrapolate(limit);
         }
 
@@ -111,23 +111,17 @@ export const GUI_STATE = {
         GUI.open_close("edit_render", "inline");
 
         document.getElementById("assign").onchange = (e) => {
-            const { GB, BF, GA, GI } = STEP.CELL0
-            const { Ff } = STEP.FOLD0
-
             const a = e.target.value - 1;
             const g = document.getElementById("selectG").value
 
             STEP.CELL0.GI[g] = a
-            STEP.FOLD0.FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff)
             STEP.update_states()
             STEP.update_dist();
         }
         document.getElementById("selectG").onchange = (e) => {
-            const { GA, GI } = STEP.CELL0
+            const { GI } = STEP.CELL0
             const g = e.target.value
-            document.getElementById("assign").max = GA[g].length
-            document.getElementById("assign").value = GI[g] + 1
-            document.getElementById("assigns").innerHTML = "/" + GA[g].length
+            STEP.update_component(STEP.CELL0, g, GI[g]);
         }
 
         document.getElementById("reset_tt").onclick = (e) => {

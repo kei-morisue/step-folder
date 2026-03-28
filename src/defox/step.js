@@ -69,7 +69,7 @@ export const STEP = {
         document.getElementById("state3").style.background = DRAW.color.background;
         const select = document.getElementById("selectG");
         const assign = document.getElementById("assign");
-        STEP.update_component(STEP.CELL0, select, assign);
+        STEP.reset_component(STEP.CELL0, select, assign);
     },
 
     new: () => {
@@ -77,7 +77,7 @@ export const STEP = {
         STEP.update_states();
         const select = document.getElementById("selectG");
         const assign = document.getElementById("assign");
-        STEP.update_component(STEP.CELL0, select, assign);
+        STEP.reset_component(STEP.CELL0, select, assign);
         DIST.refresh();
         SEG.refresh();
         STEP.update_dist();
@@ -117,8 +117,8 @@ export const STEP = {
         const T = STEP.get_transform();
         return STEP.update_linear_state(STEP.FOLD_D, STEP.LIN.S, "state3", T);
     },
-    update_component: (CELL, el_select, el_assign) => {
-        const { GB, GA } = CELL
+    reset_component: (CELL, el_select, el_assign) => {
+        const { GB, GA, } = CELL
         SVG.clear(el_select.id)
         el_assign.max = GA[0].length
         el_assign.value = 1;
@@ -130,6 +130,13 @@ export const STEP = {
         }
     },
 
+    update_component: (CELL, g, a) => {
+        const { GA, } = CELL;
+        document.getElementById("selectG").value = g;
+        document.getElementById("assign").max = GA[g].length;
+        document.getElementById("assign").value = a + 1;
+        document.getElementById("assigns").innerHTML = "/" + GA[g].length;
+    },
 
     update_states: () => {
         const T = STEP.get_transform();
