@@ -269,18 +269,7 @@ export const Y = {     // CONVERSION
         const Ctop = CD.map(S => S[S.length - 1]);
         const Cbottom = CD.map(S => S[0]);
 
-        const Ccolor = Ctop.map(d => {
-            if (d == undefined) { return undefined; }
-            if (Ff[d]) { return true; }
-            else { return false; }
-        });
-        const Ccolor_bottom = Cbottom.map(d => {
-            if (d == undefined) { return undefined; }
-            if (Ff[d]) { return true; }
-            else { return false; }
-        });
-
-        return { Q, CD, Ctop, Cbottom, Ccolor, Ccolor_bottom, L, edges };
+        return { Q, CD, Ctop, Cbottom, L, edges };
     },
 
     Ctop_SC_SE_EF_Ff_EA_FE_2_SD: (Ctop, SC, SE, EF, Ff, EA, FE) => {
