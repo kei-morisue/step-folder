@@ -44,6 +44,10 @@ export const PRJ = {
             PRJ.record(i);
 
             STEP.redraw();
+            const pages = PAGE.get_pages(PRJ.steps);
+            if (PAGE.current_idx + 1 > pages) {
+                PAGE.current_idx = pages - 1;
+            }
             PRJ.redraw_page();
         }
     },
