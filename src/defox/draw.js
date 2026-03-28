@@ -8,6 +8,7 @@ import { SYM } from "./symbol.js"
 import { M } from "../flatfolder/math.js";
 
 import { SVG } from "../flatfolder/svg.js";
+import { X } from "../flatfolder/conversion.js";
 
 export const DRAW = {
     uncreases: true,
@@ -127,12 +128,12 @@ export const DRAW = {
         const { Ff, EF, FE, EA, FU, UV, Vc, UA, Vf } = FOLD;
         const { P, PP, CP, CF, SP, SC, SE } = CELL;
         const { Q, Ctop, Cbottom, L, Ccolor, Ccolor_bottom } = STATE;
-        const color = is_flip ? Ccolor_bottom : Ccolor;
         const CFD = is_flip ? Cbottom : Ctop;
         const SD = Y.Ctop_SC_SE_EF_Ff_EA_FE_2_SD(CFD, SC, SE, EF, Ff, EA, FE);
         const Q_ = M.normalize_points(Q).map((v) => N.transform(T, v));
-        const cells = CP.map(V => M.expand(V, Q_));
 
+        const [RP, RF] = Y.Ctop_CP_SC_SD_P_2_RP_RF(CFD, CP, SC, SD, Q_);
+        const regions = RP.map(V => M.expand(V, Q_));
         const g_step = SVG.append("g", svg)
 
         const g_clip = SVG.append("g", g_step)
@@ -144,10 +145,10 @@ export const DRAW = {
         const fold_s_crease = SVG.append("g", g_clip, { id: svg.id + "_fold_s_crease_" + id });
         const fold_s_edge = SVG.append("g", g_clip, { id: svg.id + "_fold_s_edge_" + id });
 
-        SVG.draw_polygons(fold_c, cells, {
+        SVG.draw_polygons(fold_c, regions, {
             id: true,
-            fill: color.map(b => b ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom),
-            stroke: color.map(b => b ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom),
+            fill: RF.map(fi => Ff[fi] ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom),
+            stroke: RF.map(fi => Ff[fi] ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom),
         });
         const lines = SP.map((ps) => M.expand(ps, Q_));
         SVG.draw_segments(fold_s_crease, lines, {
@@ -189,22 +190,22 @@ export const DRAW = {
         });
 
         const Vf_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
-        const FC_map = new Map();
-        for (const [ci, fi] of CFD.entries()) {
-            const cis = FC_map.get(fi);
-            if (cis) {
-                cis.push(ci);
-                FC_map.set(fi, cis);
+        const FR_map = new Map();
+        for (const [ri, fi] of RF.entries()) {
+            const ris = FR_map.get(fi);
+            if (ris) {
+                ris.push(ri);
+                FR_map.set(fi, ris);
             }
             else {
-                FC_map.set(fi, [ci]);
+                FR_map.set(fi, [ri]);
             }
         }
-        for (const [fi, cis] of FC_map.entries()) {
+        for (const [fi, cis] of FR_map.entries()) {
             if (FU[fi].length > 0) {
                 const gg = SVG.append("g", fold_s_crease);
                 const cp = SVG.append("clipPath", g_step);
-                SVG.draw_polygons(cp, cells, { filter: (ci) => cis.indexOf(ci) != -1 });
+                SVG.draw_polygons(cp, regions, { filter: (ci) => cis.indexOf(ci) != -1 });
                 cp.setAttribute("id", svg.id + "_cpath_" + id + "_" + fi);
                 gg.setAttribute("clip-path", "url(#" + svg.id + "_cpath_" + id + "_" + fi + ")");
                 // Don't draw creases that got clipped to nothing

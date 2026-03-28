@@ -305,4 +305,68 @@ export const Y = {     // CONVERSION
         });
         return SD;
     },
+
+    Ctop_CP_SC_SD_P_2_RP_RF: (Ctop, CP, SC, SD, P) => {
+        const cn = Ctop.length;
+        const CC = Array(cn).fill(0).map(() => []);
+        for (let si = 0; si < SC.length; ++si) {
+            const C = SC[si];
+            if (C.length != 2) { continue; }
+            const d = SD[si];
+            if (SD[si][0] == "B") { continue; }
+            const [ci, cj] = C;
+            CC[ci].push(cj);
+            CC[cj].push(ci);
+        }
+        const RP = [];
+        const RF = [];
+        let ri = 0;
+        const seen = Array(cn).fill(false);
+        for (let ci = 0; ci < cn; ++ci) {
+            const fi = Ctop[ci];
+            if ((fi == undefined) || seen[ci]) { continue; }
+            seen[ci] = true;
+            const C = [ci];
+            let i = 0;
+            while (i < C.length) {
+                for (const cj of CC[C[i]]) {
+                    if (!seen[cj]) {
+                        seen[cj] = true;
+                        C.push(cj);
+                    }
+                }
+                ++i;
+            }
+            const Adj = P.map(() => new Set());
+            for (const ci of C) {
+                const P_ = CP[ci];
+                let pi = P_[P_.length - 1];
+                for (const pj of P_) {
+                    const A = Adj[pj];
+                    if (A.has(pi)) {
+                        A.delete(pi);
+                    } else {
+                        Adj[pi].add(pj);
+                    }
+                    pi = pj;
+                }
+            }
+            let start;
+            for (let i = 0; i < Adj.length; ++i) {
+                if (Adj[i].size == 1) { start = i; break; }
+            }
+            const Q = [];
+            let u = start;
+            do {
+                Q.push(u);
+                let v;
+                for (v of Adj[u]) { break; }
+                u = v;
+            } while (u != start);
+            RP.push(Q);
+            RF.push(fi);
+        }
+        return [RP, RF];
+    },
+
 }
