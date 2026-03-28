@@ -76,4 +76,18 @@ export const N = {
         const [a, b] = v;
         return N.matmul([[a * a, a * b], [a * b, b * b]], 1 / M.magsq(v));
     },
+    focus: (P, center) => {
+        const [[x_min, y_min], [x_max, y_max]] = M.bounding_box(P);
+        const c_ = [(x_max + x_min) / 2, (y_max + y_min) / 2];
+        const move = M.sub(center, c_);
+        return P.map(p => M.add(p, move));
+    },
+    is_in_frame: (P, [x, y, w, h] = [-0.05, -0.05, 1.05, 1.05]) => {
+        const [[x_min, y_min], [x_max, y_max]] = M.bounding_box(P);
+        if (x_min < x) { return false }
+        if (y_min < y) { return false }
+        if (x_max > x + w) { return false }
+        if (y_max > y + h) { return false }
+        return true;
+    }
 }

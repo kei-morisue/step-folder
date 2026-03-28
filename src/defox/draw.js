@@ -130,7 +130,7 @@ export const DRAW = {
         const { Ctop, Cbottom } = STATE;
         const CFD = is_flip ? Cbottom : Ctop;
         const SD = Y.Ctop_SC_SE_EF_Ff_EA_FE_2_SD(CFD, SC, SE, EF, Ff, EA, FE);
-        const P_ = M.normalize_points(P).map((v) => N.transform(T, v));
+        const P_ = N.focus(P, [.5, .5]).map((v) => N.transform(T, v));
 
         const [RP, RF] = Y.Ctop_CP_SC_SD_P_2_RP_RF(CFD, CP, SC, SD, P_);
         const regions = RP.map(V => M.expand(V, P_));
@@ -138,7 +138,7 @@ export const DRAW = {
 
         const g_clip = SVG.append("g", g_step)
 
-        if (Math.abs(det) > 1) {
+        if (!N.is_in_frame(P_)) {
             SVG3.draw_clip_path(g_step, g_clip, .5 * SVG.SCALE, id);
         }
         const fold_c = SVG.append("g", g_clip, { id: svg.id + "_fold_c_" + id });

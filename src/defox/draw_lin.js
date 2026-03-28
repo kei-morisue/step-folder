@@ -62,13 +62,13 @@ export const DRAW_LIN = {
             return
         }
         const { Vf, Ff, FE, EA, FV, EV, Vc, UV, FU, UA } = FOLD;
-        const V_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
+        const V_ = N.focus(Vf, [.5, .5]).map((v) => N.transform(T, v));
         const faces = FV.map(v => M.expand(v, V_));
         const S_ = is_flip ? S.toReversed() : S
 
         const g_step = SVG.append("g", svg, { id: `${svg.id}_${id}` });
         const g_clip = SVG.append("g", g_step);
-        if (Math.abs(det) > 1) {
+        if (!N.is_in_frame(V_)) {
             SVG3.draw_clip_path(g_step, g_clip, .5 * SVG.SCALE, id);
 
         }
