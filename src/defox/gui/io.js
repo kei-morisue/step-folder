@@ -121,6 +121,7 @@ export const GUI_IO = {
                 PRJ.steps = IO3.load(JSON.parse(doc));
                 PRJ.restore(PRJ.steps.length - 1);
                 STEP.redraw();
+                PAGE.current_idx = 0;
                 PRJ.redraw_page();
             };
             file_reader.readAsText(e.target.files[0]);
