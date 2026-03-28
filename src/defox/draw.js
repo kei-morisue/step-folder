@@ -138,7 +138,7 @@ export const DRAW = {
 
         const g_clip = SVG.append("g", g_step)
 
-        if (!N.is_in_frame(P_)) {
+        if (!N.is_framed(P_)) {
             SVG3.draw_clip_path(g_step, g_clip, .5 * SVG.SCALE, id);
         }
         const fold_c = SVG.append("g", g_clip, { id: svg.id + "_fold_c_" + id });

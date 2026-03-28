@@ -68,7 +68,7 @@ export const DRAW_LIN = {
 
         const g_step = SVG.append("g", svg, { id: `${svg.id}_${id}` });
         const g_clip = SVG.append("g", g_step);
-        if (!N.is_in_frame(V_)) {
+        if (!N.is_framed(V_)) {
             SVG3.draw_clip_path(g_step, g_clip, .5 * SVG.SCALE, id);
 
         }

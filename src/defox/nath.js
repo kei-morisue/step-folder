@@ -82,7 +82,7 @@ export const N = {
         const move = M.sub(center, c_);
         return P.map(p => M.add(p, move));
     },
-    is_in_frame: (P, [x, y, w, h] = [-0.05, -0.05, 1.05, 1.05]) => {
+    is_framed: (P, [x, y, w, h] = [-0.05, -0.05, 1.05, 1.05]) => {
         const [[x_min, y_min], [x_max, y_max]] = M.bounding_box(P);
         if (x_min < x) { return false }
         if (y_min < y) { return false }
