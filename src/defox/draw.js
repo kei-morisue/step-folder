@@ -127,13 +127,13 @@ export const DRAW = {
         }
         const { Ff, EF, FE, EA, FU, UV, Vc, UA, Vf } = FOLD;
         const { P, PP, CP, CF, SP, SC, SE } = CELL;
-        const { Q, Ctop, Cbottom, L, Ccolor, Ccolor_bottom } = STATE;
+        const { Ctop, Cbottom } = STATE;
         const CFD = is_flip ? Cbottom : Ctop;
         const SD = Y.Ctop_SC_SE_EF_Ff_EA_FE_2_SD(CFD, SC, SE, EF, Ff, EA, FE);
-        const Q_ = M.normalize_points(Q).map((v) => N.transform(T, v));
+        const P_ = M.normalize_points(P).map((v) => N.transform(T, v));
 
-        const [RP, RF] = Y.Ctop_CP_SC_SD_P_2_RP_RF(CFD, CP, SC, SD, Q_);
-        const regions = RP.map(V => M.expand(V, Q_));
+        const [RP, RF] = Y.Ctop_CP_SC_SD_P_2_RP_RF(CFD, CP, SC, SD, P_);
+        const regions = RP.map(V => M.expand(V, P_));
         const g_step = SVG.append("g", svg)
 
         const g_clip = SVG.append("g", g_step)
@@ -150,7 +150,7 @@ export const DRAW = {
             fill: RF.map(fi => Ff[fi] ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom),
             stroke: RF.map(fi => Ff[fi] ^ is_flip ? DRAW.color.face.top : DRAW.color.face.bottom),
         });
-        const lines = SP.map((ps) => M.expand(ps, Q_));
+        const lines = SP.map((ps) => M.expand(ps, P_));
         SVG.draw_segments(fold_s_crease, lines, {
             id: true,
             stroke: SD.map((d, i) => {

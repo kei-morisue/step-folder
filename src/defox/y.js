@@ -256,9 +256,8 @@ export const Y = {     // CONVERSION
 
     FOLD_CELL_2_STATE: (FOLD, CELL) => {
         const { Ff } = FOLD;
-        const { P, CF, BF, GB, GA, GI } = CELL;
+        const { CF, BF, GB, GA, GI } = CELL;
         const FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff);
-        const Q = P;
         const edges = FO.map(([f1, f2, o]) => {
             return M.encode(((Ff[f2] ? 1 : -1) * o >= 0) ? [f1, f2] : [f2, f1]);
         });
@@ -269,7 +268,7 @@ export const Y = {     // CONVERSION
         const Ctop = CD.map(S => S[S.length - 1]);
         const Cbottom = CD.map(S => S[0]);
 
-        return { Q, CD, Ctop, Cbottom, L, edges };
+        return { CD, Ctop, Cbottom, L, edges };
     },
 
     Ctop_SC_SE_EF_Ff_EA_FE_2_SD: (Ctop, SC, SE, EF, Ff, EA, FE) => {
