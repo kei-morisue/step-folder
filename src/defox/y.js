@@ -254,6 +254,23 @@ export const Y = {     // CONVERSION
     },
 
 
+    FOLD_Stack_2_Fvisible: (FOLD, Stack) => {
+        const { CF } = Y.FOLD_2_CELL(FOLD);
+        const Ctop = CF.map((fis) => {
+            const fis_ = fis.toSorted((fi, gi) => {
+                const si = Stack.indexOf(fi);
+                const ti = Stack.indexOf(gi);
+                return si - ti;
+            });
+            return fis_[fis_.length - 1];
+        });
+        const Fvisible = FOLD.Ff.map(() => { false });
+        for (const fi of Ctop) {
+            Fvisible[fi] = true;
+        }
+        return Fvisible;
+    },
+
     FOLD_CELL_2_STATE: (FOLD, CELL) => {
         const { Ff } = FOLD;
         const { CF, BF, GB, GA, GI } = CELL;

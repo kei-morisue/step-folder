@@ -21,10 +21,10 @@ export const IO3 = {    // INPUT-OUTPUT
             return IO3.write_png_steps(name);
         }
         if (ext == "svg") {
-            return IO3.write_svgs(svg_id, name, idx);
+            return IO3.write_svgs(name, idx, false);
         }
         if (ext == "cell_svg") {
-            return IO3.write_svgs(svg_id, name, idx, true);
+            return IO3.write_svgs(name, idx, true);
         }
 
         if (ext == "cp") {
@@ -66,13 +66,23 @@ export const IO3 = {    // INPUT-OUTPUT
 
     },
 
-    write_svgs: (svg_id, name, idx = undefined, to_cell = false) => {
+    write_svgs: (name, idx = undefined, to_cell = false) => {
+        const defs = document.getElementById("defs");
         if (idx) {
-            PRJ.restore(idx);
-            IO3.write_svg(document.getElementById(svg_id), name, idx);
+            const book = document.createElement("svg");
+            book.setAttribute("xmlns", SVG.NS);
+            book.appendChild(defs.cloneNode(true));
+            const [s, b] = [SVG.SCALE, SVG3.MARGIN]
+            book.setAttribute("width", s);
+            book.setAttribute("height", s);
+            book.setAttribute("x", 0);
+            book.setAttribute("y", 0);
+            book.setAttribute("viewBox", [-b, -b, s + 2 * b, s + 2 * b].join(" "));
+            book.appendChild(defs.cloneNode(true));
+            PAGE.draw_step(book, PRJ.steps[idx], idx, to_cell, false)
+            IO3.write_svg(book, name, idx);
             return;
         }
-        const defs = document.getElementById("defs");
         const w = PAGE.dim.width;
         const h = PAGE.dim.height;
         const pages = PAGE.get_pages(PRJ.steps);

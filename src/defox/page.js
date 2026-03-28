@@ -178,7 +178,7 @@ export const PAGE = {
         return l;
     },
 
-    draw_step: (panel_d, step, id, to_cell) => {
+    draw_step: (panel_d, step, id, to_cell, render_all = true) => {
         const { flip0, rotate, scale, clip, cx, cy, depth } = step.params;
 
         const T = STEP.get_T(flip0, rotate, scale, cx, cy);
@@ -197,7 +197,7 @@ export const PAGE = {
                 DRAW.draw_state(panel_d, FOLD, CELL_d, STATE, T, clip, id, symbols);
             }
         } else {
-            DRAW_LIN.draw_state(panel_d, FOLD, step.lin.S, T, clip, depth, id, symbols);
+            DRAW_LIN.draw_state(panel_d, FOLD, step.lin.S, T, clip, depth, id, symbols, render_all);
         }
     },
 

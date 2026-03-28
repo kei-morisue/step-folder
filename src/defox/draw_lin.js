@@ -54,17 +54,17 @@ export const DRAW_LIN = {
 
 
 
-    draw_state: (svg, FOLD, S, T, clip_c, depth, id = 0, symbols = []) => {
+    draw_state: (svg, FOLD, Stack, T, clip_c, depth, id = 0, symbols = [], render_all = true) => {
         const det = N.det(T[0]);
         const is_flip = det < 0;
-        if (!S) {
+        if (!Stack) {
             DRAW.draw_xray(FOLD, flip, svg);
             return
         }
         const { Vf, Ff, FE, EA, FV, EV, Vc, UV, FU, UA } = FOLD;
         const V_ = N.focus(Vf, [.5, .5]).map((v) => N.transform(T, v));
         const faces = FV.map(v => M.expand(v, V_));
-        const S_ = is_flip ? S.toReversed() : S
+        const Stack_ = is_flip ? Stack.toReversed() : Stack
 
         const g_step = SVG.append("g", svg, { id: `${svg.id}_${id}` });
         const g_clip = SVG.append("g", g_step);
@@ -80,28 +80,40 @@ export const DRAW_LIN = {
 
         const F_sym = FV.map((_) => { return []; });
         for (const [si, s] of symbols.entries()) {
-            const fi = S_.length - s.depth - 1;
+            const fi = Stack_.length - s.depth - 1;
             F_sym[fi].push(s);
         }
-        for (let i = 0; i < S_.length; i++) {
-            const face_idx = S_[i];
-            const par = i > S_.length - depth - 1 ? g_mask : g_clip;
-            const g = SVG.append("g", par, { id: "face_" + face_idx })
-            const face = faces[face_idx];
-            const is_pair = Ff[face_idx] ^ is_flip;
-            const edges = FE[face_idx].map((e) => M.expand(EV[e], V_));
-            const assigns = FE[face_idx].map((e) => EA[e]);
-
-            DRAW_LIN.draw_face(g, face, edges, assigns, is_pair);
-
-            const clipped = FU[face_idx]
-                .map((ui) => [SEG.clip_edge(ui, UV, V_, Vc, clip_c), UA[ui]])
-                .filter(([[[c0x, c0y], [c1x, c1y]], _]) => c0x !== c1x || c0y !== c1y);
-            const as = clipped.map(([_, a]) => a);
-            const creases_clipped = clipped.map(([c, _]) => c);
-            DRAW_LIN.draw_creases(g, creases_clipped, as, is_pair);
-
+        let Fvisible = Ff.map(() => true);
+        if (!render_all) {
+            Fvisible = Y.FOLD_Stack_2_Fvisible(FOLD, Stack_);
+        }
+        for (let i = 0; i < Stack_.length; i++) {
+            const face_idx = Stack_[i];
             const ss = F_sym[i];
+            if (!ss) {
+                if (!Fvisible[face_idx]) {
+                    continue;
+                }
+            }
+
+            const par = i > Stack_.length - depth - 1 ? g_mask : g_clip;
+            const g = SVG.append("g", par, { id: "face_" + face_idx })
+            if (Fvisible[face_idx]) {
+                const face = faces[face_idx];
+                const is_pair = Ff[face_idx] ^ is_flip;
+                const edges = FE[face_idx].map((e) => M.expand(EV[e], V_));
+                const assigns = FE[face_idx].map((e) => EA[e]);
+
+                DRAW_LIN.draw_face(g, face, edges, assigns, is_pair);
+
+                const clipped = FU[face_idx]
+                    .map((ui) => [SEG.clip_edge(ui, UV, V_, Vc, clip_c), UA[ui]])
+                    .filter(([[[c0x, c0y], [c1x, c1y]], _]) => c0x !== c1x || c0y !== c1y);
+                const as = clipped.map(([_, a]) => a);
+                const creases_clipped = clipped.map(([c, _]) => c);
+                DRAW_LIN.draw_creases(g, creases_clipped, as, is_pair);
+            }
+
             if (ss) {
                 for (const s of ss) {
                     DRAW.draw_symbol(g, s, FOLD, T);
