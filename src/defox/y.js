@@ -110,7 +110,7 @@ export const Y = {     // CONVERSION
             IO3.cp_2_V_VV_EV_EA_EF_FV_FE(doc, L_add);
         if (V == undefined) { return; }
         const [W, Ff] = Y.V_FV_EV_EA_FU_UV_2_Vf_Ff(V, FV, EV, EA, FU, UV);
-        const Vf = M.normalize_points(W);
+        const Vf = W;
         const FOLD = { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA };
         const CELL_ = Y.FOLD_2_CELL(FOLD);
         const B = Y.FOLD_CELL_2_BF_BI_GB_GA(FOLD, CELL_, limit);
