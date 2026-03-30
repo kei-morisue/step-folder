@@ -190,7 +190,7 @@ export const DRAW = {
             stroke_width: DRAW.width.edge.B,
         });
 
-        const Vf_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
+        const Vf_ = N.focus(Vf, [.5, .5]).map((v) => N.transform(T, v));
         const FR_map = new Map();
         for (const [ri, fi] of RF.entries()) {
             const ris = FR_map.get(fi);
@@ -250,7 +250,7 @@ export const DRAW = {
         const { Vf, FV } = FOLD;
         const { GB, BF, BI } = CELL
         const m = [0.5, 0.5];
-        const Q = Vf.map((v) => N.transform(T, v));
+        const Q = N.focus(Vf, [.5, .5]).map((v) => N.transform(T, v));
 
         const P = GB.map((bs, Gi) => {
             if (Gi == 0) {
