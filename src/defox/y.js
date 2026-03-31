@@ -104,14 +104,17 @@ export const Y = {     // CONVERSION
 
 
 
-    CP_2_FOLD_CELL: (doc, limit, FOLD_infer) => {
+    CP_2_FOLD: (doc, FOLD_infer) => {
         const L_add = FOLD_infer ? Y.FOLD_2_L(FOLD_infer) : undefined;
         const [V, VV, EV, EA, EF, FV, FE, UV, FU, Vc, UA] =
             IO3.cp_2_V_VV_EV_EA_EF_FV_FE(doc, L_add);
         if (V == undefined) { return; }
-        const [W, Ff] = Y.V_FV_EV_EA_FU_UV_2_Vf_Ff(V, FV, EV, EA, FU, UV);
-        const Vf = W;
-        const FOLD = { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA };
+        const [Vf, Ff] = Y.V_FV_EV_EA_FU_UV_2_Vf_Ff(V, FV, EV, EA, FU, UV);
+        return { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA };
+    },
+
+    CP_2_FOLD_CELL: (doc, limit, FOLD_infer) => {
+        const FOLD = Y.CP_2_FOLD(doc, FOLD_infer);
         const CELL_ = Y.FOLD_2_CELL(FOLD);
         const B = Y.FOLD_CELL_2_BF_BI_GB_GA(FOLD, CELL_, limit);
         if (B == undefined) { return [undefined, undefined]; }

@@ -49,11 +49,7 @@ export const GUI_STATE = {
         }
         document.getElementById("duplicate_forward").onclick = PRJ.duplicate;
         document.getElementById("duplicate_backward").onclick = PRJ.duplicate_back;
-        document.getElementById("extrapolate").onclick = () => {
-            let limit = parseInt(document.getElementById("assign_limit").value);
-            if (limit == 0) { limit = Infinity }
-            PRJ.extrapolate(limit);
-        }
+        document.getElementById("extrapolate").onclick = PRJ.extrapolate;
 
 
         document.getElementById("infer_layer_order_forward").onclick = (e) => {
