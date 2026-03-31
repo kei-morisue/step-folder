@@ -206,6 +206,9 @@ export const IO3 = {    // INPUT-OUTPUT
             data_.push(d_);
         }
         data_[0].color = DRAW.color;
+        for (const id of ["title", "title_alt", "desc0", "desc1", "desc2"]) {
+            data_[0][id] = document.getElementById(id).value;
+        }
         const json = new Blob([JSON.stringify(data_, undefined, 2)], {
             type: "application/json"
         })
@@ -226,6 +229,10 @@ export const IO3 = {    // INPUT-OUTPUT
             document.getElementById("bottomcolor").value = DRAW.color.face.bottom;
             document.getElementById("bgcolor").value = DRAW.color.background;
         }
+        for (const id of ["title", "title_alt", "desc0", "desc1", "desc2"]) {
+            document.getElementById(id).value = data_[0][id];
+        }
+
         NOTE.start_check("recovered steps", data_);
         for (const [i, d] of data_.entries()) {
             NOTE.check(i);
