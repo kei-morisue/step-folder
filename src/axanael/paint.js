@@ -12,7 +12,7 @@ import { DRAW } from "../defox/draw.js"
 
 
 import { L } from "../cyborg/lath.js"
-import { PAINT as P } from "../cyborg/paint.js"
+
 
 import { GUI } from "./gui.js"
 import { TMP } from "./template.js"
@@ -173,7 +173,7 @@ export const PAINT = {
     hilight_segment: () => {
         if (!PAINT.segment || PAINT.segment[0] < 0) { return; }
         const s = SVG.SCALE;
-        const T = P.get_T();
+        const T = STEP.get_transform();
         const [v1_, v2_] = PAINT.creases[PAINT.segment[0]];
         const v1 = N.transform(T, v1_);
         const v2 = N.transform(T, v2_);
@@ -194,7 +194,7 @@ export const PAINT = {
     hilight_vertex: (svg, v_idx) => {
         if (!v_idx) { return; }
         const s = SVG.SCALE;
-        const T = P.get_T();
+        const T = STEP.get_transform();
         const v = N.transform(T, PAINT.vertices[v_idx]);
         const seg_svg = SVG.append(
             "circle",
