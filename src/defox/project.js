@@ -57,9 +57,9 @@ export const PRJ = {
         const s = PRJ.steps[i];
         const step = {
             id: Date.now(),
-            fold_cp: s.fold_cp,
-            cell_cp: s.cell_cp,
-            params: s.params,
+            fold_cp: JSON.parse(JSON.stringify(s.fold_cp)),
+            cell_cp: JSON.parse(JSON.stringify(s.cell_cp)),
+            params: JSON.parse(JSON.stringify(s.params)),
             symbols: [],
         };
 
