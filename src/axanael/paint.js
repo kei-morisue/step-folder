@@ -173,10 +173,9 @@ export const PAINT = {
     hilight_segment: () => {
         if (!PAINT.segment || PAINT.segment[0] < 0) { return; }
         const s = SVG.SCALE;
-        const T = STEP.get_transform();
-        const [v1_, v2_] = PAINT.creases[PAINT.segment[0]];
-        const v1 = N.transform(T, v1_);
-        const v2 = N.transform(T, v2_);
+
+        const [v1, v2] = PAINT.creases[PAINT.segment[0]];
+
         SVG.clear("axanael_selection");
         const seg_svg = SVG.append(
             "line",
@@ -194,8 +193,8 @@ export const PAINT = {
     hilight_vertex: (svg, v_idx) => {
         if (!v_idx) { return; }
         const s = SVG.SCALE;
-        const T = STEP.get_transform();
-        const v = N.transform(T, PAINT.vertices[v_idx]);
+
+        const v = PAINT.vertices[v_idx];
         const seg_svg = SVG.append(
             "circle",
             svg,
@@ -220,7 +219,7 @@ export const PAINT = {
         PAINT.vertex = undefined;
         PAINT.v0 = undefined;
         PAINT.v1 = undefined;
-        const V_ = M.normalize_points(FOLD.Vf).map((v) => N.transform(T, v));
+        const V_ = N.focus(FOLD.Vf, [.5, .5]).map((v) => N.transform(T, v));
 
         const creases = FOLD.UV.map((vs) => M.expand(vs, V_));
         const edges = FOLD.EV.map((vs) => M.expand(vs, V_));
