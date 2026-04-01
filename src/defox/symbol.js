@@ -41,7 +41,7 @@ export const SYM = {
     create: (type, params, FOLD, T) => {
         const i = params.crease_index;
         const { Vf, UV, EV } = FOLD;
-        const V_ = M.normalize_points(Vf).map((v) => N.transform(T, v));
+        const V_ = N.focus(Vf, [.5, .5]).map((v) => N.transform(T, v));
 
         let s, e, v, v1, v2;
         if (i >= 0) {
