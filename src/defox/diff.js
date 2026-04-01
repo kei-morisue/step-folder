@@ -255,7 +255,7 @@ export const DIFF = {
                 orders.push(o);
             }
             const enc = M.bit_encode(orders);
-            for (const [ai, a] of GA[i]) {
+            for (const [ai, a] of GA[i].entries()) {
                 if (a == enc) {
                     GI[i] = ai;
                 }
