@@ -52,17 +52,7 @@ export const DIFF = {
         const UA_ = UL.map(ls => DIFF.diff_a(
             ls, L0, F0.EA.concat(F0.UA), F1.EA.concat(F1.UA)))
 
-        L = [];
-        for (const [ei_, a_] of UA_.entries()) {
-            if (a_ == "FF" || a_ == "F" || a_ == "MM" || a_ == "VV") {
-                continue;
-            }
-            const [pi, qi] = UV_[ei_];
-            L.push([V_[pi], V_[qi], a_]);
-        }
-
-        let [V, EV, EL,] = X.L_2_V_EV_EL(L);
-        let EA = EL.map(ls => L[ls[0]][2]);
+        let [V, EV, EA] = DIFF.trim(V_, UV_, UA_, ["UF", "B", "RM", "RV", "M", "V"]);
 
         let [VV, FV] = X.V_EV_2_VV_FV(V, EV)
         let [EF, FE] = X.EV_FV_2_EF_FE(EV, FV);
@@ -78,38 +68,20 @@ export const DIFF = {
             }
         }
 
-        const UV = [];
-        const UA = [];
-        for (const [ei_, a_] of UA_.entries()) {
-            if (a_ == "FF" || a_ == "F" || a_ == "MM" || a_ == "VV") {
-                const [pi_, qi_] = UV_[ei_];
-                const [p, q] = [V_[pi_], V_[qi_]];
-                let pi = -1;
-                for (const [vi, v] of V.entries()) {
-                    if (M.distsq(p, v) < 1e-16) {
-                        pi = vi
-                        break;
-                    }
-                }
-                if (pi < 0) {
-                    V.push(p);
-                    pi = V.length - 1;
-                }
-                let qi = -1;
-                for (const [vi, v] of V.entries()) {
-                    if (M.distsq(q, v) < 1e-16) {
-                        qi = vi
-                        break;
-                    }
-                }
-                if (qi < 0) {
-                    V.push(q);
-                    qi = V.length - 1;
-                }
-                UV.push([pi, qi]);
-                UA.push(a_);
+
+        const [V_MV, UV_MV, UA_MV] = DIFF.trim(V_, UV_, UA_, ["FF", "MM", "VV"]);
+        const UV_F = [];
+        for (const [ei, a] of UA_.entries()) {
+            if (a == "F") {
+                UV_F.push(UV_[ei]);
             }
         }
+
+
+        const UV = [];
+        const UA = [];
+        DIFF.add_segments(V, UV, UA, V_, UV_F, UV_F.map(() => "F"));
+        DIFF.add_segments(V, UV, UA, V_MV, UV_MV, UA_MV);
 
 
 
@@ -183,6 +155,61 @@ export const DIFF = {
             return M.encode([FF_map[f][0], FF_map[g][0]]);
         });
         return [FOLD, { S, cycle }];
+    },
+
+    trim: (V_, UV_, UA_, filter = []) => {
+        let L = [];
+        const as = ["UF", "B", "RM", "RV", "M", "V"].concat(filter);
+        for (const [ei, a] of UA_.entries()) {
+            if (as.indexOf(a) >= 0) {
+                const [pi, qi] = UV_[ei];
+                L.push([V_[pi], V_[qi], a]);
+            }
+        }
+
+        const [V, EV_, EL,] = X.L_2_V_EV_EL(L);
+        const EA = [];
+        const EV = [];
+        for (const [ei, ls] of EL.entries()) {
+            const a = L[ls[0]][2];
+            if (filter.indexOf(a) >= 0) {
+                EA.push(a);
+                EV.push(EV_[ei]);
+            }
+        }
+        return [V, EV, EA];
+    },
+
+    add_segments: (V, UV, UA, V_ref, UV_add, UA_add) => {
+        for (const [ei, a] of UA_add.entries()) {
+            const [pi_, qi_] = UV_add[ei];
+            const [p, q] = [V_ref[pi_], V_ref[qi_]];
+            let pi = -1;
+            for (const [vi, v] of V.entries()) {
+                if (M.distsq(p, v) < 1e-16) {
+                    pi = vi
+                    break;
+                }
+            }
+            if (pi < 0) {
+                V.push(p);
+                pi = V.length - 1;
+            }
+            let qi = -1;
+            for (const [vi, v] of V.entries()) {
+                if (M.distsq(q, v) < 1e-16) {
+                    qi = vi
+                    break;
+                }
+            }
+            if (qi < 0) {
+                V.push(q);
+                qi = V.length - 1;
+            }
+            UV.push([pi, qi]);
+            UA.push(a);
+        }
+
     },
 
     get_VV_map: (V_from, V_to) => {
