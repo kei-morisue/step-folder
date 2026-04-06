@@ -119,10 +119,14 @@ export const SYM = {
         const d = M.sub([x1, y1], [x0, y0]);
         const [dx, dy] = d;
         const n = is_clockwese ? [dy, -dx] : [-dy, dx];
-        const [x, y] = M.add(M.add([x0, y0], M.mul(d, is_sqeezed ? -.5 : .5)), M.mul(n, 0.3));
+        const [x, y] = M.add(M.add([x0, y0], M.mul(d, is_sqeezed ? -.075 : .5)), M.mul(n, is_sqeezed ? .1 : .5));
+        const [xx, yy] = M.add([x0, y0], M.mul(n, .4));
 
         const sym = document.createElementNS(SVG.NS, "path");
-        sym.setAttribute("d", `M ${x0} ${y0} S ${x} ${y}, ${x1} ${y1}`);
+        is_sqeezed ?
+            sym.setAttribute("d", `M ${x0} ${y0} C ${x} ${y}, ${xx} ${yy}, ${x1} ${y1}`) :
+            sym.setAttribute("d", `M ${x0} ${y0} S ${x} ${y}, ${x1} ${y1}`);
+        ;
         sym.setAttribute("stroke", SYM.color.arrow);
         sym.setAttribute("stroke-width", SYM.width.arrow);
         sym.setAttribute("stroke-linecap", "butt");
@@ -182,14 +186,17 @@ export const SYM = {
         const d = M.sub([x1, y1], [x0, y0]);
         const [dx, dy] = d;
         const n = is_clockwese ? [dy, -dx] : [-dy, dx];
-        const [x, y] = M.add(M.add([x0, y0], M.mul(d, is_sqeezed ? -.3 : .5)), M.mul(n, 0.3));
+        const [x, y] = M.add(M.add([x0, y0], M.mul(d, is_sqeezed ? -.3 : .5)), M.mul(n, 0.25));
 
 
-        const [x2, y2] = M.add([x0, y0], M.mul(n, 0.3));
+        const [x2, y2] = is_sqeezed ?
+            M.add([x0, y0], M.mul(n, 0.25))
+            :
+            M.add(M.mul(d, 0.125), M.add([x0, y0], M.mul(n, 0.125)));
         const dd = M.sub([x2, y2], [x1, y1]);
         const [dxx, dyy] = dd;
         const nn = is_clockwese ? [dyy, -dxx] : [-dyy, dxx];
-        const [xx, yy] = M.add(M.add([x1, y1], M.mul(dd, .5)), M.mul(nn, -0.3));
+        const [xx, yy] = M.add(M.add([x1, y1], M.mul(dd, .5)), M.mul(nn, -0.25));
 
 
         const sym = document.createElementNS(SVG.NS, "path");
