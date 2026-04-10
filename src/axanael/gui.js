@@ -80,11 +80,11 @@ export const GUI = {
 
     open: () => {
         document.getElementById("axanael").showModal();
-        GUI.initialize();
         document.getElementById("axanael_range_steps").max = PRJ.steps.length;
         document.getElementById("axanael_range_steps").value = PRJ.current_idx + 1;
         document.getElementById("axanael_steps").innerHTML = PRJ.steps.length;
         GUI.set_templates();
+        GUI.initialize();
         PAINT.type = -1;
         PAINT.redraw();
 
