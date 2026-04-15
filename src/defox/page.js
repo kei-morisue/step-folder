@@ -201,10 +201,10 @@ export const PAGE = {
         }
     },
 
-    draw_blank_step: (par_svg, step, id) => {
+    draw_blank_step: (par_svg, step, id, scaled = true) => {
         const { flip0, rotate, scale, clip, cx, cy, depth } = step.params;
 
-        const T = STEP.get_T(flip0, rotate, scale, cx, cy);
+        const T = STEP.get_T(flip0, rotate, scaled ? scale : 1, cx, cy);
         const FOLD = step.fold_cp;
         const CELL = step.cell_cp;
 
@@ -216,8 +216,8 @@ export const PAGE = {
         const body = PAGE.draw_tutorial_body();
         const b = SVG3.MARGIN;
         const s = SVG.SCALE;
-        const panel_A = PAGE.draw_panel(body, s, s, b, b, idx);
-        const panel_B = PAGE.draw_panel(body, s, s, 3 * b + s, b, idx);
+        const panel_A = PAGE.draw_panel(body, s + 2 * b, s + 2 * b, b, b, idx);
+        const panel_B = PAGE.draw_panel(body, s + 2 * b, s + 2 * b, 3 * b + s, b, idx);
         PAGE.draw_step(panel_A, step_before, idx);
         if (step_after) {
             PAGE.draw_blank_step(panel_B, step_after, idx);
@@ -225,7 +225,14 @@ export const PAGE = {
         PAGE.draw_label(body, idx);
         return body;
     },
-
+    get_nonscale_svg: (step, idx) => {
+        const body = PAGE.draw_tutorial_body(1, 1);
+        const b = SVG3.MARGIN;
+        const s = SVG.SCALE;
+        const panel = PAGE.draw_panel(body, s + 2 * b, s + 2 * b, b, b, idx);
+        PAGE.draw_blank_step(panel, step, idx, false);
+        return body;
+    },
     get_row_col: (idx) => {
         const c = PAGE.layout.cols;
         const r = PAGE.layout.rows;
@@ -264,15 +271,16 @@ export const PAGE = {
         return body;
     },
 
-    draw_tutorial_body: () => {
+    draw_tutorial_body: (r = 1, c = 2) => {
         const body = SVG.clear("tutorial");
         body.setAttribute("xmlns", SVG.NS);
         body.appendChild(document.getElementById("defs").cloneNode(true));
 
         const b = SVG3.MARGIN;
         const s = SVG.SCALE;
-        const h = s + 2 * b;
-        const w = h * 2;
+        const u = (s + 2 * b);
+        const h = u * r
+        const w = h * c;
         body.setAttribute("width", w);
         body.setAttribute("height", h);
         body.setAttribute("x", 0);

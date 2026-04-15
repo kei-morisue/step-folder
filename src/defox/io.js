@@ -20,6 +20,9 @@ export const IO3 = {    // INPUT-OUTPUT
         if (ext == "png_steps") {
             return IO3.write_png_steps(name);
         }
+        if (ext == "png_nonscale") {
+            return IO3.write_png_nonscale(name);
+        }
         if (ext == "svg") {
             return IO3.write_svgs(name, idx, false);
         }
@@ -154,7 +157,23 @@ export const IO3 = {    // INPUT-OUTPUT
                 saveAs(content, name + ".zip");
             });
     },
-
+    write_png_nonscale: async (name) => {
+        const zip = new JSZip();
+        for (const [idx, step] of PRJ.steps.entries()) {
+            const height = SVG.SCALE + 2 * SVG3.MARGIN;
+            const width = height;
+            const dim = { width, height };
+            const svg = PAGE.get_nonscale_svg(step, idx);
+            const blob = await IO3.get_png_blob(svg, dim);
+            const num = IO3.format_num(idx);
+            const file_name = `${name}_${num}.png`;
+            zip.file(file_name, blob);
+        }
+        zip.generateAsync({ type: "blob" })
+            .then(function (content) {
+                saveAs(content, name + ".zip");
+            });
+    },
     get_png_blob: (svg, dim) => {
         const svgData = new XMLSerializer().serializeToString(svg);
 

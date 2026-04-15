@@ -109,6 +109,7 @@
         <option value="cell_svg">cell.svg</option>
         <option value="cp">.cp</option>
         <option value="png_steps">.png.zip</option>
+        <option value="png_nonscale">nonscale.png.zip</option>
     </select>
 </div>
 <div id="page">
