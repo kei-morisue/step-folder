@@ -197,7 +197,12 @@ export const PAGE = {
                 DRAW.draw_state(panel_d, FOLD, CELL_d, STATE, T, clip, id, symbols);
             }
         } else {
-            DRAW_LIN.draw_state(panel_d, FOLD, step.lin.S, T, clip, depth, id, symbols, render_all);
+            if (CELL) {
+                const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
+                DRAW.draw_state(panel_d, FOLD, CELL, STATE, T, clip, id, symbols);
+            } else {
+                DRAW_LIN.draw_state(panel_d, FOLD, step.lin.S, T, clip, depth, id, symbols, render_all);
+            }
         }
     },
 
