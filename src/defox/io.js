@@ -81,7 +81,7 @@ export const IO3 = {    // INPUT-OUTPUT
             book.setAttribute("x", 0);
             book.setAttribute("y", 0);
             book.setAttribute("viewBox", [-b, -b, s + 2 * b, s + 2 * b].join(" "));
-            book.appendChild(defs.cloneNode(true));
+
             PAGE.draw_step(book, PRJ.steps[idx], idx, to_cell, false)
             IO3.write_svg(book, name, idx);
             return;
