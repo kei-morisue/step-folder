@@ -221,8 +221,12 @@ export const PAGE = {
         const body = PAGE.draw_tutorial_body();
         const b = SVG3.MARGIN;
         const s = SVG.SCALE;
-        const panel_A = PAGE.draw_panel(body, s + 2 * b, s + 2 * b, b, b, idx);
-        const panel_B = PAGE.draw_panel(body, s + 2 * b, s + 2 * b, 3 * b + s, b, idx);
+        const w = s + 2 * b;
+        const h = s + 2 * b;
+        const panel_A = PAGE.draw_panel(body, w, h, 0, 0, idx);
+        const panel_B = PAGE.draw_panel(body, w, h, w, 0, idx);
+        panel_A.setAttribute("viewBox", [-b, -b, w, h].join(" "));
+        panel_B.setAttribute("viewBox", [-b, -b, w, h].join(" "));
         PAGE.draw_step(panel_A, step_before, idx);
         if (step_after) {
             PAGE.draw_blank_step(panel_B, step_after, idx);
@@ -304,6 +308,7 @@ export const PAGE = {
         panel.setAttribute("height", h);
         panel.setAttribute("x", x);
         panel.setAttribute("y", y);
+
         return panel;
     },
 }
