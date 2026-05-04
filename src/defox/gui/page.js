@@ -20,29 +20,41 @@ export const GUI_PAGE = {
                     IO3.write("page", pj, ext);
                 };
 
-                document.getElementById("topcolor").onchange = (e) => {
-                    DRAW.color.face.top = e.target.value
-                    STEP.redraw()
-                }
                 document.getElementById("make_title").onclick = (e) => {
                     PAGE.make_title = e.target.checked;
                     PRJ.redraw_page();
-                }
-
-                document.getElementById("bottomcolor").onchange = (e) => {
-                    DRAW.color.face.bottom = e.target.value
-                    STEP.redraw()
                 }
                 document.getElementById("draw_uncreases").onclick = (e) => {
                     DRAW.uncreases = e.target.checked;
                     STEP.redraw();
                 }
 
+                document.getElementById("topcolor").onchange = (e) => {
+                    DRAW.color.face.top = e.target.value
+                    STEP.redraw()
+                }
+                document.getElementById("bottomcolor").onchange = (e) => {
+                    DRAW.color.face.bottom = e.target.value
+                    STEP.redraw()
+                }
+
                 document.getElementById("bgcolor").onchange = (e) => {
                     DRAW.color.background = e.target.value
                     STEP.update_dist()
                 }
+                document.getElementById("arrowcolor").onchange = (e) => {
+                    const c = e.target.value;
+                    SYM.color.arrow = c;
+                    const defs = document.getElementById("defs");
+                    fetch('./resources/defs.xml')
+                        .then(response => response.text())
+                        .then(xml => {
+                            const rep = xml.replaceAll("black", c)
+                            defs.innerHTML = rep;
+                        });
 
+                    STEP.update_dist()
+                }
                 document.getElementById("page_next").onclick = GUI_PAGE.next;
                 document.getElementById("page_prev").onclick = GUI_PAGE.prev;
 

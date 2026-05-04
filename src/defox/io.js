@@ -10,6 +10,7 @@ import { PAGE } from "./page.js";
 import { DIST } from "../distortionfolder/distortion.js";
 import { SVG3 } from "./svg.js";
 import { DRAW } from "./draw.js";
+import { SYM } from "./symbol.js";
 
 
 export const IO3 = {    // INPUT-OUTPUT
@@ -225,6 +226,8 @@ export const IO3 = {    // INPUT-OUTPUT
             data_.push(d_);
         }
         data_[0].color = DRAW.color;
+        data_[0].symcolor = SYM.color;
+
         for (const id of ["title", "title_alt", "desc0", "desc1", "desc2"]) {
             data_[0][id] = document.getElementById(id).value;
         }
@@ -247,6 +250,10 @@ export const IO3 = {    // INPUT-OUTPUT
             document.getElementById("topcolor").value = DRAW.color.face.top;
             document.getElementById("bottomcolor").value = DRAW.color.face.bottom;
             document.getElementById("bgcolor").value = DRAW.color.background;
+        }
+        if (data_[0].symcolor) {
+            SYM.color = data_[0].symcolor;
+            document.getElementById("arrowcolor").value = SYM.color.arrow;
         }
         for (const id of ["title", "title_alt", "desc0", "desc1", "desc2"]) {
             document.getElementById(id).value = data_[0][id];

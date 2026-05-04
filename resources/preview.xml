@@ -7,6 +7,8 @@
         <input type="color" id="bottomcolor" value="#53d8f9">
         <label for="bottomcolor">BG Color</label>
         <input type="color" id="bgcolor" value="#ffffff">
+        <label for="arrowcolor">Arrow Color</label>
+        <input type="color" id="arrowcolor" value="#000000">
     </span>
     <span id="option_width_b" class="openclose"><b>Segment Options</b></span>
     <span id="option_width" style="display: none;">
