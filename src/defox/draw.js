@@ -160,19 +160,7 @@ export const DRAW = {
                 if (d == "UF") {
                     return DRAW.color.edge["UF"];
                 }
-                const [c0, c1] = SC[i];
-                const [f0, f1] = [CFD[c0], CFD[c1]];
-                for (const f of [f0, f1]) {
-                    if (!f) { continue; }
-                    for (const e of FE[f]) {
-                        if (SE[i].indexOf(e) >= 0) {
-                            return Ff[f] ?
-                                DRAW.color.edge[DRAW.pair(d)]
-                                : DRAW.color.edge[d];
-                        }
-                    }
-                }
-                return DRAW.color.edge[d];
+                return DRAW.color.edge["RM"];
             }),
             filter: (i) => SD[i] == "UF" || SD[i] == "RM" || SD[i] == "RV",
             stroke_width: SD.map((d, i) => {
