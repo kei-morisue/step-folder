@@ -202,11 +202,11 @@ export const DRAW = {
                 FR_map.set(fi, [ri]);
             }
         }
-        for (const [fi, cis] of FR_map.entries()) {
+        for (const [fi, ris] of FR_map.entries()) {
             if (FU[fi].length > 0) {
                 const gg = SVG.append("g", fold_s_crease);
                 const cp = SVG.append("clipPath", g_step);
-                SVG.draw_polygons(cp, regions, { filter: (ci) => cis.indexOf(ci) != -1 });
+                SVG.draw_polygons(cp, regions, { filter: (ci) => ris.indexOf(ci) != -1 });
                 cp.setAttribute("id", svg.id + "_cpath_" + id + "_" + fi);
                 gg.setAttribute("clip-path", "url(#" + svg.id + "_cpath_" + id + "_" + fi + ")");
                 // Don't draw creases that got clipped to nothing

@@ -322,6 +322,9 @@ export const Y = {     // CONVERSION
             if (C.length != 2) { continue; }
             const d = SD[si];
             if (SD[si][0] == "B") { continue; }
+            if (SD[si] == "RM") { continue; }
+            if (SD[si] == "RV") { continue; }
+            if (SD[si] == "UF") { continue; }
             const [ci, cj] = C;
             CC[ci].push(cj);
             CC[cj].push(ci);
