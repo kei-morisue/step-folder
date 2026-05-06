@@ -190,7 +190,14 @@ export const PAGE = {
             }
             else {
                 const CELL_d = Y.FOLD_2_CELL(FOLD);
-                const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL_d);
+                const C = {
+                    CF: CELL_d.CF,
+                    BF: step.cell_cp.BF,
+                    GB: step.cell_cp.GB,
+                    GA: step.cell_cp.GA,
+                    GI: step.cell_cp.GI
+                }
+                const STATE = Y.FOLD_CELL_2_STATE(FOLD, C);
                 DRAW.draw_state(panel_d, FOLD, CELL_d, STATE, T, clip, id, symbols);
             }
         } else {
