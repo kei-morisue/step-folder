@@ -71,7 +71,7 @@ export const IO3 = {    // INPUT-OUTPUT
     },
 
     write_svgs: (name, idx = undefined, to_cell = false) => {
-        const defs = document.getElementById("defs");
+        const defs = document.getElementById("defs").firstElementChild;
         if (idx) {
             const book = document.createElement("svg");
             book.setAttribute("xmlns", SVG.NS);
@@ -254,6 +254,13 @@ export const IO3 = {    // INPUT-OUTPUT
         if (data_[0].symcolor) {
             SYM.color = data_[0].symcolor;
             document.getElementById("arrowcolor").value = SYM.color.arrow;
+            const defs = document.getElementById("defs");
+            fetch('./resources/defs.xml')
+                .then(response => response.text())
+                .then(xml => {
+                    const rep = xml.replaceAll("black", SYM.color.arrow)
+                    defs.innerHTML = rep;
+                });
         }
         for (const id of ["title", "title_alt", "desc0", "desc1", "desc2"]) {
             document.getElementById(id).value = data_[0][id];

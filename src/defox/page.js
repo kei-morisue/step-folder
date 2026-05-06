@@ -136,9 +136,6 @@ export const PAGE = {
         svg.setAttribute("style", "background: " + DRAW.color.background);
         svg.setAttribute("viewBox", [0, 0, PAGE.dim.width, PAGE.dim.height].join(" "));
         const body = PAGE.draw_body(svg);
-        if (defs != undefined) {
-            body.appendChild(defs.cloneNode(true));
-        }
         const w = body.width.baseVal.value / PAGE.layout.cols;
         const h = body.height.baseVal.value / PAGE.layout.rows;
 

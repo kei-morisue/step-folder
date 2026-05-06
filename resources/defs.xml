@@ -2,7 +2,7 @@
     <marker id="arrow_head_v" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10"
         orient="auto-start-reverse">
         <path d="M 1.5 0 L 10 5 L 1.5 10" width="4" stroke="black"
-        fill="transparent"/>
+        fill="none"/>
     </marker>
     <marker id="arrow_head_m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10"
         orient="auto-start-reverse">
@@ -11,7 +11,7 @@
     <marker id="arrow_head_fold_unfold" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10"
         orient="auto-start-reverse">
         <path d="M 1.5 0 L 10 5 L 1.5 10" width="4" stroke="black"
-        fill="transparent"/>
+        fill="none"/>
     </marker>
     <marker id="arrow_head_open_sink" viewBox="0 0 12 10" refX="12" refY="5" markerWidth="30" markerHeight="30"
         orient="auto-start-reverse">
@@ -24,22 +24,22 @@
     <marker id="arrow_head_flip" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10"
         orient="auto-start-reverse">
         <path d="M 1.5 0 L 10 5 L 1.5 10" width="4" stroke="black"
-        fill="transparent"/>
+        fill="none"/>
     </marker>
     <marker id="arrow_head_pleat" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10"
         orient="auto-start-reverse">
         <path d="M 1.5 0 L 10 5 L 1.5 10" width="4" stroke="black"
-        fill="transparent"/>
+        fill="none"/>
     </marker>
     <marker id="arrow_head_inside_reverse" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10"
         orient="auto-start-reverse">
         <path d="M 1.5 0 L 10 5 L 1.5 10" width="4" stroke="black"
-        fill="transparent"/>
+        fill="none"/>
     </marker>
     <marker id="arrow_head_repeat" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10"
         orient="auto-start-reverse">
         <path d="M 1.5 0 L 10 5 L 1.5 10" width="4" stroke="black"
-        fill="transparent"/>
+        fill="none"/>
     </marker>
 
 </defs>

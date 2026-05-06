@@ -21,8 +21,7 @@ export const PRJ = {
 
     redraw_page: () => {
         const svg_page = SVG.append("svg", SVG.clear("page"));
-        const defs = document.getElementById("defs");
-        PAGE.redraw(svg_page, PRJ.steps, defs);
+        PAGE.redraw(svg_page, PRJ.steps);
     },
 
     remove: () => {
