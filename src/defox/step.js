@@ -39,6 +39,12 @@ export const STEP = {
     get_zoom: (scale) => {
         return Math.pow(2, (scale - 1) / 2);
     },
+    get_scale: (zoom) => {
+        return 2 * (Math.log(zoom) / Math.LN2) + 1;
+    },
+    limit_scale: (scale) => {
+        return Math.min(10, Math.max(1, scale));
+    },
     refresh: () => {
         STEP.flip0 = false;
         STEP.rotate = 0.5;
