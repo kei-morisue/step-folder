@@ -33,8 +33,6 @@ export const GUI = {
                 const input_free = document.getElementById("cpedit_input_free");
                 const input_bisector = document.getElementById("cpedit_input_bisector");
                 const input_mirror = document.getElementById("cpedit_input_mirror");
-                const zoom_out = document.getElementById("cpedit_zoomout");
-                const zoom_in = document.getElementById("cpedit_zoomin");
                 const move = document.getElementById("cpedit_move");
                 const reset = document.getElementById("cpedit_reset");
                 const undo = document.getElementById("cpedit_undo");
@@ -113,14 +111,7 @@ export const GUI = {
                 input_angle_num.onchange = () => {
                     PAINT.bind_angle = 2 * Math.PI / input_angle_num.value;
                 }
-                zoom_in.onclick = () => {
-                    PAINT.scale = Math.min(10, PAINT.scale + 1);
-                    PAINT.redraw();
-                }
-                zoom_out.onclick = () => {
-                    PAINT.scale = Math.max(1, PAINT.scale - 1);
-                    PAINT.redraw();
-                }
+
 
                 dialog.onkeydown = GUI.key_bind;
                 GUI.set_svg(svg.id);
@@ -134,12 +125,12 @@ export const GUI = {
         }
         b_0.style["background-color"] = "darkgray";
     },
-    
+
     toggle_touch_action: () => {
         const dialog = document.getElementById("cpeditor");
         dialog.style.touchAction = (PAINT.current_mode == "move") ? "none" : "auto";
     },
-    
+
     key_bind: (e) => {
         const mv = document.getElementById("cpedit_mv");
         const input_angle = document.getElementById("cpedit_input_angle");

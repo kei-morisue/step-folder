@@ -12,9 +12,7 @@
 </span>
 <span>
     <button id="cpedit_reset" class="gryph">&#xe041;</button>
-    <button id="cpedit_zoomout" class="gryph">&#xe048;</button>
     <button id="cpedit_move" class="gryph">&#xe045;</button>
-    <button id="cpedit_zoomin" class="gryph">&#xe049;</button>
 </span>
 
 <div class="cpeditor_body">
