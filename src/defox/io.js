@@ -2,7 +2,7 @@ import { IO } from "../flatfolder/io.js";
 import { M } from "../flatfolder/math.js";
 import { X } from "../flatfolder/conversion.js";
 import { SVG } from "../flatfolder/svg.js";
-import { NOTE } from "../flatfolder/note.js";
+
 import { N } from "./nath.js";
 import { Y } from "./y.js";
 import { PRJ } from "./project.js";
@@ -18,6 +18,19 @@ export const IO3 = {
     write: async (svg_id, name, ext, idx = undefined) => {
         if (ext == "png") {
             return await IO3.write_pngs(svg_id, name, idx);
+        }
+        if (ext == "png_1p") {
+            const svg_page = SVG.clear("png");
+            const defs = document.getElementById("defs").firstElementChild;
+            svg_page.appendChild(defs.cloneNode(true));
+            const svg = PAGE.redraw(svg_page, PRJ.steps);
+            const width = PAGE.dim.width;
+            const height = PAGE.dim.height;
+            const dim = { width, height };
+            IO3.write_png(svg, name + "_page_", dim, PAGE.current_idx);
+            document.getElementById("png").setAttribute("style", "display:none");
+            SVG.clear("png");
+            return
         }
         if (ext == "png_steps") {
             return await IO3.write_png_steps(name);
