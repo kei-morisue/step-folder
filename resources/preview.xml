@@ -110,6 +110,7 @@
         <option value="png_1p">.png(1p)</option>
         <option value="svg">.svg</option>        
         <option value="cell_svg">cell.svg</option>
+        <option value="cell_svg_1p">cell.svg(1p)</option>
         <option value="cp">.cp</option>
         <option value="png_steps">.png.zip</option>
         <option value="png_nonscale">nonscale.png.zip</option>

@@ -30,7 +30,7 @@ export const IO3 = {
             IO3.write_png(svg, name + "_page_", dim, PAGE.current_idx);
             document.getElementById("png").setAttribute("style", "display:none");
             SVG.clear("png");
-            return
+            return await LOAD.report();
         }
         if (ext == "png_steps") {
             return await IO3.write_png_steps(name);
@@ -44,7 +44,20 @@ export const IO3 = {
         if (ext == "cell_svg") {
             return await IO3.write_svgs(name, idx, true);
         }
+        if (ext == "cell_svg_1p") {
+            const w = PAGE.dim.width;
+            const h = PAGE.dim.height;
 
+            const book = document.createElement("svg");
+            book.setAttribute("xmlns", SVG.NS);
+            book.appendChild(defs.cloneNode(true));
+            book.setAttribute("width", w);
+            book.setAttribute("height", h);
+            const svg_page = SVG.append("g", book);
+            PAGE.redraw(svg_page, PRJ.steps, defs, true, [0, 0]);
+            IO3.write_svg(book, name, PAGE.current_idx);
+            return await LOAD.report();
+        }
         if (ext == "cp") {
             return await IO3.write_cps(name, idx);
         }
