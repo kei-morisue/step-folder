@@ -14,11 +14,12 @@ export const ACT = {
     hilight: (e) => {
         const p_cursor = PAINT.get_pointer_loc(e);
         PAINT.segment = undefined;
-        PAINT.vertex = undefined;
+        if (PAINT.pointers.count() == 0) {
+            PAINT.vertex = undefined;
+        }
         SVG.clear(PAINT.svg_selection.id);
 
-        if (PAINT.current_mode == "move") {
-            PAINT.vertex = p_cursor;
+        if (ACT.hilight_move(e, p_cursor)) {
             return;
         }
         if (ACT.hilight_del_segs(p_cursor)) {
@@ -43,11 +44,6 @@ export const ACT = {
 
     onclick: (e) => {
         ACT.hilight(e);
-        if (PAINT.current_mode == "move") {
-            [PAINT.cx, PAINT.cy] = PAINT.vertex;
-            PAINT.redraw();
-            return;
-        }
         if (PAINT.current_mode == "del") {
             ACT.remove(e)
             return;
@@ -88,7 +84,28 @@ export const ACT = {
 
         ACT.remove(e);
     },
-
+    
+    hilight_move: (e, p_cursor) => {
+        if (PAINT.current_mode != "move") return false;
+        if (PAINT.vertex == undefined || !PAINT.pointers.has_id(e)) return true;
+        if (e.pointerType == "touch") {
+            const prev_span = PAINT.pointers.get_distance();
+            PAINT.pointers.add_point(e);
+            const new_span = PAINT.pointers.get_distance();
+            const new_middle = PAINT.get_pointer_loc_xy(PAINT.pointers.get_middle_x(), PAINT.pointers.get_middle_y());
+            const new_scale = STEP.limit_scale(STEP.get_scale(STEP.get_zoom(PAINT.scale) * new_span / prev_span));
+            const zoom_factor = STEP.get_zoom(PAINT.scale)/STEP.get_zoom(new_scale);
+            
+            PAINT.cx = zoom_factor*(PAINT.cx - new_middle[0]) + PAINT.vertex[0];
+            PAINT.cy = zoom_factor*(PAINT.cy - new_middle[1]) + PAINT.vertex[1];
+            PAINT.scale = new_scale;
+        } else {
+            PAINT.cx += PAINT.vertex[0] - p_cursor[0];
+            PAINT.cy += PAINT.vertex[1] - p_cursor[1];
+        }
+        PAINT.redraw();
+        return true;
+    },
 
     hilight_del_segs: (p_cursor) => {
         if (PAINT.current_mode == "del") {

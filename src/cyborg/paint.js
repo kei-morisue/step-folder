@@ -13,12 +13,13 @@ import { STEP } from "../defox/step.js";
 import { Z } from "./z.js";
 import { ACT } from "./action.js";
 
-
+import { Pointer } from "./pointer.js";
 
 export const PAINT = {
     current_mode: "mv",
     bind_angle: Math.PI / 8,
     input_a: "V",
+    pointers: Pointer(),
 
     V: [],
     EV: [],
@@ -98,8 +99,7 @@ export const PAINT = {
     },
 
     get_T: () => {
-        const zoom = STEP.get_zoom(PAINT.scale);
-        return STEP.get_T(false, 0.5, zoom, PAINT.cx, PAINT.cy);
+        return STEP.get_T(false, 0.5, PAINT.scale, PAINT.cx, PAINT.cy);
     },
     redraw: () => {
         const T = PAINT.get_T();
@@ -187,10 +187,14 @@ export const PAINT = {
     },
 
     get_pointer_loc: (e) => {
+        return PAINT.get_pointer_loc_xy(e.clientX, e.clientY);
+    },
+    
+    get_pointer_loc_xy: (x, y) => {
         const svg = document.getElementById("cpedit");
         var pt = svg.createSVGPoint();
-        pt.x = e.clientX;
-        pt.y = e.clientY;
+        pt.x = x;
+        pt.y = y;
         const p = pt.matrixTransform(svg.getScreenCTM().inverse());
         const w = SVG.SCALE;
         const x0 = ((p.x) / w);
@@ -272,9 +276,50 @@ export const PAINT = {
         PAINT.validate();
         PAINT.redraw();
     },
-    onmouseout: (e) => {
+    
+    onpointdown: (e) => {
+        if (PAINT.current_mode != "move") return;
+        
+        if (e.pointerType == "touch") {
+            PAINT.pointers.add_point(e);
+            switch (PAINT.pointers.count()) {
+                case 1:
+                    PAINT.vertex = undefined;
+                    break;
+                case 2:
+                    PAINT.vertex = PAINT.get_pointer_loc_xy(PAINT.pointers.get_middle_x(), PAINT.pointers.get_middle_y());
+                    break;
+                default:
+                    return;
+            }
+        } else if ((e.pointerType == "mouse" && e.button == 0) || e.pointerType != "mouse") {
+            // Expect one pointer from the other types
+            if (PAINT.pointers.count() > 0) return;
+            PAINT.vertex = PAINT.get_pointer_loc(e);
+            PAINT.pointers.add_point(e);
+            PAINT.svg.style.cursor = "move";
+        }
+    },
+    
+    onpointcancel: (e) => {
         PAINT.vertex = undefined;
         PAINT.segment = undefined;
+        PAINT.pointers.clear();
+        PAINT.svg.style.cursor = "auto";
+        PAINT.redraw();
+    },
+    
+    onwheelscroll: (e) => {
+        if (PAINT.current_mode != "move") return;
+        
+        e.preventDefault();
+        const new_scale = STEP.limit_scale(PAINT.scale + (e.deltaY * (-0.01)));
+        if (Math.abs(PAINT.scale - new_scale) <= 0.001) return;
+        const p_cursor = PAINT.get_pointer_loc(e);
+        const zoom_factor = STEP.get_zoom(PAINT.scale)/STEP.get_zoom(new_scale);
+        PAINT.cx = zoom_factor*(PAINT.cx - p_cursor[0]) + p_cursor[0];
+        PAINT.cy = zoom_factor*(PAINT.cy - p_cursor[1]) + p_cursor[1];
+        PAINT.scale = new_scale;
         PAINT.redraw();
     },
 
