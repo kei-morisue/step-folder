@@ -43,7 +43,7 @@ export const GUI = {
                 discardButton.onclick = GUI.discard;
 
                 showButton.onclick = GUI.open;
-                svg.onclick = ACT.onclick;
+                //svg.onclick = ACT.onclick;
                 svg.oncontextmenu = ACT.oncontextmenu;
                 svg.onpointerdown = PAINT.onpointdown;
                 svg.onpointermove = ACT.hilight;

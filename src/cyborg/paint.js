@@ -189,7 +189,7 @@ export const PAINT = {
     get_pointer_loc: (e) => {
         return PAINT.get_pointer_loc_xy(e.clientX, e.clientY);
     },
-    
+
     get_pointer_loc_xy: (x, y) => {
         const svg = document.getElementById("cpedit");
         var pt = svg.createSVGPoint();
@@ -276,10 +276,10 @@ export const PAINT = {
         PAINT.validate();
         PAINT.redraw();
     },
-    
+
     onpointdown: (e) => {
-        if (PAINT.current_mode != "move") return;
-        
+        if (PAINT.current_mode != "move") return ACT.onclick(e);
+
         if (e.pointerType == "touch") {
             PAINT.pointers.add_point(e);
             switch (PAINT.pointers.count()) {
@@ -300,7 +300,7 @@ export const PAINT = {
             PAINT.svg.style.cursor = "move";
         }
     },
-    
+
     onpointcancel: (e) => {
         PAINT.vertex = undefined;
         PAINT.segment = undefined;
@@ -308,17 +308,17 @@ export const PAINT = {
         PAINT.svg.style.cursor = "auto";
         PAINT.redraw();
     },
-    
+
     onwheelscroll: (e) => {
         if (PAINT.current_mode != "move") return;
-        
+
         e.preventDefault();
         const new_scale = STEP.limit_scale(PAINT.scale + (e.deltaY * (-0.01)));
         if (Math.abs(PAINT.scale - new_scale) <= 0.001) return;
         const p_cursor = PAINT.get_pointer_loc(e);
-        const zoom_factor = STEP.get_zoom(PAINT.scale)/STEP.get_zoom(new_scale);
-        PAINT.cx = zoom_factor*(PAINT.cx - p_cursor[0]) + p_cursor[0];
-        PAINT.cy = zoom_factor*(PAINT.cy - p_cursor[1]) + p_cursor[1];
+        const zoom_factor = STEP.get_zoom(PAINT.scale) / STEP.get_zoom(new_scale);
+        PAINT.cx = zoom_factor * (PAINT.cx - p_cursor[0]) + p_cursor[0];
+        PAINT.cy = zoom_factor * (PAINT.cy - p_cursor[1]) + p_cursor[1];
         PAINT.scale = new_scale;
         PAINT.redraw();
     },
