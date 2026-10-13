@@ -110,18 +110,18 @@ export const Y = {     // CONVERSION
         const [V, VV, EV, EA, EF, FV, FE, UV, FU, Vc, UA] =
             IO3.cp_2_V_VV_EV_EA_EF_FV_FE(doc, L_add);
         if (V == undefined) { return; }
-        const HF = [];
-        for (const c of hs) {
-            for (const [i, vs] of FV.entries()) {
-                if (N.is_inside(c, M.expand(vs, V))
-                ) {
-                    HF.push(i);
+        const H = [];
+        for (const h of hs) {
+            for (const [i, vs] of EV.entries()) {
+                const c = M.centroid(M.expand(vs, V));
+                if (M.distsq(h, c) < 1e-8) {
+                    H.push(i);
                     break;
                 }
             }
         }
         const [Vf, Ff] = Y.V_FV_EV_EA_FU_UV_2_Vf_Ff(V, FV, EV, EA, FU, UV);
-        return { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA, HF };
+        return { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA, H };
     },
 
     CP_2_FOLD_CELL: (doc, limit, FOLD_infer, hs) => {
@@ -154,8 +154,8 @@ export const Y = {     // CONVERSION
         const trans_count = { all: 0, reduced: 0 };
         const BA1 = SOLVER.initial_assignment(BA0, BF, BT, BI, FC, CF, CC, trans_count);
 
-        const HF = FOLD.HF ?? [];
-        const BA = SOL2.additional_assignment(HF, BA1, BF, BI, FC, CF, Ff);
+        const H = FOLD.H ?? [];
+        const BA = SOL2.additional_assignment(H, EF, BA1, BF, BI, SE, CS, FC, CF, Ff);
         const GB = SOLVER.get_components(BI, BF, BT, BA, FC, CF, CC, trans_count);
         const GA = SOLVER.solve(BI, BF, BT, BA.map(a => a), GB, FC, CF, CC, limit);
         const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {

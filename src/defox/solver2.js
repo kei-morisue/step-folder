@@ -4,10 +4,11 @@ import { N } from "./nath.js";
 
 export const SOL2 = {
 
-    additional_assignment: (HF, BA, BF, BI, FC, CF, Ff) => {
-        for (const F of HF) {
-            SOL2.align_assignment(F, BA, BF, BI, FC, CF, Ff);
+    additional_assignment: (H, EF, BA, BF, BI, SE, CS, FC, CF, Ff) => {
+        for (const E of H) {
+            SOL2.align_edge(E, EF, BA, BF, BI, SE, CS, FC, CF, Ff);
         }
+
         return BA;
     },
 
@@ -18,8 +19,7 @@ export const SOL2 = {
         return ((o == 1)) ? 2 : 1;
     },
 
-    align_assignment: (F, BA, BF, BI, FC, CF, Ff) => {
-        const cells = FC[F];
+    align_face: (F, cells, BA, BF, BI, CF, Ff) => {
         let o_ = undefined;
         const bis = [];
         for (const cell of cells) {
@@ -48,5 +48,37 @@ export const SOL2 = {
             BA[bi] = SOL2.get_assign(key, o_, F, Ff);
         }
 
+    },
+
+    align_edge: (E, EF, BA, BF, BI, SE, CS, FC, CF, Ff) => {
+        const [f1, f2] = EF[E];
+        const cells_f1 = FC[f1];
+        const cells_e = [];
+        for (const c of cells_f1) {
+            const segs = CS[c];
+            for (const seg of segs) {
+                const edges = SE[seg];
+                const i = edges.indexOf(E);
+                if (i >= 0) {
+                    cells_e.push(c);
+                    break;
+                }
+            }
+        }
+        if (f2 == undefined) {
+            SOL2.align_face(f1, cells_e, BA, BF, BI, CF, Ff);
+            return;
+        }
+        const cells_f2 = FC[f2];
+
+        const cells = [];
+        for (const c of cells_f2) {
+            if (cells_e.indexOf(c) >= 0) {
+                cells.push(c);
+            }
+        }
+        SOL2.align_face(f1, cells, BA, BF, BI, CF, Ff);
+        SOL2.align_face(f2, cells, BA, BF, BI, CF, Ff);
+        return;
     },
 }

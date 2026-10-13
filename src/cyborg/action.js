@@ -281,19 +281,30 @@ export const ACT = {
         return false;
     },
     hilight_input_h: (p_cursor) => {
-
         if (PAINT.current_mode == "h") {
-            PAINT.hilight_input(p_cursor);
+            const seg = L.find_seg(
+                p_cursor,
+                PAINT.segs,
+                PAINT.EA,
+                (idx) => {
+                    return PAINT.EA[idx] == "V" || PAINT.EA[idx] == "M" || PAINT.EA[idx] == "B"
+                });
+            PAINT.hilight_mv(seg);
             return true;
         }
         return false;
     },
 
     hilight_delete_h: (p_cursor) => {
-
         if (PAINT.current_mode == "del_h") {
-            const v = L.find_v(p_cursor, PAINT.H, PAINT.radius.bind / PAINT.scale);
-            PAINT.hilight_input(v);
+            const seg = L.find_seg(
+                p_cursor,
+                PAINT.segs,
+                PAINT.EA,
+                (idx) => {
+                    return PAINT.EA[idx] == "V" || PAINT.EA[idx] == "M" || PAINT.EA[idx] == "B"
+                });
+            PAINT.hilight_mv(seg);
             return true;
         }
         return false;
@@ -460,36 +471,28 @@ export const ACT = {
         }
         return false;
     },
-    click_input_h: (e) => {
-        if (PAINT.current_mode == "h") {
-            if (!PAINT.vertex) {
-                return true;
-            }
-            PAINT.H.push(PAINT.vertex);
-            return true;
-        }
-        return false;
-    },
 
     click_input_h: (e) => {
         if (PAINT.current_mode == "h") {
-            if (!PAINT.vertex) {
+            if (PAINT.segment < 0) {
                 return true;
             }
-            PAINT.H.push(PAINT.vertex);
+            if (PAINT.H.indexOf(PAINT.segment) >= 0) {
+                return true;
+            }
+            PAINT.H.push(PAINT.segment);
             return true;
         }
         return false;
     },
     click_delete_h: (e) => {
         if (PAINT.current_mode == "del_h") {
-            if (!PAINT.vertex) {
+            if (PAINT.segment < 0) {
                 return true;
             }
-            for (const [i, h] of PAINT.H.entries()) {
-                if (M.dist(h, PAINT.vertex) < 1e-8) {
-                    PAINT.H.splice(i, 1);
-                }
+            const idx = PAINT.H.indexOf(PAINT.segment);
+            if (idx >= 0) {
+                PAINT.H.splice(idx, 1);
             }
             return true;
         }
