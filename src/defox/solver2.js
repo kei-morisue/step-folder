@@ -15,7 +15,7 @@ export const SOL2 = {
         if (o == 0) return undefined;
         const [f1, f2] = M.decode(key);
         if (f1 == F) return o;
-        return ((o == 1 && Ff[f2]) || (o == 2 && !Ff[f2])) ? 1 : 2;
+        return ((o == 1)) ? 2 : 1;
     },
 
     align_assignment: (F, BA, BF, BI, FC, CF, Ff) => {
@@ -30,18 +30,17 @@ export const SOL2 = {
                 const bi = BI.get(key);
                 if (BA[bi] == 0) {
                     bis.push(bi);
+                    continue;
                 }
                 const o = SOL2.get_assign(key, BA[bi], F, Ff);
-                if (o != undefined) {
-                    if (o_ == undefined) {
-                        o_ = o;
-                        continue;
-                    };
-                    if (o != o_) {
-                        return;
-                    };
+                if (o_ == undefined) {
+                    o_ = o;
                     continue;
                 };
+                if (o != o_) {
+                    return;
+                };
+                continue;
             }
         }
         for (const bi of bis) {
