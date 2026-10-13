@@ -30,6 +30,8 @@
                 <button id="cpedit_to_v" style="color:blue">&#xe018;</button>
                 <button id="cpedit_to_aux" style="color:gray">&#xe01A;</button>
                 <button id="cpedit_input_a" class="cpedit_input_a">M</button>
+                <button id ="cpedit_hanchor_delete">&#xe032;</button>
+                <button id ="cpedit_hanchor">&#xe033;</button>
             </span>
         </div>
     </div>

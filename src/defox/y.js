@@ -4,6 +4,7 @@ import { SOLVER } from "../flatfolder/solver.js";
 
 import { LIN } from "../linefolder/linear.js";
 import { IO3 } from "./io.js"
+import { SOL2 } from "./solver2.js"
 import { N } from "./nath.js";
 
 
@@ -104,17 +105,27 @@ export const Y = {     // CONVERSION
 
 
 
-    CP_2_FOLD: (doc, FOLD_infer) => {
+    CP_2_FOLD: (doc, FOLD_infer, hs) => {
         const L_add = FOLD_infer ? Y.FOLD_2_L(FOLD_infer) : undefined;
         const [V, VV, EV, EA, EF, FV, FE, UV, FU, Vc, UA] =
             IO3.cp_2_V_VV_EV_EA_EF_FV_FE(doc, L_add);
         if (V == undefined) { return; }
+        const HF = [];
+        for (const c of hs) {
+            for (const [i, vs] of FV.entries()) {
+                if (N.is_inside(c, M.expand(vs, V))
+                ) {
+                    HF.push(i);
+                    break;
+                }
+            }
+        }
         const [Vf, Ff] = Y.V_FV_EV_EA_FU_UV_2_Vf_Ff(V, FV, EV, EA, FU, UV);
-        return { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA };
+        return { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA, HF };
     },
 
-    CP_2_FOLD_CELL: (doc, limit, FOLD_infer) => {
-        const FOLD = Y.CP_2_FOLD(doc, FOLD_infer);
+    CP_2_FOLD_CELL: (doc, limit, FOLD_infer, hs) => {
+        const FOLD = Y.CP_2_FOLD(doc, FOLD_infer, hs);
         const CELL_ = Y.FOLD_2_CELL(FOLD);
         const B = Y.FOLD_CELL_2_BF_BI_GB_GA(FOLD, CELL_, limit);
         if (B == undefined) { return [undefined, undefined]; }
@@ -141,7 +152,10 @@ export const Y = {     // CONVERSION
         const CC = X.FC_BF_BI_BT_2_CC(FC, BF, BI, BT);
         const BA0 = SOLVER.EF_EA_Ff_BF_BI_2_BA0(EF, EA, Ff, BF, BI);
         const trans_count = { all: 0, reduced: 0 };
-        const BA = SOLVER.initial_assignment(BA0, BF, BT, BI, FC, CF, CC, trans_count);
+        const BA1 = SOLVER.initial_assignment(BA0, BF, BT, BI, FC, CF, CC, trans_count);
+
+        const HF = FOLD.HF ?? [];
+        const BA = SOL2.additional_assignment(HF, BA1, BF, BI, FC, CF, Ff);
         const GB = SOLVER.get_components(BI, BF, BT, BA, FC, CF, CC, trans_count);
         const GA = SOLVER.solve(BI, BF, BT, BA.map(a => a), GB, FC, CF, CC, limit);
         const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {

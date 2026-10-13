@@ -22,6 +22,8 @@ export const GUI = {
                 const svg = document.getElementById("cpedit");
                 const input_angle_num = document.getElementById("cpedit_angle_num");
                 const input_a = document.getElementById("cpedit_input_a");
+                const input_h = document.getElementById("cpedit_hanchor");
+                const delete_h = document.getElementById("cpedit_hanchor_delete");
 
                 const del = document.getElementById("cpedit_delete");
                 const mv = document.getElementById("cpedit_mv");
@@ -38,7 +40,7 @@ export const GUI = {
                 const undo = document.getElementById("cpedit_undo");
                 const redo = document.getElementById("cpedit_redo");
 
-                const bg = [del, mv, input_angle, input_free, input_bisector, move, to_m, to_aux, to_v, input_mirror];
+                const bg = [del, mv, input_angle, input_free, input_bisector, move, to_m, to_aux, to_v, input_mirror, input_h, delete_h];
                 closeButton.onclick = async () => await GUI.close();
                 discardButton.onclick = GUI.discard;
 
@@ -53,54 +55,66 @@ export const GUI = {
                 svg.onwheel = PAINT.onwheelscroll;
                 input_a.onclick = GUI.toggle_input_a;
 
+
+                input_h.onclick = () => {
+                    PAINT.set_mode("h");
+                    GUI.reset_button_group(bg, input_h);
+                    GUI.toggle_touch_action();
+                }
+                delete_h.onclick = () => {
+                    PAINT.set_mode("del_h");
+                    GUI.reset_button_group(bg, delete_h);
+                    GUI.toggle_touch_action();
+                }
+
                 del.onclick = () => {
                     PAINT.set_mode("del");
-                    GUI.reset_bg(bg, del);
+                    GUI.reset_button_group(bg, del);
                     GUI.toggle_touch_action();
                 }
                 mv.onclick = () => {
                     PAINT.set_mode("mv");
-                    GUI.reset_bg(bg, mv);
+                    GUI.reset_button_group(bg, mv);
                     GUI.toggle_touch_action();
                 }
                 to_m.onclick = () => {
                     PAINT.set_mode("to_m");
-                    GUI.reset_bg(bg, to_m);
+                    GUI.reset_button_group(bg, to_m);
                     GUI.toggle_touch_action();
                 }
                 to_v.onclick = () => {
                     PAINT.set_mode("to_v");
-                    GUI.reset_bg(bg, to_v);
+                    GUI.reset_button_group(bg, to_v);
                     GUI.toggle_touch_action();
                 }
                 to_aux.onclick = () => {
                     PAINT.set_mode("to_aux");
-                    GUI.reset_bg(bg, to_aux);
+                    GUI.reset_button_group(bg, to_aux);
                     GUI.toggle_touch_action();
                 }
                 input_angle.onclick = () => {
                     PAINT.set_mode("input_angle");
-                    GUI.reset_bg(bg, input_angle);
+                    GUI.reset_button_group(bg, input_angle);
                     GUI.toggle_touch_action();
                 }
                 input_free.onclick = () => {
                     PAINT.set_mode("input_free");
-                    GUI.reset_bg(bg, input_free);
+                    GUI.reset_button_group(bg, input_free);
                     GUI.toggle_touch_action();
                 }
                 input_bisector.onclick = () => {
                     PAINT.set_mode("input_bisector");
-                    GUI.reset_bg(bg, input_bisector);
+                    GUI.reset_button_group(bg, input_bisector);
                     GUI.toggle_touch_action();
                 }
                 input_mirror.onclick = () => {
                     PAINT.set_mode("input_mirror");
-                    GUI.reset_bg(bg, input_mirror);
+                    GUI.reset_button_group(bg, input_mirror);
                     GUI.toggle_touch_action();
                 }
                 move.onclick = () => {
                     PAINT.set_mode("move");
-                    GUI.reset_bg(bg, move);
+                    GUI.reset_button_group(bg, move);
                     GUI.toggle_touch_action();
                 }
 
@@ -119,7 +133,7 @@ export const GUI = {
             });
     },
 
-    reset_bg: (bg, b_0) => {
+    reset_button_group: (bg, b_0) => {
         for (const b of bg) {
             b.style["background-color"] = "";
         }

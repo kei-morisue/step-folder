@@ -40,6 +40,13 @@ export const ACT = {
         if (ACT.hilight_input_mirror(p_cursor)) {
             return;
         };
+        if (ACT.hilight_input_h(p_cursor)) {
+            return;
+        };
+        if (ACT.hilight_delete_h(p_cursor)) {
+            return;
+        };
+
     },
 
     onclick: (e) => {
@@ -63,6 +70,13 @@ export const ACT = {
         if (ACT.click_input_mirror(e)) {
             return;
         };
+        if (ACT.click_input_h(e)) {
+            return;
+        }
+        if (ACT.click_delete_h(e)) {
+            return;
+        }
+
     },
 
 
@@ -84,7 +98,7 @@ export const ACT = {
 
         ACT.remove(e);
     },
-    
+
     hilight_move: (e, p_cursor) => {
         if (PAINT.current_mode != "move") return false;
         if (PAINT.vertex == undefined || !PAINT.pointers.has_id(e)) return true;
@@ -94,10 +108,10 @@ export const ACT = {
             const new_span = PAINT.pointers.get_distance();
             const new_middle = PAINT.get_pointer_loc_xy(PAINT.pointers.get_middle_x(), PAINT.pointers.get_middle_y());
             const new_scale = STEP.limit_scale(STEP.get_scale(STEP.get_zoom(PAINT.scale) * new_span / prev_span));
-            const zoom_factor = STEP.get_zoom(PAINT.scale)/STEP.get_zoom(new_scale);
-            
-            PAINT.cx = zoom_factor*(PAINT.cx - new_middle[0]) + PAINT.vertex[0];
-            PAINT.cy = zoom_factor*(PAINT.cy - new_middle[1]) + PAINT.vertex[1];
+            const zoom_factor = STEP.get_zoom(PAINT.scale) / STEP.get_zoom(new_scale);
+
+            PAINT.cx = zoom_factor * (PAINT.cx - new_middle[0]) + PAINT.vertex[0];
+            PAINT.cy = zoom_factor * (PAINT.cy - new_middle[1]) + PAINT.vertex[1];
             PAINT.scale = new_scale;
         } else {
             PAINT.cx += PAINT.vertex[0] - p_cursor[0];
@@ -266,6 +280,24 @@ export const ACT = {
         }
         return false;
     },
+    hilight_input_h: (p_cursor) => {
+
+        if (PAINT.current_mode == "h") {
+            PAINT.hilight_input(p_cursor);
+            return true;
+        }
+        return false;
+    },
+
+    hilight_delete_h: (p_cursor) => {
+
+        if (PAINT.current_mode == "del_h") {
+            const v = L.find_v(p_cursor, PAINT.H, PAINT.radius.bind / PAINT.scale);
+            PAINT.hilight_input(v);
+            return true;
+        }
+        return false;
+    },
     click_input_seg: (e) => {
         const m = PAINT.current_mode
         if (m == "mv" || m == "to_m"
@@ -428,6 +460,42 @@ export const ACT = {
         }
         return false;
     },
+    click_input_h: (e) => {
+        if (PAINT.current_mode == "h") {
+            if (!PAINT.vertex) {
+                return true;
+            }
+            PAINT.H.push(PAINT.vertex);
+            return true;
+        }
+        return false;
+    },
+
+    click_input_h: (e) => {
+        if (PAINT.current_mode == "h") {
+            if (!PAINT.vertex) {
+                return true;
+            }
+            PAINT.H.push(PAINT.vertex);
+            return true;
+        }
+        return false;
+    },
+    click_delete_h: (e) => {
+        if (PAINT.current_mode == "del_h") {
+            if (!PAINT.vertex) {
+                return true;
+            }
+            for (const [i, h] of PAINT.H.entries()) {
+                if (M.dist(h, PAINT.vertex) < 1e-8) {
+                    PAINT.H.splice(i, 1);
+                }
+            }
+            return true;
+        }
+        return false;
+    },
+
     context_input_free: (e, m) => {
         if (m == "input_free_2") {
             PAINT.v0 = undefined;

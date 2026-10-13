@@ -18,6 +18,7 @@ export const DRAW = {
             // M: "rgb(33, 150, 243)",
         },
         kawasaki: "rgb(6,200,200)",
+        hanchor: "rgb(100,20,200)"
     },
 
     width: {
@@ -30,6 +31,7 @@ export const DRAW = {
     },
     radius: {
         invalid: 10,
+        hanchor: 15,
     },
     pair: (d) => {
         switch (d) {
@@ -63,7 +65,23 @@ export const DRAW = {
         });
 
     },
-
+    draw_hanchors: (H, T, svg) => {
+        for (const h of H) {
+            const v_ = N.transform(T, h);
+            const [cx, cy] = M.mul(v_, SVG.SCALE);
+            const r = DRAW.radius.hanchor;
+            const c = SVG.append(
+                "circle",
+                svg,
+                {
+                    cx,
+                    cy,
+                    r,
+                    "fill": DRAW.color.hanchor,
+                    "fill-opacity": 0.5,
+                });
+        }
+    },
 
     draw_xray: (FOLD, is_flip, svg) => {
         const { FV, Vf } = FOLD
