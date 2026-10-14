@@ -103,22 +103,28 @@ export const STEP = {
     },
 
     recalculate: async () => {
-        const FOLD = STEP.FOLD_D;
-        const CELL = Y.FOLD_2_CELL(FOLD);
-        CELL.BF = STEP.CELL0.BF;
-        CELL.BI = STEP.CELL0.BI;
-        CELL.GB = STEP.CELL0.GB;
-        CELL.GA = STEP.CELL0.GA;
-        CELL.GI = STEP.CELL0.GI;
-        STEP.CELL_D = CELL;
-        await LOAD.report();
-        const T = STEP.get_transform();
-        STEP.STATE = STEP.update_celled_state(FOLD, CELL, "state3", T)
-        if (STEP.STATE) {
-            STEP.LIN = STEP.STATE.L;
-        }
-        document.getElementById("apply_tt").style.background = "";
-        await LOAD.report();
+        await LOAD.set(2, async () => {
+
+            const FOLD = STEP.FOLD_D;
+            await LOAD.status("Building the Distorted Cell");
+
+            const CELL = Y.FOLD_2_CELL(FOLD);
+            CELL.BF = STEP.CELL0.BF;
+            CELL.BI = STEP.CELL0.BI;
+            CELL.GB = STEP.CELL0.GB;
+            CELL.GA = STEP.CELL0.GA;
+            CELL.GI = STEP.CELL0.GI;
+            STEP.CELL_D = CELL;
+            await LOAD.report();
+            const T = STEP.get_transform();
+            await LOAD.status("Building the Distorted State");
+            STEP.STATE = STEP.update_celled_state(FOLD, CELL, "state3", T)
+            if (STEP.STATE) {
+                STEP.LIN = STEP.STATE.L;
+            }
+            document.getElementById("apply_tt").style.background = "";
+            await LOAD.report();
+        })
     },
 
     update_dist: () => {

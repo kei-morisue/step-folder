@@ -12,8 +12,8 @@ export const GUI_IO = {
         document.getElementById("new").onclick = (e) => {
             if (confirm("Are you sure to discard current sequence?")) {
                 const is_interp = document.getElementById("crease_interp").checked;
-                GUI_IO.import_cps(is_interp);
                 PRJ.refresh();
+                GUI_IO.import_cps(is_interp);
             }
         };
         document.getElementById("import0").onclick = () => {
@@ -63,8 +63,8 @@ export const GUI_IO = {
                 for (let i = 0; i < l; i++) {
                     const file = e.target.files[i];
                     const textContent = await readFileAsText(file);
-
-                    const res = await GUI_IO.import_cp(file.name, textContent);
+                    const is_new = PRJ.steps.length == 0;
+                    const res = await GUI_IO.import_cp(file.name, textContent, is_new, is_interp);
 
                     if (res) {
                         await LOAD.report();
@@ -89,7 +89,7 @@ export const GUI_IO = {
 
         if (is_new) {
             await LOAD.status("Building the Initial CP");
-            const [FOLD0, CELL0] = Y.FOLD_2_PAPER(FOLD1);
+            const [FOLD0, CELL0] = await Y.FOLD_2_PAPER(FOLD1);
             const step0 = { fold_cp: FOLD0, cell_cp: CELL0, id: Date.now() + Math.floor(Math.random() * 100000) };
             const step1 = { fold_cp: FOLD1, cell_cp: CELL1, id: Date.now() + Math.floor(Math.random() * 100000) };
             PRJ.steps.push(step0);

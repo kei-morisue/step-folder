@@ -150,9 +150,8 @@ export const GUI_STATE = {
 
 
         document.getElementById("apply_tt").onclick = async (e) => {
-            await LOAD.set(2, async () => {
-                await STEP.recalculate();
-            })
+            await STEP.recalculate();
+
             PRJ.record(PRJ.current_idx);
         }
         GUI_STATE.setup_range_options(

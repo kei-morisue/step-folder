@@ -220,7 +220,7 @@ export const GUI = {
             return;
         }
         dialog.close();
-        LOAD.set(3, async () => await GUI.calculate());
+        await LOAD.set(3, async () => await GUI.calculate());
     },
 
     calculate: async () => {

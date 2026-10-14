@@ -35,7 +35,7 @@ export const LOAD = {
         LOAD.STATUS = async (status) => {
             if (stat) {
                 stat.innerHTML = status ?? "UNKNOWN";
-                await new Promise(r => setTimeout(r, 0));
+                await new Promise(r => setTimeout(r, 1));
             }
         }
 

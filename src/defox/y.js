@@ -122,9 +122,49 @@ export const Y = {     // CONVERSION
             }
         }
         const [Vf, Ff] = Y.V_FV_EV_EA_FU_UV_2_Vf_Ff(V, FV, EV, EA, FU, UV);
+
+
         return { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA, H };
     },
 
+    HF_2_EV_EF_EA: () => {
+        // const HF = [0, 1, 2, 3, 4, 5];
+        const HF = [];
+
+        const EV_ = [];
+        const EF_ = [];
+        const EA_ = [];
+        for (const [i, [f1, f2]] of EF.entries()) {
+            if (f2 == undefined) {
+                if (HF.indexOf(f1) < 0) {
+                    EV_.push(EV[i]);
+                    EF_.push([f1]);
+                    EA_.push(EA[i]);
+                }
+                continue;
+            }
+            if (HF.indexOf(f1) < 0 || HF.indexOf(f2) < 0) {
+                EV_.push(EV[i]);
+                EA_.push(EA[i]);
+                if (HF.indexOf(f1) < 0 && HF.indexOf(f2) < 0) {
+                    EF_.push([f1, f2]);
+                    continue;
+                }
+                if (HF.indexOf(f1) < 0) {
+                    EF_.push([f1]);
+                    EA_[EA_.length - 1] = "B";
+                    continue;
+                }
+                if (HF.indexOf(f2) < 0) {
+                    EF_.push([f2]);
+                    EA_[EA_.length - 1] = "B";
+                    continue;
+                }
+
+            }
+
+        }
+    },
     CP_2_FOLD_CELL: async (doc, limit, FOLD_infer, hs) => {
         await LOAD.status("folding the Crease Pattern");
         const FOLD = Y.CP_2_FOLD(doc, FOLD_infer, hs);
@@ -140,7 +180,7 @@ export const Y = {     // CONVERSION
     },
     FOLD_CELL_2_BF_BI: (FOLD, CELL) => {
         const { EF } = FOLD;
-        const { P, CP, SP, PP, SC, CS, SE, FC, CF } = CELL;
+        const { CP, SP, SE, CF } = CELL;
         const BF = X.EF_SP_SE_CP_CF_2_BF(EF, SP, SE, CP, CF);
         const BI = new Map();
         for (const [i, F] of BF.entries()) { BI.set(F, i); }
@@ -149,7 +189,7 @@ export const Y = {     // CONVERSION
 
     FOLD_CELL_2_BF_BI_GB_GA: async (FOLD, CELL, limit) => {
         const { EF, Ff, EA } = FOLD;
-        const { P, CP, SP, PP, SC, CS, SE, FC, CF } = CELL;
+        const { SC, CS, SE, FC, CF } = CELL;
         await LOAD.status("building the Graph");
         const { BF, BI } = Y.FOLD_CELL_2_BF_BI(FOLD, CELL);
         const BT = X.BF_BI_EF_SE_CF_SC_2_BT(BF, BI, EF, SE, CF, SC);
@@ -175,8 +215,8 @@ export const Y = {     // CONVERSION
     },
 
     FOLD_2_CELL: (FOLD) => {
-        const { Vf, EV, EF, FV } = FOLD
-        const L = EV.map((P) => M.expand(P, Vf));
+        const { Vf, EV, EF, FV } = FOLD;
+        const L = EV.map((vs) => M.expand(vs, Vf));
         const [P, SP, SE, eps_i] = X.L_2_V_EV_EL(L);
         const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
         const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
@@ -220,7 +260,7 @@ export const Y = {     // CONVERSION
         return L.concat(L_);
     },
 
-    FOLD_2_PAPER: (FOLD) => {
+    FOLD_2_PAPER: async (FOLD) => {
         const EV = []
         for (const [i, a] of FOLD.EA.entries()) {
             if (a == "B") {
@@ -233,7 +273,7 @@ export const Y = {     // CONVERSION
         for (const [_, [p, q]] of L.entries()) {
             doc = doc + "1 " + p[0] + " " + p[1] + " " + q[0] + " " + q[1] + "\r\n"
         }
-        return Y.CP_2_FOLD_CELL(doc, 1)
+        return await Y.CP_2_FOLD_CELL(doc, 1)
     },
 
     FOLD_CELL_2_FO: (FOLD, CELL) => {
