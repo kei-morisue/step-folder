@@ -27,6 +27,7 @@ export const PAGE = {
         font: "Arial",
         weght: "bold",
         location: "Top",
+        base_number: 1,
     },
     is_river: false,
     make_title: true,
@@ -174,7 +175,7 @@ export const PAGE = {
     },
     draw_label: (panel, i, origin = [0, 0]) => {
         const t = PAGE.text.size;
-        let num = i + 1;
+        let num = i + PAGE.text.base_number;
         const loc = M.add([t, t], origin);
         if (PAGE.text.location == "Bottom") {
             loc[1] = h;

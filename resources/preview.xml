@@ -39,6 +39,10 @@
     <span id="option_text_b" class="openclose"><b>Text Options</b></span>
     <span id="option_text" style="display: none;">
         <p>
+            <label for="start_text">Start Number</label>
+            <input id="start_text" type="number" max="500" min="1" value="1" step="1">
+            <button id="start_text_reset">Reset</button>
+
             <label for="size_text">Text Size</label>
             <input id="size_text" type="number" max="500" min="20" value="100" step="1">
             <button id="size_text_reset">Reset</button>

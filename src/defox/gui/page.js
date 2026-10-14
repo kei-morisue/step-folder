@@ -91,6 +91,14 @@ export const GUI_PAGE = {
                     [100],
                     PAGE.text
                 );
+
+                PRJ.setup_number_options(
+                    ["start_text"],
+                    ["base_number"],
+                    [1],
+                    PAGE.text
+                );
+
                 PRJ.setup_number_options(
                     ["dim_r", "dim_c", "dim_b"],
                     ["rows", "cols", "blanks"],

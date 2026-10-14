@@ -111,7 +111,7 @@ export const Y = {     // CONVERSION
             IO3.cp_2_V_VV_EV_EA_EF_FV_FE(doc, L_add);
         if (V == undefined) { return; }
         const H = [];
-        for (const h of hs) {
+        for (const h of hs ?? []) {
             for (const [i, vs] of EV.entries()) {
                 const c = M.centroid(M.expand(vs, V));
                 if (M.distsq(h, c) < 1e-8) {
