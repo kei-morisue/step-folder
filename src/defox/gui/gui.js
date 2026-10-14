@@ -17,7 +17,7 @@ export const GUI = {
         CON.build();
         GUI_IO.startup();
         GUI_STATE.startup();
-        GUI_PAGE.startup();
+        await GUI_PAGE.startup();
         await GUI.build();
         PRJ.redraw_page();
     },

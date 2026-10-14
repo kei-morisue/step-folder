@@ -7,9 +7,9 @@ import { SYM } from "../symbol.js";
 import { IO3 } from "../io.js";
 
 export const GUI_PAGE = {
-    startup: () => {
+    startup: async () => {
         const preview = document.getElementById("preview");
-        fetch('./resources/preview.xml')
+        await fetch('./resources/preview.xml')
             .then(response => response.text())
             .then(xml => {
                 preview.innerHTML = xml;
