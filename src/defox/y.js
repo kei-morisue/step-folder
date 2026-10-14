@@ -127,9 +127,9 @@ export const Y = {     // CONVERSION
         return { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA, H };
     },
 
-    HF_2_EV_EF_EA: () => {
+    FOLD_HF_2_HOLD: (FOLD, HF = []) => {
+        const { Vf, EV, EF, EA, FV, Ff } = FOLD;
         // const HF = [0, 1, 2, 3, 4, 5];
-        const HF = [];
 
         const EV_ = [];
         const EF_ = [];
@@ -162,14 +162,16 @@ export const Y = {     // CONVERSION
                 }
 
             }
-
         }
+        return { Ff, Vf, FV, EV: EV_, EA: EA_, EF: EF_ };
     },
-    CP_2_FOLD_CELL: async (doc, limit, FOLD_infer, hs) => {
+    CP_2_FOLD_CELL: async (doc, limit, FOLD_infer, hs, HF) => {
         await LOAD.status("folding the Crease Pattern");
         const FOLD = Y.CP_2_FOLD(doc, FOLD_infer, hs);
-        const CELL_ = Y.FOLD_2_CELL(FOLD);
-        const B = await Y.FOLD_CELL_2_BF_BI_GB_GA(FOLD, CELL_, limit);
+        await LOAD.status("Building the Cell Graph");
+        const HOLD = Y.FOLD_HF_2_HOLD(FOLD, HF);
+        const CELL_ = Y.FOLD_2_CELL(HOLD);
+        const B = await Y.FOLD_CELL_2_BF_BI_GB_GA(HOLD, CELL_, limit);
         if (B == undefined) { return [undefined, undefined]; }
         const { BF, BI, GB, GA } = B;
         const GI = GB.map(() => 0);
