@@ -74,6 +74,7 @@ export const STEP = {
             STEP.STATE = STEP.update_celled_state(FOLD, CELL, "state3", T, STEP.STATE);
             document.getElementById("apply_tt").style.background = "";
         } else {
+            STEP.STATE = undefined;
             STEP.update_linear_state(STEP.FOLD_D, STEP.LIN.S, "state3", T);
             if (STEP.LIN.cycle.length != 0) {
                 document.getElementById("apply_tt").style.background = "red";

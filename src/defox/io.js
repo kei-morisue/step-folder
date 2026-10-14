@@ -271,7 +271,7 @@ export const IO3 = {
             async () => {
                 for (const d of data) {
                     const d_ = {};
-                    for (const key of ["id", "fold_cp", "fold", "cell_d", "params", "lin", "symbols", "catalyst"]) {
+                    for (const key of ["id", "fold_cp", "fold", "cell_d", "state_cp", "state", "params", "lin", "symbols", "catalyst"]) {
                         d_[key] = d[key];
                     }
                     d_.cell_cp = {};
@@ -325,23 +325,25 @@ export const IO3 = {
         await LOAD.set(total, async () => {
             for (const [i, d] of data_.entries()) {
                 await LOAD.status(`Loading Step ${i + 1} / ${data_.length}`);
-                IO3.load_step(i, d);
+                await IO3.load_step(i, d);
                 await LOAD.report();
             }
         });
         return data_;
     },
-    load_step: (idx, step_data) => {
+    load_step: async (idx, step_data) => {
         if (!step_data.id) {
             step_data.id = Date.now() + Math.floor(Math.random() * 100000);
         }
-        LOAD.status(`Recovering the Variables of Step ${idx}`);
+        await LOAD.status(`Recovering the Variables of Step ${idx + 1}`);
         const { BF, BI } = Y.FOLD_CELL_2_BF_BI(step_data.fold_cp, step_data.cell_cp);
         step_data.cell_cp.BF = BF;
         step_data.cell_cp.BI = BI;
+        if (!step_data.state_cp) {
+            await LOAD.status(`Recovering the State of Step ${idx + 1}`);
+            step_data.state_cp = Y.FOLD_CELL_2_STATE(step_data.fold_cp, step_data.cell_cp);
 
-        LOAD.status(`Recovering the State of Step ${idx}`);
-        step_data.state_cp = Y.FOLD_CELL_2_STATE(step_data.fold_cp, step_data.cell_cp);
+        }
 
         const { Vf, FV, EV, EF, FE, Ff, EA, V, VV, Vc, FU, UV, UA } = step_data.fold
 
@@ -350,6 +352,7 @@ export const IO3 = {
             catalyst = step_data.catalyst.Vf;
         }
         PRJ.restore_params(step_data.params);
+        await LOAD.status(`Recovering the Distortion of Step ${idx + 1}`);
         const VD = DIST.FOLD_2_VD(Vf, catalyst);
         step_data.fold_d = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA };
     },
