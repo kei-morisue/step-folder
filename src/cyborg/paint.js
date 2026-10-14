@@ -90,14 +90,14 @@ export const PAINT = {
         PAINT.record();
     },
 
-    get_FOLD_CELL: (idx, is_interp) => {
+    get_FOLD_CELL: async (idx, is_interp) => {
         const FOLD_infer = is_interp ? PRJ.steps[idx - 1].fold_cp : undefined;
         const segs = PAINT.segs;
         const assigns = PAINT.EA;
         const hs = PAINT.H;
         let limit = parseInt(document.getElementById("assign_limit").value);
         if (limit == 0) { limit = Infinity }
-        const [FOLD, CELL] = Z.segs_assings_2_FOLD_CELL(segs, assigns, limit, FOLD_infer, hs);
+        const [FOLD, CELL] = await Z.segs_assings_2_FOLD_CELL(segs, assigns, limit, FOLD_infer, hs);
         return { FOLD, CELL };
     },
 

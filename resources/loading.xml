@@ -10,6 +10,10 @@
     </b>
 </div>
 <div>
+    <b>Status: </b>
+    <b id="status"></b>
+</div>
+<div>
     <b>Remains: </b>
     <b id="remains"></b>
 </div>

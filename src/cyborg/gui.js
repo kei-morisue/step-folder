@@ -226,11 +226,12 @@ export const GUI = {
     calculate: async () => {
         const is_interp = document.getElementById("cpedit_crease_interp").checked;
         const i = PRJ.current_idx;
-        const { FOLD, CELL } = PAINT.get_FOLD_CELL(i, is_interp);
+        const { FOLD, CELL } = await PAINT.get_FOLD_CELL(i, is_interp);
         PRJ.steps[i].fold_cp = FOLD;
         PRJ.steps[i].cell_cp = CELL;
         await LOAD.report();
 
+        await LOAD.status("Refreshing the Previous Step");
         PRJ.restore(i - 1);
         STEP.update_states();
         STEP.update_dist();
@@ -238,6 +239,7 @@ export const GUI = {
         PRJ.restore(i);
         await LOAD.report();
 
+        await LOAD.status("Refreshing the Current Step");
         STEP.update_states();
         STEP.update_dist();
         PRJ.record(i);

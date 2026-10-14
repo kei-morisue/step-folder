@@ -6,6 +6,7 @@ import { LIN } from "../linefolder/linear.js";
 import { IO3 } from "./io.js"
 import { SOL2 } from "./solver2.js"
 import { N } from "./nath.js";
+import { LOAD } from "./gui/load.js";
 
 
 export const Y = {     // CONVERSION
@@ -124,15 +125,17 @@ export const Y = {     // CONVERSION
         return { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA, H };
     },
 
-    CP_2_FOLD_CELL: (doc, limit, FOLD_infer, hs) => {
+    CP_2_FOLD_CELL: async (doc, limit, FOLD_infer, hs) => {
+        await LOAD.status("folding the Crease Pattern");
         const FOLD = Y.CP_2_FOLD(doc, FOLD_infer, hs);
         const CELL_ = Y.FOLD_2_CELL(FOLD);
-        const B = Y.FOLD_CELL_2_BF_BI_GB_GA(FOLD, CELL_, limit);
+        const B = await Y.FOLD_CELL_2_BF_BI_GB_GA(FOLD, CELL_, limit);
         if (B == undefined) { return [undefined, undefined]; }
         const { BF, BI, GB, GA } = B;
         const GI = GB.map(() => 0);
         const { P, CP, SP, PP, SC, CS, SE, FC, CF } = CELL_;
         const CELL = { P, SP, SE, PP, CP, CS, SC, CF, FC, BF, BI, GB, GA, GI };
+        await LOAD.status();
         return [FOLD, CELL];
     },
     FOLD_CELL_2_BF_BI: (FOLD, CELL) => {
@@ -144,19 +147,24 @@ export const Y = {     // CONVERSION
         return { BF, BI };
     },
 
-    FOLD_CELL_2_BF_BI_GB_GA: (FOLD, CELL, limit) => {
+    FOLD_CELL_2_BF_BI_GB_GA: async (FOLD, CELL, limit) => {
         const { EF, Ff, EA } = FOLD;
         const { P, CP, SP, PP, SC, CS, SE, FC, CF } = CELL;
+        await LOAD.status("building the Graph");
         const { BF, BI } = Y.FOLD_CELL_2_BF_BI(FOLD, CELL);
         const BT = X.BF_BI_EF_SE_CF_SC_2_BT(BF, BI, EF, SE, CF, SC);
         const CC = X.FC_BF_BI_BT_2_CC(FC, BF, BI, BT);
+        await LOAD.status("building the Initial Assignments");
         const BA0 = SOLVER.EF_EA_Ff_BF_BI_2_BA0(EF, EA, Ff, BF, BI);
         const trans_count = { all: 0, reduced: 0 };
         const BA1 = SOLVER.initial_assignment(BA0, BF, BT, BI, FC, CF, CC, trans_count);
 
         const H = FOLD.H ?? [];
         const BA = SOL2.additional_assignment(H, EF, BA1, BF, BI, SE, CS, FC, CF, Ff);
+        await LOAD.status("building the Components");
+
         const GB = SOLVER.get_components(BI, BF, BT, BA, FC, CF, CC, trans_count);
+        await LOAD.status("Solving the Graph");
         const GA = SOLVER.solve(BI, BF, BT, BA.map(a => a), GB, FC, CF, CC, limit);
         const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {
             return s * BigInt(A.length);

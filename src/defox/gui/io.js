@@ -1,3 +1,4 @@
+import { LOAD } from "../gui/load.js";
 import { PAGE } from "../page.js";
 
 import { PRJ } from "../project.js";
@@ -44,28 +45,35 @@ export const GUI_IO = {
         button.setAttribute("multiple", true);
         button.setAttribute("accept", ".cp");
         button.dispatchEvent(new MouseEvent("click"));
-        button.onchange = (e) => {
+        button.onchange = async (e) => {
             const l = e.target.files.length;
             if (l == 0) {
                 return false;
             }
-            const el_input = e.target;
-            const file_reader = new FileReader();
-            const read = (i) => {
-                const file = el_input.files[i];
-                file_reader.readAsText(file);
-                file_reader.onload = (e) => {
-                    const is_new = PRJ.steps.length == 0;
-                    const res = GUI_IO.import_cp(file.name, e.target.result, is_new, is_interp);
-                    if (res && i < l - 1) {
-                        read(i + 1);
+            const readFileAsText = (file) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => resolve(event.target.result);
+                    reader.onerror = (error) => reject(error);
+                    reader.readAsText(file);
+                });
+            };
+
+            await LOAD.set(l, async () => {
+                for (let i = 0; i < l; i++) {
+                    const file = e.target.files[i];
+                    const textContent = await readFileAsText(file);
+
+                    const res = await GUI_IO.import_cp(file.name, textContent);
+
+                    if (res) {
+                        await LOAD.report();
                     }
                 }
-            }
-            read(0);
+            });
         }
     },
-    import_cp: (path, doc, is_new = false, is_interp = false) => {
+    import_cp: async (path, doc, is_new = false, is_interp = false) => {
         if (!doc) {
             return false;
         }
@@ -73,13 +81,14 @@ export const GUI_IO = {
         const FOLD_infer = !is_new && is_interp ? PRJ.steps[PRJ.current_idx].fold_cp : undefined;
         let limit = parseInt(document.getElementById("assign_limit").value);
         if (limit == 0) { limit = Infinity };
-        const [FOLD1, CELL1] = Y.CP_2_FOLD_CELL(doc, limit, FOLD_infer);
+        const [FOLD1, CELL1] = await Y.CP_2_FOLD_CELL(doc, limit, FOLD_infer);
         if (FOLD1 == undefined) {
             alert("unfoldable Crease Pattern: " + path)
             return false;
         }
 
         if (is_new) {
+            await LOAD.status("Building the Initial CP");
             const [FOLD0, CELL0] = Y.FOLD_2_PAPER(FOLD1);
             const step0 = { fold_cp: FOLD0, cell_cp: CELL0, id: Date.now() + Math.floor(Math.random() * 100000) };
             const step1 = { fold_cp: FOLD1, cell_cp: CELL1, id: Date.now() + Math.floor(Math.random() * 100000) };
@@ -90,6 +99,7 @@ export const GUI_IO = {
             const step = { fold_cp: FOLD1, cell_cp: CELL1, id: Date.now() + Math.floor(Math.random() * 100000) };
             PRJ.steps.splice(PRJ.current_idx + 1, 0, step);
         }
+        await LOAD.status("Detecting CP differences");
         PRJ.restore(PRJ.current_idx);
         STEP.new(is_new);
         PRJ.record(PRJ.current_idx);

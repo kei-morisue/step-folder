@@ -25,8 +25,8 @@ export const GUI = {
     build: async () => {
         try {
             const response = await fetch('./resources/NewProject.defox');
-            const j = await response.json();
-            PRJ.steps = await IO3.load(j);
+            const json = await response.json();
+            PRJ.steps = await IO3.load(json);
             PRJ.restore(PRJ.steps.length - 1);
             STEP.redraw();
             PAGE.current_idx = 0;

@@ -3,10 +3,14 @@ export const LOAD = {
     EL: undefined,
     LEN: 30,
     REPORT: undefined,
+    STATUS: undefined,
     CURR: 0,
 
     report: async () => {
         if (LOAD.REPORT) await LOAD.REPORT();
+    },
+    status: async (stat) => {
+        if (LOAD.STATUS) await LOAD.STATUS(stat);
     },
     startup: async () => {
         LOAD.EL = document.getElementById("loading");
@@ -22,9 +26,19 @@ export const LOAD = {
     set: async (total, taskFunction) => {
         const pr = document.getElementById("progress");
         const rem = document.getElementById("remains");
+        const stat = document.getElementById("status");
+
         const t0 = Date.now();
         let t1 = t0;
         LOAD.CURR = 0;
+
+        LOAD.STATUS = async (status) => {
+            if (stat) {
+                stat.innerHTML = status ?? "UNKNOWN";
+                await new Promise(r => setTimeout(r, 0));
+            }
+        }
+
         LOAD.REPORT = async () => {
             const current = LOAD.CURR + 1;
             LOAD.CURR = current;
@@ -68,8 +82,11 @@ export const LOAD = {
         LOAD.EL.style.visibility = "hidden";
         LOAD.REPORT = undefined;
         LOAD.CURR = 0;
+        LOAD.STATUS = undefined;
         document.getElementById("progress").innerHTML = "";
         document.getElementById("remains").innerHTML = "";
+        document.getElementById("status").innerHTML = "";
+
     },
 
     time_str: (msec) => {
