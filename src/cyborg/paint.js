@@ -70,7 +70,7 @@ export const PAINT = {
         PAINT.H = [];
         const H = FOLD.H ?? [];
         for (const E of H) {
-            PAINT.H.push(E);
+            PAINT.H.push(M.centroid(M.expand(EV[E], V)));
         }
 
         PAINT.segs = EV.map((vs) => {
@@ -94,7 +94,7 @@ export const PAINT = {
         const FOLD_infer = is_interp ? PRJ.steps[idx - 1].fold_cp : undefined;
         const segs = PAINT.segs;
         const assigns = PAINT.EA;
-        const hs = PAINT.H.map((i) => M.centroid(segs[i]));
+        const hs = PAINT.H;
         let limit = parseInt(document.getElementById("assign_limit").value);
         if (limit == 0) { limit = Infinity }
         const [FOLD, CELL] = Z.segs_assings_2_FOLD_CELL(segs, assigns, limit, FOLD_infer, hs);
@@ -116,7 +116,7 @@ export const PAINT = {
         PAINT.svg_selection = SVG.append("g", PAINT.svg, { id: "selection" });
         PAINT.svg_validation = SVG.append("g", PAINT.svg, { id: "validation" });
         DRAW.draw_VK(PAINT.V, PAINT.VK, PAINT.svg, T);
-        DRAW.draw_hanchors(PAINT.H.map((i) => M.centroid(segs[i])), T, PAINT.svg);
+        DRAW.draw_hanchors(PAINT.H, T, PAINT.svg);
     },
 
     validate: () => {

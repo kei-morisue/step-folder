@@ -297,14 +297,8 @@ export const ACT = {
 
     hilight_delete_h: (p_cursor) => {
         if (PAINT.current_mode == "del_h") {
-            const seg = L.find_seg(
-                p_cursor,
-                PAINT.segs,
-                PAINT.EA,
-                (idx) => {
-                    return PAINT.EA[idx] == "V" || PAINT.EA[idx] == "M" || PAINT.EA[idx] == "B"
-                });
-            PAINT.hilight_mv(seg);
+            const v = L.find_v(p_cursor, PAINT.H, PAINT.radius.bind / PAINT.scale);
+            PAINT.hilight_input(v);
             return true;
         }
         return false;
@@ -477,24 +471,30 @@ export const ACT = {
             if (PAINT.segment < 0) {
                 return true;
             }
-            if (PAINT.H.indexOf(PAINT.segment) >= 0) {
-                return true;
+            const seg = PAINT.segs[PAINT.segment];
+            const c = M.centroid(seg);
+            for (const h of PAINT.H) {
+                if (M.distsq(h, c) < 1e-10) {
+                    return;
+                }
             }
-            PAINT.H.push(PAINT.segment);
+            PAINT.H.push(c);
             return true;
         }
         return false;
     },
     click_delete_h: (e) => {
         if (PAINT.current_mode == "del_h") {
-            if (PAINT.segment < 0) {
+            if (PAINT.vertex == undefined) {
                 return true;
             }
-            const idx = PAINT.H.indexOf(PAINT.segment);
-            if (idx >= 0) {
-                PAINT.H.splice(idx, 1);
+            const v = PAINT.vertex;
+            for (const [i, h] of PAINT.H.entries()) {
+                if (M.distsq(h, v) < 1e-10) {
+                    PAINT.H.splice(i, 1);
+                    return;
+                }
             }
-            return true;
         }
         return false;
     },
