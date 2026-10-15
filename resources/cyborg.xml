@@ -2,6 +2,12 @@
 <button id="closeDialog" class="discardclose"><i class="bi bi-floppy"></i></button>
 <label for="cpedit_crease_interp">Crease Interpolation</label>
 <input type="checkbox" id="cpedit_crease_interp" checked>
+<label for="infer_step">Solution Infer</label>
+<select id="infer_step">
+    <option value="FW">from Prev</option>
+    <option value="NO">no</option>
+    <option value="BW">from Next</option>
+</select>
 <span>
     <button id="cpedit_undo" class="gryph">&#xe02E;</button>
     <button id="cpedit_redo" class="gryph">&#xe02F;</button>

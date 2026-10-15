@@ -226,7 +226,13 @@ export const GUI = {
     calculate: async () => {
         const is_interp = document.getElementById("cpedit_crease_interp").checked;
         const i = PRJ.current_idx;
-        const { FOLD, CELL } = await PAINT.get_FOLD_CELL(i, is_interp);
+        let limit = parseInt(document.getElementById("assign_limit").value);
+        if (limit == 0) { limit = Infinity }
+
+        const infer = document.getElementById("infer_step").value
+        const step_infer = infer == "NO" ? undefined : (infer == "FW" && i > 0) ? PRJ.steps[i - 1] : (i < PRJ.steps.length - 1) ? PRJ.steps[i + 1] : undefined;
+
+        const { FOLD, CELL } = await PAINT.get_FOLD_CELL(i, is_interp, limit, step_infer);
         PRJ.steps[i].fold_cp = FOLD;
         PRJ.steps[i].cell_cp = CELL;
         await LOAD.report();

@@ -5,6 +5,7 @@ import { X } from "../flatfolder/conversion.js";
 
 import { N } from "../defox/nath.js";
 import { PRJ } from "../defox/project.js";
+import { Y } from "../defox/y.js";
 
 
 import { L } from "./lath.js";
@@ -90,14 +91,13 @@ export const PAINT = {
         PAINT.record();
     },
 
-    get_FOLD_CELL: async (idx, is_interp) => {
+    get_FOLD_CELL: async (idx, is_interp, limit, step_infer) => {
         const FOLD_infer = is_interp ? PRJ.steps[idx - 1].fold_cp : undefined;
         const segs = PAINT.segs;
         const assigns = PAINT.EA;
         const hs = PAINT.H;
-        let limit = parseInt(document.getElementById("assign_limit").value);
-        if (limit == 0) { limit = Infinity }
-        const [FOLD, CELL] = await Z.segs_assings_2_FOLD_CELL(segs, assigns, limit, FOLD_infer, hs);
+        const doc = Y.segs_EA_2_CP(segs, assigns, 1.0);
+        const [FOLD, CELL] = await Y.CP_2_FOLD_CELL(doc, limit, FOLD_infer, hs, step_infer);
         return { FOLD, CELL };
     },
 

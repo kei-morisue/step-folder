@@ -75,12 +75,15 @@ export const STEP = {
             document.getElementById("apply_tt").style.background = "";
         } else {
             STEP.STATE = undefined;
-            STEP.update_linear_state(STEP.FOLD_D, STEP.LIN.S, "state3", T);
-            if (STEP.LIN.cycle.length != 0) {
-                document.getElementById("apply_tt").style.background = "red";
-            } else {
-                document.getElementById("apply_tt").style.background = "";
-                document.getElementById("depth").max = STEP.LIN.S.length;
+            const S = STEP.LIN ? STEP.LIN.S : undefined
+            STEP.update_linear_state(STEP.FOLD_D, S, "state3", T);
+            if (STEP.LIN) {
+                if (STEP.LIN.cycle.length != 0) {
+                    document.getElementById("apply_tt").style.background = "red";
+                } else {
+                    document.getElementById("apply_tt").style.background = "";
+                    document.getElementById("depth").max = STEP.LIN.S.length;
+                }
             }
         }
         document.getElementById("state3").style.background = DRAW.color.background;
@@ -137,32 +140,48 @@ export const STEP = {
         const VD = DIST.FOLD_2_VD(Vf, catalyst)
         STEP.FOLD_D = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA, FO };
 
-        if (STEP.LIN.cycle.length != 0) {
+        if (STEP.LIN) {
+            if (STEP.LIN.cycle.length != 0) {
 
-            document.getElementById("apply_tt").setAttribute("style", "background: red")
-        } else {
-            document.getElementById("apply_tt").setAttribute("style", "background: default");
-            document.getElementById("depth").max = STEP.LIN.S.length;
+                document.getElementById("apply_tt").setAttribute("style", "background: red")
+            } else {
+                document.getElementById("apply_tt").setAttribute("style", "background: default");
+                document.getElementById("depth").max = STEP.LIN.S.length;
+            }
         }
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
         const T = STEP.get_transform();
-        return STEP.update_linear_state(STEP.FOLD_D, STEP.LIN.S, "state3", T);
+        const S = STEP.LIN ? STEP.LIN.S : undefined;
+        return STEP.update_linear_state(STEP.FOLD_D, S, "state3", T);
     },
     reset_component: (CELL, el_select, el_assign) => {
         const { GB, GA, } = CELL
-        SVG.clear(el_select.id)
-        el_assign.max = GA[0].length
-        el_assign.value = 1;
+        SVG.clear(el_select.id);
+        if (GA == undefined) {
+            el_assign.max = 0
+            el_assign.value = 0;
+        } else {
+            el_assign.max = GA[0].length
+            el_assign.value = 1;
+        }
         for (let i = 0; i < GB.length; i++) {
             const el = document.createElement("option");
             el.setAttribute("value", `${i}`);
             el.textContent = `${i}`;
             el_select.appendChild(el);
         }
+
     },
 
     update_component: (CELL, g, a) => {
         const { GA, } = CELL;
+        if (GA == undefined) {
+            document.getElementById("selectG").value = 0;
+            document.getElementById("assign").max = 0;
+            document.getElementById("assign").value = 0;
+            document.getElementById("assigns").innerHTML = "/" + 0;
+
+        }
         document.getElementById("selectG").value = g;
         document.getElementById("assign").max = GA[g].length;
         document.getElementById("assign").value = a + 1;
@@ -179,7 +198,9 @@ export const STEP = {
         } else {
             [STEP.FOLD, STEP.LIN] = [STEP.FOLD0, STEP.STATE0.L];
         }
-        document.getElementById("depth").max = STEP.LIN.S.length;
+        if (STEP.LIN) {
+            document.getElementById("depth").max = STEP.LIN.S.length;
+        }
         DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"));
         STEP.CATAL = STEP.update_catalyst(STEP.FOLD);
         if (STEP.CATAL) {

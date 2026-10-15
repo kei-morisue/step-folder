@@ -6,6 +6,9 @@ import { LIN } from "../linefolder/linear.js";
 import { IO3 } from "./io.js"
 import { SOL2 } from "./solver2.js"
 import { N } from "./nath.js";
+import { DIFF } from "./diff.js";
+import { PRJ } from "./project.js";
+
 import { LOAD } from "./gui/load.js";
 
 
@@ -127,51 +130,12 @@ export const Y = {     // CONVERSION
         return { V, Vf, FV, EV, EF, FE, Ff, EA, VV, FU, UV, Vc, UA, H };
     },
 
-    FOLD_HF_2_HOLD: (FOLD, HF = []) => {
-        const { Vf, EV, EF, EA, FV, Ff } = FOLD;
-        // const HF = [0, 1, 2, 3, 4, 5];
-
-        const EV_ = [];
-        const EF_ = [];
-        const EA_ = [];
-        for (const [i, [f1, f2]] of EF.entries()) {
-            if (f2 == undefined) {
-                if (HF.indexOf(f1) < 0) {
-                    EV_.push(EV[i]);
-                    EF_.push([f1]);
-                    EA_.push(EA[i]);
-                }
-                continue;
-            }
-            if (HF.indexOf(f1) < 0 || HF.indexOf(f2) < 0) {
-                EV_.push(EV[i]);
-                EA_.push(EA[i]);
-                if (HF.indexOf(f1) < 0 && HF.indexOf(f2) < 0) {
-                    EF_.push([f1, f2]);
-                    continue;
-                }
-                if (HF.indexOf(f1) < 0) {
-                    EF_.push([f1]);
-                    EA_[EA_.length - 1] = "B";
-                    continue;
-                }
-                if (HF.indexOf(f2) < 0) {
-                    EF_.push([f2]);
-                    EA_[EA_.length - 1] = "B";
-                    continue;
-                }
-
-            }
-        }
-        return { Ff, Vf, FV, EV: EV_, EA: EA_, EF: EF_ };
-    },
-    CP_2_FOLD_CELL: async (doc, limit, FOLD_infer, hs, HF) => {
+    CP_2_FOLD_CELL: async (doc, limit, FOLD_infer, hs, step_infer) => {
         await LOAD.status("folding the Crease Pattern");
         const FOLD = Y.CP_2_FOLD(doc, FOLD_infer, hs);
         await LOAD.status("Building the Cell Graph");
-        const HOLD = Y.FOLD_HF_2_HOLD(FOLD, HF);
-        const CELL_ = Y.FOLD_2_CELL(HOLD);
-        const B = await Y.FOLD_CELL_2_BF_BI_GB_GA(HOLD, CELL_, limit);
+        const CELL_ = Y.FOLD_2_CELL(FOLD);
+        const B = await Y.FOLD_CELL_2_BF_BI_GB_GA(FOLD, CELL_, limit, step_infer);
         if (B == undefined) { return [undefined, undefined]; }
         const { BF, BI, GB, GA } = B;
         const GI = GB.map(() => 0);
@@ -189,7 +153,7 @@ export const Y = {     // CONVERSION
         return { BF, BI };
     },
 
-    FOLD_CELL_2_BF_BI_GB_GA: async (FOLD, CELL, limit) => {
+    FOLD_CELL_2_BF_BI_GB_GA: async (FOLD, CELL, limit, step_infer) => {
         const { EF, Ff, EA } = FOLD;
         const { SC, CS, SE, FC, CF } = CELL;
         await LOAD.status("building the Graph");
@@ -201,17 +165,26 @@ export const Y = {     // CONVERSION
         const trans_count = { all: 0, reduced: 0 };
         const BA1 = SOLVER.initial_assignment(BA0, BF, BT, BI, FC, CF, CC, trans_count);
 
+
+
         const H = FOLD.H ?? [];
         const BA = SOL2.additional_assignment(H, EF, BA1, BF, BI, SE, CS, FC, CF, Ff);
-        await LOAD.status("building the Components");
+        if (step_infer != undefined) {
+            await LOAD.status("inferring the Assignments");
+            const FOLD_from = step_infer.fold_cp;
+            const CELL_from = step_infer.cell_cp;
+            DIFF.infer_BA(FOLD_from, FOLD, CELL_from, BI, BA);
+        }
 
+
+        await LOAD.status("building the Components");
         const GB = SOLVER.get_components(BI, BF, BT, BA, FC, CF, CC, trans_count);
         await LOAD.status("Solving the Graph");
         const GA = SOLVER.solve(BI, BF, BT, BA.map(a => a), GB, FC, CF, CC, limit);
         const n = (!Array.isArray(GA)) ? 0 : GA.reduce((s, A) => {
             return s * BigInt(A.length);
         }, BigInt(1));
-        if (n == 0) { return undefined; }
+        if (n == 0) { return { BF, BI, GB, GA: undefined }; }
 
         return { BF, BI, GB, GA };
     },
@@ -341,6 +314,7 @@ export const Y = {     // CONVERSION
     FOLD_CELL_2_STATE: (FOLD, CELL) => {
         const { Ff } = FOLD;
         const { CF, BF, GB, GA, GI } = CELL;
+        if (GA == undefined) { return { Ctop: undefined, Cbottom: undefined, L: undefined }; }
         const FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff);
         const edges = FO.map(([f1, f2, o]) => {
             return M.encode(((Ff[f2] ? 1 : -1) * o >= 0) ? [f1, f2] : [f2, f1]);

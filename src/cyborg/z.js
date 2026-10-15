@@ -9,11 +9,6 @@ import { IO } from "../flatfolder/io.js";
 export const Z = {
 
 
-    segs_assings_2_FOLD_CELL: async (segs, assigns, limit, FOLD_infer = undefined, hs = []) => {
-        const doc = Y.segs_EA_2_CP(segs, assigns, 1.0);
-        return await Y.CP_2_FOLD_CELL(doc, limit, FOLD_infer, hs);
-    },
-
     segs_2_CP: (segs, assigns) => {
         const doc = Y.segs_EA_2_CP(segs, assigns, 1.0);
         const L = IO.CP_2_L(doc);

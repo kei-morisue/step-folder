@@ -123,8 +123,8 @@ export const DRAW = {
     draw_state: (svg, FOLD, CELL, STATE, T, clip_c, id = 0, symbols = [], origin = [0, 0]) => {
         const det = N.det(T[0]);
         const is_flip = det < 0
-        if (STATE == undefined) {
-            DRAW.draw_xray(FOLD, is_flip, svg)
+        if (STATE.Cbottom == undefined || STATE.Ctop == undefined) {
+            DRAW.draw_xray(FOLD, svg, T, origin)
             return
         }
         const { Ff, EF, FE, EA, FU, UV, Vc, UA, Vf } = FOLD;
@@ -280,19 +280,12 @@ export const DRAW = {
         });
     },
 
-    draw_xray: (FOLD, is_flip, svg) => {
+    draw_xray: (FOLD, svg, T, origin) => {
         const { FV, Vf } = FOLD
-        const P = DRAW.transform_points(Vf, is_flip, 0, true)
+        const Q = N.focus(Vf, [.5, .5]).map((v) => N.transform(T, v));
+        const P = Q.map(v => M.add(v, M.div(origin, SVG.SCALE)));
+
         const F = FV.map(f => M.expand(f, P));
         SVG.draw_polygons(svg, F, { opacity: 0.05 });
-    },
-
-    transform_points: (P, is_flip, rot, norm = true) => {
-        if (norm) { P = M.normalize_points(P); }
-        const ri = rot / 90;
-        const [cos, sin] = [[1, 0], [0, -1], [-1, 0], [0, 1]][ri];
-        const m = [0.5, 0.5];
-        return P.map(p => M.add(M.rotate_cos_sin(M.sub(p, m), cos, sin), m))
-            .map(p => (is_flip ? M.add(M.refX(M.sub(p, m)), m) : p));
     },
 }

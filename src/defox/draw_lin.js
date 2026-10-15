@@ -58,7 +58,7 @@ export const DRAW_LIN = {
         const det = N.det(T[0]);
         const is_flip = det < 0;
         if (!Stack) {
-            DRAW.draw_xray(FOLD, flip, svg);
+            DRAW.draw_xray(FOLD, svg, T, origin);
             return
         }
         const { Vf, Ff, FE, EA, FV, EV, Vc, UV, FU, UA } = FOLD;

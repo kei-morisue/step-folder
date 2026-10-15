@@ -146,6 +146,7 @@ export const DIFF = {
             }
         }
 
+        if (LIN0 == undefined) { return [FOLD, undefined]; }
         const S = LIN0.S.map((f0) => {
             return FF_map[f0][0];
         }
@@ -217,7 +218,7 @@ export const DIFF = {
         V_to.map((v, i) => {
             for (const [w_i, w] of V_from.entries()) {
                 const d = M.distsq(v, w);
-                if (d < 1e-10) {
+                if (d < 1e-12) {
                     VV_map[w_i] = i;
                     return;
                 }
@@ -299,5 +300,30 @@ export const DIFF = {
         DIFF.overwrite_FO(FF_map, FO_from, FO_to, FOLD_from.Ff, FOLD_to.Ff);
         const { GB, GA, BF, GI } = CELL_to;
         DIFF.FO_GB_GA_BF_2_GI(FO_to, GB, GA, BF, GI);
+    },
+    infer_BA: (FOLD_from, FOLD_to, CELL_from, BI_to, BA_to) => {
+        const VV_map = DIFF.get_VV_map(FOLD_from.V, FOLD_to.V);
+        const FF_map = DIFF.get_FF_map(VV_map, FOLD_from.FV, FOLD_to.FV);
+
+        const edges = X.BF_GB_GA_GI_2_edges(CELL_from.BF, CELL_from.GB, CELL_from.GA, CELL_from.GI);
+        for (const edge of edges) {
+            const [f1, f2] = M.decode(edge);
+            const [g1, g2] = [FF_map[f1], FF_map[f2]];
+            if (g1 == undefined || g2 == undefined) {
+                continue;
+            }
+            const key = M.encode_order_pair([g1, g2]);
+            const bi = BI_to.get(key);
+            if (bi == undefined) {
+                continue;
+            }
+            const [g1_,] = M.decode(key);
+            if (g1 == g1_) {
+                BA_to[bi] = 1;
+            }
+            else {
+                BA_to[bi] = 2;
+            }
+        }
     }
 }
