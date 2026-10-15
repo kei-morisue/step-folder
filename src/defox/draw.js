@@ -239,13 +239,18 @@ export const DRAW = {
 
     draw_group_text: (FOLD, CELL, svg, T) => {
         const { Vf, FV } = FOLD;
-        const { GB, BF, BI } = CELL
+        const { GB, BF, GA } = CELL
         const m = [0.5, 0.5];
         const Q = N.focus(Vf, [.5, .5]).map((v) => N.transform(T, v));
 
         const P = GB.map((bs, Gi) => {
             if (Gi == 0) {
-                return [2, 2]
+                return [2, 2];
+            }
+            if (GA) {
+                if (GA[Gi].length == 1) {
+                    return [2, 2];
+                }
             }
             const Fs = bs.map((b) => {
                 return M.decode(BF[b])
