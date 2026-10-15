@@ -301,10 +301,60 @@ export const DIFF = {
         const { GB, GA, BF, GI } = CELL_to;
         DIFF.FO_GB_GA_BF_2_GI(FO_to, GB, GA, BF, GI);
     },
+
+    FOLD_FOLD_2_FG: (FOLD_from, FOLD_to) => {
+        const { FV, EV, EA, V, EF, FE } = FOLD_to;
+        const L_from = FOLD_from.EV.map(vs => vs.map(i => FOLD_from.V[i]));
+        const L_to = EV.map(vs => vs.map(i => V[i]));
+        let L = L_from.concat(L_to);
+        const [, , EL,] = X.L_2_V_EV_EL(L);
+        const EB = EA.map(() => true);
+        for (const ls of EL) {
+            if (ls.length == 2) {
+                const [l0, l1] = ls;
+                if (l0 < L_from.length && l1 >= L_from.length) {
+                    const a_from = FOLD_from.EA[l0];
+                    const a_to = EA[l1 - L_from.length];
+                    EB[l1 - L_from.length] = a_from != a_to;
+                }
+                if (l1 < L_from.length && l0 >= L_from.length) {
+                    const a_from = FOLD_from.EA[l1];
+                    const a_to = EA[l0 - L_from.length];
+                    EB[l0 - L_from.length] = a_from != a_to;
+                }
+
+            }
+        }
+        let group = -1;
+        const FG = FV.map(() => undefined);
+        for (const [fi, eis] of FE.entries()) {
+            if (FG[fi] != undefined) { continue; }
+            group++;
+            FG[fi] = group;
+            let stack = eis.map(ei => [ei, fi]);
+            let stack_idx = 0;
+            while (stack.length > stack_idx) {
+                const [ei, f0] = stack[stack_idx];
+                if (!EB[ei]) {
+                    const [g1, g2] = EF[ei];
+                    const f_pair = (g1 == f0) ? g2 : g1;
+                    if (f_pair != undefined) {
+                        if (FG[f_pair] == undefined) {
+                            FG[f_pair] = group;
+                            stack = stack.concat(FE[f_pair].map(ei => [ei, f_pair]));
+                        }
+                    }
+                }
+                stack_idx++;
+            }
+        }
+        return FG;
+    },
+
     infer_BA: (FOLD_from, FOLD_to, CELL_from, BI_to, BA_to) => {
         const VV_map = DIFF.get_VV_map(FOLD_from.V, FOLD_to.V);
         const FF_map = DIFF.get_FF_map(VV_map, FOLD_from.FV, FOLD_to.FV);
-
+        const FG = DIFF.FOLD_FOLD_2_FG(FOLD_from, FOLD_to);
         const edges = X.BF_GB_GA_GI_2_edges(CELL_from.BF, CELL_from.GB, CELL_from.GA, CELL_from.GI);
         for (const edge of edges) {
             const [f1, f2] = M.decode(edge);
@@ -318,11 +368,13 @@ export const DIFF = {
                 continue;
             }
             const [g1_,] = M.decode(key);
+            if (FG[g1] != FG[g2]) { continue; }
+            const same_side = (FOLD_to.Ff[g1] == FOLD_from.Ff[f1]);
             if (g1 == g1_) {
-                BA_to[bi] = 1;
+                BA_to[bi] = same_side ? 1 : 2;
             }
             else {
-                BA_to[bi] = 2;
+                BA_to[bi] = same_side ? 2 : 1;
             }
         }
     }
