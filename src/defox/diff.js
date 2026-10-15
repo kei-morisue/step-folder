@@ -367,8 +367,13 @@ export const DIFF = {
             if (bi == undefined) {
                 continue;
             }
+            if (BA_to[bi] != 0) {
+                continue;
+            }
             const [g1_,] = M.decode(key);
-            if (FG[g1] != FG[g2]) { continue; }
+            if (FG[g1] != FG[g2]) {
+                continue;
+            }
             const same_side = (FOLD_to.Ff[g1] == FOLD_from.Ff[f1]);
             if (g1 == g1_) {
                 BA_to[bi] = same_side ? 1 : 2;
