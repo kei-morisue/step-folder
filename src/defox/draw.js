@@ -128,7 +128,7 @@ export const DRAW = {
             return
         }
         const { Ff, EF, FE, EA, FU, UV, Vc, UA, Vf } = FOLD;
-        const { P, PP, CP, CF, SP, SC, SE } = CELL;
+        const { P, CP, SP, SC, SE } = CELL;
         const { Ctop, Cbottom } = STATE;
         const CFD = is_flip ? Cbottom : Ctop;
         const SD = Y.Ctop_SC_SE_EF_Ff_EA_FE_2_SD(CFD, SC, SE, EF, Ff, EA, FE);

@@ -200,6 +200,39 @@ export const Y = {     // CONVERSION
         return { P, CP, SP, PP, SC, CS, SE, FC, CF }
     },
 
+    FOLD_2_CELL_D: (FOLD, div = 1) => {
+        const { Vf, EV, EF, FV } = FOLD;
+        const L = EV.map((vs) => M.expand(vs, Vf));
+        const [P, SP, SE, eps_i] = Y.L_2_V_EV_EL(L, div);
+        if (P.length == 0) { return; }
+        const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
+        const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
+        let [CF, FC] = X.EF_FV_P_SP_SE_CP_SC_2_CF_FC(EF, FV, P, SP, SE, CP, SC);
+
+        return { P, CP, SP, PP, SC, CS, SE, FC, CF }
+    },
+    L_2_V_EV_EL: (L, div) => {
+        const d = M.min_line_length(L) / div;
+        const k = 3;    // decrease eps until feature #s repeat sufficiently
+        const N = 25;
+        let k_ = 0, i_ = 1, nV = 0, nE = 0, count = 0;
+        for (let i = 3; i < (N + 3); ++i) {
+            const eps = d / (2 ** i);
+            if (eps < M.FLOAT_EPS) { break; }
+            const [V, EV, EL] = X.L_eps_2_V_EV_EL(L, eps);
+            if (V.length == 0) { nV = nE = count = 0; continue; }
+            count = ((V.length == nV) && (EV.length == nE)) ? (count + 1) : 1;
+            nV = V.length;
+            nE = EV.length;
+            if (count <= k_) { continue; }
+            k_ = count; i_ = i;
+            if (k_ == k) { break; }
+        }
+        const eps_i = i_ - k_ + 1;
+        const eps = d / (2 ** eps_i);
+        const [V, EV, EL] = X.L_eps_2_V_EV_EL(L, eps);
+        return [V, EV, EL, eps_i];
+    },
 
     FOLD_2_CP: (FOLD, size = 400) => {
         const L_ = FOLD.UV.map((P) => M.expand(P, FOLD.V));

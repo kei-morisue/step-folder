@@ -111,17 +111,17 @@ export const STEP = {
             const FOLD = STEP.FOLD_D;
             await LOAD.status("Building the Distorted Cell");
 
-            const CELL = Y.FOLD_2_CELL(FOLD);
-            CELL.BF = STEP.CELL0.BF;
-            CELL.BI = STEP.CELL0.BI;
-            CELL.GB = STEP.CELL0.GB;
-            CELL.GA = STEP.CELL0.GA;
-            CELL.GI = STEP.CELL0.GI;
-            STEP.CELL_D = CELL;
+            STEP.CELL_D = Y.FOLD_2_CELL_D(FOLD, 100);
+            if (!STEP.CELL_D) { return; }
             await LOAD.report();
             const T = STEP.get_transform();
             await LOAD.status("Building the Distorted State");
+            const { BF, BI, GB, GA, GI } = STEP.CELL0;
+            const { P, CP, SP, SC, SE, CF } = STEP.CELL_D;
+            const CELL = { P, CP, SP, SC, SE, CF, BF, BI, GB, GA, GI };
             STEP.STATE = STEP.update_celled_state(FOLD, CELL, "state3", T)
+            STEP.CELL_D.CF = undefined;
+            STEP.CELL_D.FC = undefined;
             if (STEP.STATE) {
                 STEP.LIN = STEP.STATE.L;
             }
