@@ -35,7 +35,7 @@ export const LIN = {
                 cycle.push(s);
             }
         }
-        return cycle.length > 0 ? undefined : S;
+        return { S, cycle };
     },
     linearize: (edges, n) => {
         const Adj = Array(n).fill(0).map(() => []);

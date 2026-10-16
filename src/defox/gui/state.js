@@ -56,6 +56,7 @@ export const GUI_STATE = {
         document.getElementById("rerender").onclick = async () => await PRJ.rerender();
 
 
+
         document.getElementById("infer_layer_order_forward").onclick = (e) => {
             const i = PRJ.current_idx;
             if (i < 1) {
