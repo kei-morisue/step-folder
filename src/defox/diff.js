@@ -147,15 +147,11 @@ export const DIFF = {
         }
 
         if (LIN0 == undefined) { return [FOLD, undefined]; }
-        const S = LIN0.S.map((f0) => {
+        const S = LIN0.map((f0) => {
             return FF_map[f0][0];
         }
         );
-        const cycle = LIN0.cycle.map((s) => {
-            const [f, g] = M.decode(s);
-            return M.encode([FF_map[f][0], FF_map[g][0]]);
-        });
-        return [FOLD, { S, cycle }];
+        return [FOLD, S];
     },
 
     trim: (V_, UV_, UA_, filter = []) => {

@@ -169,6 +169,26 @@ export const PRJ = {
         );
 
     },
+
+    rerender: async () => {
+        const i = PRJ.current_idx;
+        if (!confirm(`rerender all the cyclic figures after Step. ${i + 1}?`)) { return }
+        for (let j = i; j < PRJ.steps.length; j++) {
+            const { cell_d, lin } = PRJ.steps[j];
+            if (lin) {
+                if (lin.cycle.length != 0) {
+                    if (!cell_d) {
+                        PRJ.restore(j);
+                        await STEP.recalculate();
+                        PRJ.record(j);
+                    }
+                }
+            }
+        }
+        PRJ.restore(i);
+        STEP.redraw();
+    },
+
     restore: (i) => {
         if (i > PRJ.steps.length - 1) {
             return;

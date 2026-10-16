@@ -320,7 +320,7 @@ export const Y = {     // CONVERSION
             return M.encode(((Ff[f2] ? 1 : -1) * o >= 0) ? [f1, f2] : [f2, f1]);
         });
         const L = LIN.serialize(edges, Ff.length);
-        L.S.reverse();
+        L.reverse();
 
         const CD = Y.CF_FO_Ff_2_CD(CF, FO, Ff);
         const Ctop = CD.map(S => S[S.length - 1]);

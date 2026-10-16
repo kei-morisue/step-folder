@@ -320,10 +320,13 @@ export const IO3 = {
         for (const id of ["title", "title_alt", "desc0", "desc1", "desc2"]) {
             document.getElementById(id).value = data_[0][id];
         }
-
         const total = data_.length;
         await LOAD.set(total, async () => {
             for (const [i, d] of data_.entries()) {
+                if (d.lin.S) {
+                    d.lin = d.lin.S;
+
+                }
                 await LOAD.status(`Loading Step ${i + 1} / ${data_.length}`);
                 await IO3.load_step(i, d);
                 await LOAD.report();

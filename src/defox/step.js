@@ -75,15 +75,15 @@ export const STEP = {
             document.getElementById("apply_tt").style.background = "";
         } else {
             STEP.STATE = undefined;
-            const S = STEP.LIN ? STEP.LIN.S : undefined
+            const S = STEP.LIN;
             STEP.update_linear_state(STEP.FOLD_D, S, "state3", T);
             if (STEP.LIN) {
-                if (STEP.LIN.cycle.length != 0) {
-                    document.getElementById("apply_tt").style.background = "red";
-                } else {
-                    document.getElementById("apply_tt").style.background = "";
-                    document.getElementById("depth").max = STEP.LIN.S.length;
-                }
+                document.getElementById("apply_tt").style.background = "";
+                document.getElementById("depth").max = STEP.LIN.length;
+            }
+            else {
+                document.getElementById("apply_tt").style.background = "red";
+
             }
         }
         document.getElementById("state3").style.background = DRAW.color.background;
@@ -117,7 +117,8 @@ export const STEP = {
             CELL.GB = STEP.CELL0.GB;
             CELL.GA = STEP.CELL0.GA;
             CELL.GI = STEP.CELL0.GI;
-            STEP.CELL_D = CELL;
+            const { P, CP, SP, SC, SE } = CELL;
+            STEP.CELL_D = { P, CP, SP, SC, SE };
             await LOAD.report();
             const T = STEP.get_transform();
             await LOAD.status("Building the Distorted State");
@@ -141,17 +142,16 @@ export const STEP = {
         STEP.FOLD_D = { V, Vf: VD, FV, EV, EF, FE, Ff, EA, VV, Vc, FU, UV, UA, FO };
 
         if (STEP.LIN) {
-            if (STEP.LIN.cycle.length != 0) {
+            document.getElementById("apply_tt").setAttribute("style", "background: default");
+            document.getElementById("depth").max = STEP.LIN.length;
+        }
+        else {
+            document.getElementById("apply_tt").setAttribute("style", "background: red")
 
-                document.getElementById("apply_tt").setAttribute("style", "background: red")
-            } else {
-                document.getElementById("apply_tt").setAttribute("style", "background: default");
-                document.getElementById("depth").max = STEP.LIN.S.length;
-            }
         }
         document.getElementById("state3").setAttribute("style", "background: " + DRAW.color.background);
         const T = STEP.get_transform();
-        const S = STEP.LIN ? STEP.LIN.S : undefined;
+        const S = STEP.LIN;
         return STEP.update_linear_state(STEP.FOLD_D, S, "state3", T);
     },
     reset_component: (CELL, el_select, el_assign) => {
@@ -199,7 +199,7 @@ export const STEP = {
             [STEP.FOLD, STEP.LIN] = [STEP.FOLD0, STEP.STATE0.L];
         }
         if (STEP.LIN) {
-            document.getElementById("depth").max = STEP.LIN.S.length;
+            document.getElementById("depth").max = STEP.LIN.length;
         }
         DRAW.draw_cp(STEP.FOLD, SVG.clear("cp3"));
         STEP.CATAL = STEP.update_catalyst(STEP.FOLD);

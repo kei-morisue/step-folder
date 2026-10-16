@@ -217,7 +217,7 @@ export const PAGE = {
                 const STATE = step.state ?? Y.FOLD_CELL_2_STATE(FOLD, CELL);
                 DRAW.draw_state(panel_d, FOLD, CELL, STATE, T, clip, id, symbols, origin);
             } else {
-                DRAW_LIN.draw_state(panel_d, FOLD, step.lin.S, T, clip, depth, id, symbols, render_all, origin);
+                DRAW_LIN.draw_state(panel_d, FOLD, step.lin, T, clip, depth, id, symbols, render_all, origin);
             }
         }
     },
