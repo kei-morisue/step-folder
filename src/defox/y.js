@@ -200,34 +200,83 @@ export const Y = {     // CONVERSION
         return { P, CP, SP, PP, SC, CS, SE, FC, CF }
     },
 
-    FOLD_2_CELL_D: (FOLD, div = 1) => {
+    FOLD_2_CELL_D: async (FOLD, div = 1) => {
         const { Vf, EV, EF, FV } = FOLD;
         const L = EV.map((vs) => M.expand(vs, Vf));
+        await LOAD.status("Building the Distorted Cell");
         const [P, SP, SE, eps_i] = Y.L_2_V_EV_EL(L, div);
         if (P.length == 0) { return; }
         const [PP, CP] = X.V_EV_2_VV_FV(P, SP);
         const [SC, CS] = X.EV_FV_2_EF_FE(SP, CP);
+        await LOAD.status("Building Cell Topology");
         let [CF, FC] = X.EF_FV_P_SP_SE_CP_SC_2_CF_FC(EF, FV, P, SP, SE, CP, SC);
 
         return { P, CP, SP, PP, SC, CS, SE, FC, CF }
     },
+
     L_2_V_EV_EL: (L, div) => {
         const d = M.min_line_length(L) / div;
-        const k = 3;    // decrease eps until feature #s repeat sufficiently
-        const N = 25;
-        let k_ = 0, i_ = 1, nV = 0, nE = 0, count = 0;
-        for (let i = 3; i < (N + 3); ++i) {
+        const k = 3;
+        const min_i = 3;
+        const max_i = 28; // 3 + 25
+
+        const evaluate = (i) => {
             const eps = d / (2 ** i);
-            if (eps < M.FLOAT_EPS) { break; }
+            if (eps < M.FLOAT_EPS) return null;
             const [V, EV, EL] = X.L_eps_2_V_EV_EL(L, eps);
-            if (V.length == 0) { nV = nE = count = 0; continue; }
-            count = ((V.length == nV) && (EV.length == nE)) ? (count + 1) : 1;
-            nV = V.length;
-            nE = EV.length;
-            if (count <= k_) { continue; }
-            k_ = count; i_ = i;
-            if (k_ == k) { break; }
+            return { V, EV, EL, vLen: V.length, eLen: EV.length };
+        };
+
+        //1st Phase
+        let best_i = min_i;
+        let prevV = -1, prevE = -1, count = 0;
+        let coarse_candidates = [];
+
+        for (let i = min_i; i <= max_i; i += 2) {
+            const res = evaluate(i);
+            if (!res || res.vLen === 0) continue;
+
+            if (res.vLen === prevV && res.eLen === prevE) {
+                count++;
+            } else {
+                count = 1;
+                prevV = res.vLen;
+                prevE = res.eLen;
+            }
+
+            coarse_candidates.push({ i, vLen: res.vLen, eLen: res.eLen });
+
+            if (count >= k) {
+                best_i = i;
+                break;
+            }
         }
+
+        const start_i = Math.max(min_i, best_i - 4);
+        const end_i = Math.min(max_i, best_i + 2);
+
+        let k_ = 0, i_ = min_i, nV = 0, nE = 0;
+        count = 0;
+
+        //2nd phase
+        for (let i = start_i; i <= end_i; ++i) {
+            const res = evaluate(i);
+            if (!res || res.vLen === 0) { nV = nE = count = 0; continue; }
+
+            count = ((res.vLen == nV) && (res.eLen == nE)) ? (count + 1) : 1;
+            nV = res.vLen;
+            nE = res.eLen;
+
+            if (count > k_) {
+                k_ = count;
+                i_ = i;
+            }
+            if (k_ >= k) break;
+        }
+
+        //fallbacks
+        if (k_ === 0) { i_ = best_i; k_ = 1; }
+
         const eps_i = i_ - k_ + 1;
         const eps = d / (2 ** eps_i);
         const [V, EV, EL] = X.L_eps_2_V_EV_EL(L, eps);
@@ -299,22 +348,47 @@ export const Y = {     // CONVERSION
 
     FV_V_2_Ff: (FV, V) => FV.map(fV => (M.polygon_area2(fV.map(i => V[i])) < 0)),
 
-    CF_FO_Ff_2_CD: (CF, FO, Ff) => {
-        return CF.map((F, i) => {
-            const Adj = F.map(() => []);
-            FO.map(([f1, f2, o]) => {
-                if (F.indexOf(f1) < 0) { return }
-                if (F.indexOf(f2) < 0) { return }
-                const edge = ((Ff[f2] ? 1 : -1) * o >= 0) ? [f1, f2] : [f2, f1];
-                Adj[F.indexOf(edge[0])].push(edge[1]);
-            });
+    CF_FO_Ff_2_CD: (CF, FC, FO, Ff) => {
+        const Fids = Array(Ff.length).fill(0).map(() => new Map());
+        for (let cId = 0; cId < CF.length; ++cId) {
+            const Fs = CF[cId];
+            for (let i = 0; i < Fs.length; ++i) {
+                const fId = Fs[i];
+                Fids[fId].set(cId, i);
+            }
+        }
+        const Adj = CF.map((Fs) => Fs.map(() => []));
+
+        for (const [f1, f2, o] of FO) {
+            const cs1 = FC[f1];
+            const cs2 = FC[f2];
+            if (!cs1 || !cs2) continue;
+
+            const [small, large] = cs1.length < cs2.length ? [cs1, cs2] : [cs2, cs1];
+            const largeSet = new Set(large);
+
+            const edge = ((Ff[f2] ? 1 : -1) * o >= 0) ? [f1, f2] : [f2, f1];
+            const targetMap0 = Fids[edge[0]];
+            const targetMap1 = Fids[edge[1]];
+
+            for (const cId of small) {
+                if (largeSet.has(cId)) {
+                    const i = targetMap0.get(cId);
+                    const j = targetMap1.get(cId);
+                    if (i !== undefined && j !== undefined) {
+                        Adj[cId][i].push(j);
+                    }
+                }
+            }
+        }
+        return CF.map((F, cId) => {
             const S = [];
             const seen = F.map(() => false);
             const dfs = (i) => {
                 if (seen[i]) { return; }
                 seen[i] = true;
-                for (const j of Adj[i]) {
-                    dfs(F.indexOf(j));
+                for (const j of Adj[cId][i]) {
+                    dfs(j);
                 }
                 S.push(F[i]);
             };
@@ -344,18 +418,20 @@ export const Y = {     // CONVERSION
         return Fvisible;
     },
 
-    FOLD_CELL_2_STATE: (FOLD, CELL) => {
+    FOLD_CELL_2_STATE: async (FOLD, CELL) => {
         const { Ff } = FOLD;
-        const { CF, BF, GB, GA, GI } = CELL;
+        const { CF, FC, BF, GB, GA, GI } = CELL;
         if (GA == undefined) { return { Ctop: undefined, Cbottom: undefined, L: undefined }; }
+        await LOAD.status("calc FO");
         const FO = Y.BF_GB_GA_GI_Ff_2_FO(BF, GB, GA, GI, Ff);
         const edges = FO.map(([f1, f2, o]) => {
             return M.encode(((Ff[f2] ? 1 : -1) * o >= 0) ? [f1, f2] : [f2, f1]);
         });
+        await LOAD.status("serializing the Faces");
         const L = LIN.serialize(edges, Ff.length);
         L.S.reverse();
-
-        const CD = Y.CF_FO_Ff_2_CD(CF, FO, Ff);
+        await LOAD.status("Calculating Cells to Display");
+        const CD = Y.CF_FO_Ff_2_CD(CF, FC, FO, Ff);
         const Ctop = CD.map(S => S[S.length - 1]);
         const Cbottom = CD.map(S => S[0]);
 

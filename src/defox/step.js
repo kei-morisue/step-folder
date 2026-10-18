@@ -57,7 +57,7 @@ export const STEP = {
         document.getElementById("rotate").value = STEP.rotate;
         document.getElementById("depth").value = STEP.depth;
     },
-    redraw: () => {
+    redraw: async () => {
         const T = STEP.get_transform();
         DRAW.draw_state(SVG.clear("state0"), STEP.FOLD0, STEP.CELL0, STEP.STATE0, T, SEG.clip, STEP.id, []);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
@@ -71,7 +71,7 @@ export const STEP = {
         if (STEP.CELL_D) {
             const FOLD = STEP.FOLD_D;
             const CELL = STEP.CELL_D;
-            STEP.STATE = STEP.update_celled_state(FOLD, CELL, "state3", T, STEP.STATE);
+            STEP.STATE = await STEP.update_celled_state(FOLD, CELL, "state3", T, STEP.STATE);
             document.getElementById("apply_tt").style.background = "";
         } else {
             STEP.STATE = undefined;
@@ -92,11 +92,11 @@ export const STEP = {
         STEP.reset_component(STEP.CELL0, select, assign);
     },
 
-    new: (ini = true) => {
+    new: async (ini = true) => {
         if (ini) {
             STEP.refresh();
         }
-        STEP.update_states();
+        await STEP.update_states();
         const select = document.getElementById("selectG");
         const assign = document.getElementById("assign");
         STEP.reset_component(STEP.CELL0, select, assign);
@@ -109,17 +109,20 @@ export const STEP = {
         await LOAD.set(2, async () => {
 
             const FOLD = STEP.FOLD_D;
-            await LOAD.status("Building the Distorted Cell");
-
-            STEP.CELL_D = Y.FOLD_2_CELL_D(FOLD, 100);
+            STEP.CELL_D = await Y.FOLD_2_CELL_D(FOLD, 100);
             if (!STEP.CELL_D) { return; }
             await LOAD.report();
             const T = STEP.get_transform();
             await LOAD.status("Building the Distorted State");
             const { BF, BI, GB, GA, GI } = STEP.CELL0;
-            const { P, CP, SP, SC, SE, CF } = STEP.CELL_D;
-            const CELL = { P, CP, SP, SC, SE, CF, BF, BI, GB, GA, GI };
-            STEP.STATE = STEP.update_celled_state(FOLD, CELL, "state3", T)
+            const { P, CP, SP, SC, SE, CF, FC } = STEP.CELL_D;
+            const CELL = { P, CP, SP, SC, SE, CF, FC, BF, BI, GB, GA, GI };
+            STEP.STATE = await Y.FOLD_CELL_2_STATE(FOLD, CELL);
+            if (!STEP.STATE) {
+                return;
+            }
+            await LOAD.status("Rendering the Distorted State");
+            DRAW.draw_state(SVG.clear("state3"), FOLD, CELL, STEP.STATE, T, SEG.clip, STEP.id, STEP.SYMBOLS);
             STEP.CELL_D.CF = undefined;
             STEP.CELL_D.FC = undefined;
             if (STEP.STATE) {
@@ -188,10 +191,10 @@ export const STEP = {
         document.getElementById("assigns").innerHTML = "/" + GA[g].length;
     },
 
-    update_states: () => {
+    update_states: async () => {
         const T = STEP.get_transform();
         STEP.SYMBOLS = [];
-        STEP.STATE0 = STEP.update_celled_state(STEP.FOLD0, STEP.CELL0, "state0", T);
+        STEP.STATE0 = await STEP.update_celled_state(STEP.FOLD0, STEP.CELL0, "state0", T);
         DRAW.draw_group_text(STEP.FOLD0, STEP.CELL0, document.getElementById("state0"), T);
         if (STEP.FOLD1) {
             [STEP.FOLD, STEP.LIN] = DIFF.diff(STEP.FOLD0, STEP.FOLD1, STEP.STATE0.L);
@@ -245,11 +248,11 @@ export const STEP = {
         };
 
     },
-    update_celled_state: (FOLD, CELL, svg_state, T, STATE = undefined) => {
+    update_celled_state: async (FOLD, CELL, svg_state, T, STATE = undefined) => {
         if (!FOLD) {
             return;
         }
-        const STATE_ = STATE ?? Y.FOLD_CELL_2_STATE(FOLD, CELL);
+        const STATE_ = STATE ?? await Y.FOLD_CELL_2_STATE(FOLD, CELL);
         DRAW.draw_state(SVG.clear(svg_state), FOLD, CELL, STATE_, T, SEG.clip, STEP.id, STEP.SYMBOLS);
         return STATE_
     },
