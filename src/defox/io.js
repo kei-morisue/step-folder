@@ -23,7 +23,7 @@ export const IO3 = {
             const svg_page = SVG.clear("png");
             const defs = document.getElementById("defs").firstElementChild;
             svg_page.appendChild(defs.cloneNode(true));
-            const svg = PAGE.redraw(svg_page, PRJ.steps);
+            const svg = await PAGE.redraw(svg_page, PRJ.steps);
             const width = PAGE.dim.width;
             const height = PAGE.dim.height;
             const dim = { width, height };
@@ -54,7 +54,7 @@ export const IO3 = {
             book.setAttribute("width", w);
             book.setAttribute("height", h);
             const svg_page = SVG.append("g", book);
-            PAGE.redraw(svg_page, PRJ.steps, defs, true, [0, 0]);
+            await PAGE.redraw(svg_page, PRJ.steps, defs, true, [0, 0]);
             IO3.write_svg(book, name, PAGE.current_idx);
             return await LOAD.report();
         }
@@ -136,7 +136,7 @@ export const IO3 = {
                 book.setAttribute("height", h);
                 PAGE.current_idx = j;
                 const svg_page = SVG.append("g", book);
-                PAGE.redraw(svg_page, PRJ.steps, defs, to_cell, [0, 0]);
+                await PAGE.redraw(svg_page, PRJ.steps, defs, to_cell, [0, 0]);
                 IO3.write_svg(book, name, j);
                 await LOAD.report();
             }
@@ -170,7 +170,7 @@ export const IO3 = {
                     const svg_page = SVG.clear("png");
                     const defs = document.getElementById("defs").firstElementChild;
                     svg_page.appendChild(defs.cloneNode(true));
-                    const svg = PAGE.redraw(svg_page, PRJ.steps);
+                    const svg = await PAGE.redraw(svg_page, PRJ.steps);
 
                     const width = PAGE.dim.width;
                     const height = PAGE.dim.height;

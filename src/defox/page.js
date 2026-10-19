@@ -41,13 +41,13 @@ export const PAGE = {
         return Math.ceil((steps.length + b) / (r * c));
     },
 
-    draw_title: (body, w, h, steps, origin_body = [0, 0]) => {
+    draw_title: async (body, w, h, steps, origin_body = [0, 0]) => {
         if (!PAGE.make_title || PAGE.current_idx != 0) { return; }
-        if (PAGE.layout.blanks > 0) { PAGE.draw_title_A(body, w, h, steps, .9, origin_body); }
+        if (PAGE.layout.blanks > 0) { await PAGE.draw_title_A(body, w, h, steps, .9, origin_body); }
         if (PAGE.layout.blanks > 1) { PAGE.draw_title_B(body, w, h, .9, origin_body); }
         if (PAGE.layout.blanks > 2) { PAGE.draw_title_C(body, w, h, steps, .9, origin_body); }
     },
-    draw_title_A: (body, w, h, steps, size, origin_body = [0, 0]) => {
+    draw_title_A: async (body, w, h, steps, size, origin_body = [0, 0]) => {
         const panel = SVG.append("g", body);
         const origin_panel = origin_body;
 
@@ -58,7 +58,7 @@ export const PAGE = {
         const b = d * SVG3.MARGIN / SVG3.INI_SCALE;
         const [x0, y0] = M.add(origin_panel_d, [b, b])
         SVG.SCALE = d - 2 * b;
-        PAGE.draw_step(panel, steps[steps.length - 1], steps.length, false, true, [x0, y0]);
+        await PAGE.draw_step(panel, steps[steps.length - 1], steps.length, false, true, [x0, y0]);
 
         SVG.append("rect", panel, { x: origin_body[0], y: origin_body[1] + h * .8, width: w, height: h * 0.1, fill: "darkgray" });
         SVG3.reset();
@@ -138,7 +138,7 @@ export const PAGE = {
         SVG3.reset();
         return panel;
     },
-    redraw: (svg, steps, defs = undefined, to_cell = false, origin = [0, 0]) => {
+    redraw: async (svg, steps, defs = undefined, to_cell = false, origin = [0, 0]) => {
         document.getElementById("pages").innerHTML = PAGE.get_pages(steps);
         document.getElementById("page_idx").innerHTML = PAGE.current_idx + 1;
 
@@ -151,7 +151,7 @@ export const PAGE = {
         const w = (PAGE.dim.width - 2 * PAGE.dim.margin_x) / PAGE.layout.cols;
         const h = (PAGE.dim.height - 2 * PAGE.dim.margin_y) / PAGE.layout.rows;
 
-        PAGE.draw_title(body, w, h, steps, origin_body);
+        await PAGE.draw_title(body, w, h, steps, origin_body);
         for (let i = 0; i < steps.length; i++) {
             const [r, c] = PAGE.get_row_col(i);
             if (r == undefined || c == undefined) {
@@ -167,7 +167,7 @@ export const PAGE = {
             const b = s * SVG3.MARGIN / SVG3.INI_SCALE;
             SVG.SCALE = d - 2 * b;
             const origin_dia = M.add(origin_panel_d, [b, b])
-            PAGE.draw_step(panel, steps[i], i, to_cell, true, origin_dia);
+            await PAGE.draw_step(panel, steps[i], i, to_cell, true, origin_dia);
             PAGE.draw_label(panel, i, origin_panel);
         }
         SVG3.reset();
@@ -187,7 +187,7 @@ export const PAGE = {
         return l;
     },
 
-    draw_step: (panel_d, step, id, to_cell, render_all = true, origin = [0, 0]) => {
+    draw_step: async (panel_d, step, id, to_cell, render_all = true, origin = [0, 0]) => {
         const { flip0, rotate, scale, clip, cx, cy, depth } = step.params;
 
         const T = STEP.get_T(flip0, rotate, scale, cx, cy);
@@ -197,24 +197,25 @@ export const PAGE = {
 
         if (to_cell) {
             if (CELL) {
-                const STATE = step.state ?? Y.FOLD_CELL_2_STATE(FOLD, CELL);
+                const STATE = step.state ?? await Y.FOLD_CELL_2_STATE(FOLD, CELL);
                 DRAW.draw_state(panel_d, FOLD, CELL, STATE, T, clip, id, symbols, origin);
             }
             else {
                 const CELL_d = Y.FOLD_2_CELL(FOLD);
                 const C = {
                     CF: CELL_d.CF,
+                    FC: CELL_d.FC,
                     BF: step.cell_cp.BF,
                     GB: step.cell_cp.GB,
                     GA: step.cell_cp.GA,
                     GI: step.cell_cp.GI
                 }
-                const STATE = step.state ?? Y.FOLD_CELL_2_STATE(FOLD, C);
+                const STATE = step.state ?? await Y.FOLD_CELL_2_STATE(FOLD, C);
                 DRAW.draw_state(panel_d, FOLD, CELL_d, STATE, T, clip, id, symbols, origin);
             }
         } else {
             if (CELL) {
-                const STATE = step.state ?? Y.FOLD_CELL_2_STATE(FOLD, CELL);
+                const STATE = step.state ?? await Y.FOLD_CELL_2_STATE(FOLD, CELL);
                 DRAW.draw_state(panel_d, FOLD, CELL, STATE, T, clip, id, symbols, origin);
             } else {
                 DRAW_LIN.draw_state(panel_d, FOLD, step.lin.S, T, clip, depth, id, symbols, render_all, origin);

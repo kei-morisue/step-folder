@@ -20,9 +20,9 @@ export const PRJ = {
         PRJ.steps = [];
     },
 
-    redraw_page: () => {
+    redraw_page: async () => {
         const svg_page = SVG.append("svg", SVG.clear("page"));
-        PAGE.redraw(svg_page, PRJ.steps);
+        await PAGE.redraw(svg_page, PRJ.steps);
     },
 
     remove: () => {
