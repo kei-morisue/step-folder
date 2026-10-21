@@ -57,7 +57,7 @@ export const GUI_STATE = {
 
 
 
-        document.getElementById("infer_layer_order_forward").onclick = (e) => {
+        document.getElementById("infer_layer_order_forward").onclick = async (e) => {
             const i = PRJ.current_idx;
             if (i < 1) {
                 return;
@@ -66,11 +66,11 @@ export const GUI_STATE = {
             const CELL_from = PRJ.steps[i - 1].cell_cp;
             const FOLD_to = STEP.FOLD0;
             DIFF.infer_GI(FOLD_from, FOLD_to, CELL_from, STEP.CELL0);
-            STEP.update_states();
+            await STEP.update_states();
             STEP.update_dist();
-            STEP.redraw();
+            await STEP.redraw();
         }
-        document.getElementById("infer_layer_order_backward").onclick = (e) => {
+        document.getElementById("infer_layer_order_backward").onclick = async (e) => {
             const i = PRJ.current_idx;
             if (i + 1 > PRJ.steps.length - 1) {
                 return;
@@ -79,9 +79,9 @@ export const GUI_STATE = {
             const CELL_from = PRJ.steps[i + 1].cell_cp;
             const FOLD_to = STEP.FOLD0;
             DIFF.infer_GI(FOLD_from, FOLD_to, CELL_from, STEP.CELL0);
-            STEP.update_states();
+            await STEP.update_states();
             STEP.update_dist();
-            STEP.redraw();
+            await STEP.redraw();
         }
 
         document.getElementById("state3").onclick = (e) => {

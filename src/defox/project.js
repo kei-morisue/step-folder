@@ -110,7 +110,7 @@ export const PRJ = {
                     }
 
                     PRJ.restore(j - 1);
-                    STEP.update_states();
+                    await STEP.update_states();
                     STEP.update_dist();
                     PRJ.record(j - 1);
                     FOLD_infer = FOLD;
@@ -152,7 +152,7 @@ export const PRJ = {
                     }
 
                     PRJ.restore(j - 1);
-                    STEP.update_states();
+                    await STEP.update_states();
                     STEP.update_dist();
                     PRJ.record(j - 1);
                     await LOAD.report();
