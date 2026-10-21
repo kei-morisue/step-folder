@@ -239,14 +239,14 @@ export const GUI = {
 
         await LOAD.status("Refreshing the Previous Step");
         PRJ.restore(i - 1);
-        STEP.update_states();
+        await STEP.update_states();
         STEP.update_dist();
         PRJ.record(i - 1);
         PRJ.restore(i);
         await LOAD.report();
 
         await LOAD.status("Refreshing the Current Step");
-        STEP.update_states();
+        await STEP.update_states();
         STEP.update_dist();
         PRJ.record(i);
         await STEP.redraw();
