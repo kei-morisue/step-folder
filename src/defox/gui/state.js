@@ -106,12 +106,12 @@ export const GUI_STATE = {
         GUI.open_close("edit_symbol", "inline");
         GUI.open_close("edit_render", "inline");
 
-        document.getElementById("assign").onchange = (e) => {
+        document.getElementById("assign").onchange = async (e) => {
             const a = e.target.value - 1;
             const g = document.getElementById("selectG").value
 
             STEP.CELL0.GI[g] = a
-            STEP.update_states()
+            await STEP.update_states()
             STEP.update_dist();
         }
         document.getElementById("selectG").onchange = (e) => {
