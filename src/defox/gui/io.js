@@ -16,9 +16,9 @@ export const GUI_IO = {
                 GUI_IO.import_cps(is_interp);
             }
         };
-        document.getElementById("import0").onclick = () => {
+        document.getElementById("import0").onclick = async () => {
             const is_interp = document.getElementById("crease_interp").checked;
-            GUI_IO.import_cps(is_interp)
+            await GUI_IO.import_cps(is_interp)
         };
         document.getElementById("save_proj").onclick = async (e) => {
             PRJ.record(PRJ.current_idx);
@@ -101,11 +101,11 @@ export const GUI_IO = {
         }
         await LOAD.status("Detecting CP differences");
         PRJ.restore(PRJ.current_idx);
-        STEP.new(is_new);
+        await STEP.new(is_new);
         PRJ.record(PRJ.current_idx);
 
         PRJ.restore(PRJ.current_idx + 1);
-        STEP.new();
+        await STEP.new();
         PRJ.record(PRJ.current_idx);
         PRJ.restore(PRJ.current_idx);
 
