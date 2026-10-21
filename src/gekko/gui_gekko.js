@@ -41,7 +41,7 @@ export const GUI = {
                 closeButton.onclick = async () => await GUI.close();
                 discardButton.onclick = GUI.discard;
 
-                showButton.onclick = GUI.open;
+                showButton.onclick = async () => await GUI.open();
                 svg.onpointermove = ACT.hilight;
                 svg.onclick = ACT.onclick;
                 svg.onmouseleave = PAINT.onmouseout;
@@ -134,7 +134,7 @@ export const GUI = {
         }
     },
 
-    open: () => {
+    open: async () => {
         const dialog = document.getElementById("gekko");
         const svg = document.getElementById("gekko_cp")
 
@@ -142,7 +142,7 @@ export const GUI = {
         const STEP = PRJ.steps[Math.max(PRJ.current_idx, 0)];
         const FOLD = STEP.fold;
         const CATAL = STEP.catalyst;
-        PAINT.initialize(FOLD, svg, CATAL);
+        await PAINT.initialize(FOLD, svg, CATAL);
         PAINT.redraw();
     },
     close: async () => {

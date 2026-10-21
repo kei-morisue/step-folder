@@ -68,7 +68,7 @@ export const PAINT = {
     },
 
 
-    initialize: (FOLD, svg, catalyst = undefined) => {
+    initialize: async (FOLD, svg, catalyst = undefined) => {
         PAINT.segment = -1;
         PAINT.vertex = -1;
         PAINT.v0 = undefined;
@@ -92,7 +92,7 @@ export const PAINT = {
 
 
         if (catalyst == undefined) {
-            const [FOLD_,] = Y.FOLD_2_PAPER(FOLD);
+            const [FOLD_,] = await Y.FOLD_2_PAPER(FOLD);
             PAINT.V = FOLD_.V;
             PAINT.EA = FOLD_.EA;
             PAINT.EV = FOLD_.EV;
