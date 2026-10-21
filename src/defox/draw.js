@@ -274,11 +274,11 @@ export const DRAW = {
         });
         P.map((p, g) => {
             const el = document.getElementById("group_text_" + g);
-            el.onclick = (e) => {
+            el.onclick = async (e) => {
                 const { GA, GI } = STEP.CELL0
                 const a = (GI[g] + 1) % GA[g].length;
                 STEP.CELL0.GI[g] = a
-                STEP.update_states()
+                await STEP.update_states()
                 STEP.update_dist();
                 STEP.update_component(STEP.CELL0, g, a);
             };
