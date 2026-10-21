@@ -25,7 +25,7 @@ export const PRJ = {
         await PAGE.redraw(svg_page, PRJ.steps);
     },
 
-    remove: () => {
+    remove: async () => {
         const i = PRJ.current_idx;
         if (PRJ.steps.length == 2 || i == 0) {
             return;
@@ -34,16 +34,16 @@ export const PRJ = {
             PRJ.steps.splice(i, 1);
             if (PRJ.steps[i - 1]) {
                 PRJ.restore(i - 1);
-                STEP.update_states();
+                await STEP.update_states();
                 STEP.update_dist();
                 PRJ.record(i - 1);
             }
             PRJ.restore(i);
-            STEP.update_states();
+            await STEP.update_states();
             STEP.update_dist();
             PRJ.record(i);
 
-            STEP.redraw();
+            await STEP.redraw();
             const pages = PAGE.get_pages(PRJ.steps);
             if (PAGE.current_idx + 1 > pages) {
                 PAGE.current_idx = pages - 1;
@@ -51,7 +51,7 @@ export const PRJ = {
             PRJ.redraw_page();
         }
     },
-    duplicate: () => {
+    duplicate: async () => {
         const i = PRJ.current_idx;
         PRJ.record(i);
         const s = PRJ.steps[i];
@@ -65,23 +65,23 @@ export const PRJ = {
 
         PRJ.steps.splice(i + 1, 0, step);
         PRJ.restore(i);
-        STEP.update_states();
+        await STEP.update_states();
         STEP.update_dist();
         PRJ.record(i);
         if (PRJ.steps[i + 1]) {
             PRJ.restore(i + 1);
-            STEP.update_states();
+            await STEP.update_states();
             STEP.update_dist();
             PRJ.record(i + 1);
         }
-        STEP.redraw();
+        await STEP.redraw();
         PRJ.redraw_page();
     },
-    duplicate_back: () => {
-        PRJ.duplicate();
+    duplicate_back: async () => {
+        await PRJ.duplicate();
         const i = PRJ.current_idx;
         PRJ.restore(i - 1);
-        STEP.redraw();
+        await STEP.redraw();
     },
     extrapolate: async () => {
         if (!confirm("All the symbols added in the following steps will be all deleted.")) { return }
@@ -119,10 +119,10 @@ export const PRJ = {
 
                 const j = PRJ.steps.length - 1;
                 PRJ.restore(j);
-                STEP.update_states();
+                await STEP.update_states();
                 STEP.update_dist();
                 PRJ.record(j);
-                STEP.redraw();
+                await STEP.redraw();
 
             }
         );
@@ -160,10 +160,10 @@ export const PRJ = {
 
                 const j = PRJ.steps.length - 1;
                 PRJ.restore(j);
-                STEP.update_states();
+                await STEP.update_states();
                 STEP.update_dist();
                 PRJ.record(j);
-                STEP.redraw();
+                await STEP.redraw();
 
             }
         );
@@ -186,7 +186,7 @@ export const PRJ = {
             }
         }
         PRJ.restore(i);
-        STEP.redraw();
+        await STEP.redraw();
     },
 
     restore: (i) => {
@@ -287,23 +287,23 @@ export const PRJ = {
     setup_number_options: (ids, edge_props, init, module) => {
         for (const [i, id] of ids.entries()) {
             const props = edge_props[i]
-            document.getElementById(id).onchange = (e) => {
+            document.getElementById(id).onchange = async (e) => {
                 if (Array.isArray(props)) {
                     props.map(p => module[p] = e.target.value)
                 } else {
                     module[props] = parseInt(e.target.value);
                 }
-                STEP.redraw();
+                await STEP.redraw();
                 PRJ.redraw_page();
             }
-            document.getElementById(id + "_reset").onclick = (e) => {
+            document.getElementById(id + "_reset").onclick = async (e) => {
                 if (Array.isArray(props)) {
                     props.map(p => module[p] = init[i])
                 } else {
                     module[props] = init[i]
                 }
                 document.getElementById(id).value = init[i]
-                STEP.redraw();
+                await STEP.redraw();
                 PRJ.redraw_page();
             }
         }

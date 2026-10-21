@@ -160,10 +160,10 @@ export const GUI = {
 
         PRJ.steps[i].catalyst = PAINT.get_catalyst();
         PRJ.restore(i);
-        STEP.update_states();
+        await STEP.update_states();
         STEP.update_dist();
         PRJ.record(i);
-        STEP.redraw();
+        await STEP.redraw();
         PAINT.reset();
     },
 

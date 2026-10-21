@@ -249,7 +249,7 @@ export const GUI = {
         STEP.update_states();
         STEP.update_dist();
         PRJ.record(i);
-        STEP.redraw();
+        await STEP.redraw();
         PAINT.reset();
         await LOAD.report();
 
