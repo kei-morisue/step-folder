@@ -341,8 +341,20 @@ export const IO3 = {
         step_data.cell_cp.BI = BI;
         if (!step_data.state_cp) {
             await LOAD.status(`Recovering the State of Step ${idx + 1}`);
-            step_data.state_cp = Y.FOLD_CELL_2_STATE(step_data.fold_cp, step_data.cell_cp);
+            step_data.state_cp = await Y.FOLD_CELL_2_STATE(step_data.fold_cp, step_data.cell_cp);
 
+        }
+        if (!step_data.cell_cp.FC) {
+            await LOAD.status(`Recovering the face-cell mapping of Step ${idx + 1}`);
+            const { CF, FV } = step_data.cell_cp;
+            step_data.cell_cp.FC = Y.CF_FV_2_FC(CF, FV);
+        }
+        if (step_data.cell_d) {
+            if (!step_data.cell_d.FC) {
+                await LOAD.status(`Recovering the distorted face-cell mapping of Step ${idx + 1}`);
+                const { CF, FV } = step_data.cell_d;
+                step_data.cell_d.FC = Y.CF_FV_2_FC(CF, FV);
+            }
         }
 
         const { Vf, FV, EV, EF, FE, Ff, EA, V, VV, Vc, FU, UV, UA } = step_data.fold

@@ -188,6 +188,16 @@ export const Y = {     // CONVERSION
 
         return { BF, BI, GB, GA };
     },
+    CF_FV_2_FC: (CF, FV) => {
+        const FC = FV.map(() => []);
+        for (const [ci, cF] of CF.entries()) {
+            cF.sort((a, b) => a - b);
+            for (const f of cF) {
+                FC[f].push(ci);
+            }
+        }
+        return FC;
+    },
 
     FOLD_2_CELL: (FOLD) => {
         const { Vf, EV, EF, FV } = FOLD;
