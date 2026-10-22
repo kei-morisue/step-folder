@@ -223,18 +223,18 @@ export const PAGE = {
         }
     },
 
-    draw_blank_step: (par_svg, step, id, scaled = true) => {
+    draw_blank_step: async (par_svg, step, id, scaled = true) => {
         const { flip0, rotate, scale, clip, cx, cy, depth } = step.params;
 
         const T = STEP.get_T(flip0, rotate, scaled ? scale : 1, cx, cy);
         const FOLD = step.fold_cp;
         const CELL = step.cell_cp;
 
-        const STATE = Y.FOLD_CELL_2_STATE(FOLD, CELL);
+        const STATE = await Y.FOLD_CELL_2_STATE(FOLD, CELL);
         DRAW.draw_state(par_svg, FOLD, CELL, STATE, T, clip, id);
     },
 
-    get_tutorial_svg: (step_before, step_after, idx) => {
+    get_tutorial_svg: async (step_before, step_after, idx) => {
         const body = PAGE.draw_tutorial_body();
         const b = SVG3.MARGIN;
         const s = SVG.SCALE;
@@ -244,19 +244,19 @@ export const PAGE = {
         const panel_B = PAGE.draw_panel(body, w, h, w, 0, idx);
         panel_A.setAttribute("viewBox", [-b, -b, w, h].join(" "));
         panel_B.setAttribute("viewBox", [-b, -b, w, h].join(" "));
-        PAGE.draw_step(panel_A, step_before, idx);
+        await PAGE.draw_step(panel_A, step_before, idx);
         if (step_after) {
-            PAGE.draw_blank_step(panel_B, step_after, idx);
+            await PAGE.draw_blank_step(panel_B, step_after, idx);
         }
         PAGE.draw_label(body, idx);
         return body;
     },
-    get_nonscale_svg: (step, idx) => {
+    get_nonscale_svg: async (step, idx) => {
         const body = PAGE.draw_tutorial_body(1, 1);
         const b = SVG3.MARGIN;
         const s = SVG.SCALE;
         const panel = PAGE.draw_panel(body, s + 2 * b, s + 2 * b, b, b, idx);
-        PAGE.draw_blank_step(panel, step, idx, false);
+        await PAGE.draw_blank_step(panel, step, idx, false);
         return body;
     },
     get_row_col: (idx) => {
