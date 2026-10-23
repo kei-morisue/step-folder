@@ -75,7 +75,7 @@ export const PRJ = {
             PRJ.record(i + 1);
         }
         await STEP.redraw();
-        PRJ.redraw_page();
+        await PRJ.redraw_page();
     },
     duplicate_back: async () => {
         await PRJ.duplicate();

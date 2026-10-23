@@ -49,8 +49,8 @@ export const GUI_STATE = {
             STEP.update_dist();
             STEP.redraw();
         }
-        document.getElementById("duplicate_forward").onclick = PRJ.duplicate;
-        document.getElementById("duplicate_backward").onclick = PRJ.duplicate_back;
+        document.getElementById("duplicate_forward").onclick = async () => await PRJ.duplicate();
+        document.getElementById("duplicate_backward").onclick = async () => await PRJ.duplicate_back();
         document.getElementById("extrapolate").onclick = async () => await PRJ.extrapolate();
         document.getElementById("sweep").onclick = async () => await PRJ.sweep();
         document.getElementById("rerender").onclick = async () => await PRJ.rerender();
