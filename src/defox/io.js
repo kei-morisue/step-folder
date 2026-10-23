@@ -349,13 +349,6 @@ export const IO3 = {
             const { CF, FV } = step_data.cell_cp;
             step_data.cell_cp.FC = Y.CF_FV_2_FC(CF, FV);
         }
-        if (step_data.cell_d) {
-            if (!step_data.cell_d.FC) {
-                await LOAD.status(`Recovering the distorted face-cell mapping of Step ${idx + 1}`);
-                const { CF, FV } = step_data.cell_d;
-                step_data.cell_d.FC = Y.CF_FV_2_FC(CF, FV);
-            }
-        }
 
         const { Vf, FV, EV, EF, FE, Ff, EA, V, VV, Vc, FU, UV, UA } = step_data.fold
 
